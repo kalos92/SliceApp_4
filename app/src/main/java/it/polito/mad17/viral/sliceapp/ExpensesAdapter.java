@@ -3,6 +3,7 @@ package it.polito.mad17.viral.sliceapp;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +12,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by abdel on 28/03/2017.
  */
 
-public class ExpensesAdapter extends ArrayAdapter<Spesa> {
+public class ExpensesAdapter extends ArrayAdapter<Spesa>  {
 
     private Context context;
     private int layoutResourceId;
     private ArrayList<Spesa> data = null;
     private Persona user;
+
 
     public ExpensesAdapter(Context context, int layoutResourceId, ArrayList<Spesa> objects,Persona user) {
         super(context, layoutResourceId, objects);
@@ -90,6 +95,19 @@ public class ExpensesAdapter extends ArrayAdapter<Spesa> {
     }
 
 
+
+    @Override
+    public int getViewTypeCount() {
+
+        return getCount();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+
+        return position;
+    }
+
     static class GroupHolder {
         ImageView imgIcon;
         TextView txtTitle;
@@ -100,3 +118,4 @@ public class ExpensesAdapter extends ArrayAdapter<Spesa> {
 
     }
 }
+

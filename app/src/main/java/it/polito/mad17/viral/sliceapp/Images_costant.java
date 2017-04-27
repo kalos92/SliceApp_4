@@ -8,4 +8,7 @@ public class Images_costant {
     public static final int MENU_ICON_WIDTH= 20;
     public static final int MENU_ICON_HEIGHT= 20;
 
+    //393466950530
+    //ciaocomestai
+
 }

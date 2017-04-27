@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,15 +25,21 @@ import android.widget.Toast;
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import static it.polito.mad17.viral.sliceapp.FirstFragment.newInstance;
 
-public class ExpensesActivity extends AppCompatActivity {
+public class ExpensesActivity extends AppCompatActivity implements Observer {
 
-    Gruppo gruppo;
-    Persona user;
-    FragmentManager fm;
+    private Gruppo gruppo;
+    private Persona user;
+    private FragmentManager fm;
+    private ArrayList<Spesa> spese = new ArrayList();
+    private HashMap<String, Spesa> observableMap = null;
+    private ExpensesAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +52,7 @@ public class ExpensesActivity extends AppCompatActivity {
            user = (Persona) extra.get("User");
        }
 
+        gruppo.addObserver(this);
         fm= getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -68,8 +76,12 @@ public class ExpensesActivity extends AppCompatActivity {
         ListView mlist = (ListView) findViewById(R.id.listView2);
 
 
-
-        ExpensesAdapter adapter = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, gruppo.getSpese(),user);
+        spese.addAll(gruppo.getSpese());
+        if(observableMap!=null)
+            if(observableMap.values().size() == spese.size())
+            adapter = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, spese,user);
+        else
+            adapter.notifyDataSetChanged();
 
         mlist.setAdapter(adapter);
 
@@ -113,6 +125,7 @@ public class ExpensesActivity extends AppCompatActivity {
         Spesa s = (Spesa)i.getSerializableExtra("Spesa");
         SliceAppDB.addSpesa(s);
         adapter = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, gruppo.getSpese(),user);
+        adapter.notifyDataSetChanged();
         mlist.setAdapter(adapter);
         adapter.notifyDataSetChanged();
 
@@ -130,4 +143,14 @@ public class ExpensesActivity extends AppCompatActivity {
         super.onPause();
 
     }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        observableMap = ((Gruppo) o).getMappaSpese();
+
+
+        Log.d("OBSERVER", "All is flux!  Some variable is now " + observableMap.values());
+    }
+
+
 }

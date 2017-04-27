@@ -72,21 +72,7 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
         else holder = (PayerHolder2) row.getTag();
 
         holder.cb.setTag(position);
-        cb.setTag(position);
 
-        cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-
-                    percentages[position]= new Double(-1d);
-
-                } else {
-                    checkMarks[position] = false;
-                    percentages[position]=new Double(0d);
-                }
-            }
-        });
 
         holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
