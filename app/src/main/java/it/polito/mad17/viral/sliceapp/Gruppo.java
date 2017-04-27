@@ -57,6 +57,8 @@ public class Gruppo implements Serializable, Observer {
     public String getGroupID(){ return groupID; }
     public void setGroupID(String groupID){ this.groupID = groupID; }
 
+    public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
+
     public Spesa AddSpesa_and_try_repay(Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
 
         gestore=new Gestore();
