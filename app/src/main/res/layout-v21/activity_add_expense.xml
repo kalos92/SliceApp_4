@@ -1,0 +1,47 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tab_bck"
+    xmlns:design="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+        android:orientation="vertical"
+       >
+
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/expenseToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            design:layout_collapseMode="pin"
+            design:layout_scrollFlags="scroll|enterAlways"
+            design:navigationIcon="?attr/homeAsUpIndicator"
+            design:popupTheme="@style/AppTheme"
+            design:subtitleTextColor="#FFFFFF"
+            design:title="Add a new expense"
+            design:titleTextColor="#FFFFFF"
+            android:paddingBottom="5dp"
+            android:elevation="2dp"/>
+
+
+
+
+        <FrameLayout
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="it.polito.mad17.viral.sliceapp.AddExpenseFragment">
+
+        <View android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/myrect"/>
+
+    </FrameLayout>
+
+</LinearLayout>
+
+</android.support.design.widget.CoordinatorLayout>

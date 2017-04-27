@@ -1,0 +1,71 @@
+{
+  "project_info": {
+    "project_number": "656475460728",
+    "firebase_url": "https://sliceapp-a55d6.firebaseio.com",
+    "project_id": "sliceapp-a55d6",
+    "storage_bucket": "sliceapp-a55d6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656475460728:android:f224be18814524e1",
+        "android_client_info": {
+          "package_name": "it.polito.mad17.viral.sliceapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "656475460728-5ggh163potjut3gbbl4hkuptl4kekeiq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad17.viral.sliceapp",
+            "certificate_hash": "93dd417cc4a9162b8321165b4b0489b8f9bce09a"
+          }
+        },
+        {
+          "client_id": "656475460728-l9scqc64fi8qd4um9jvoi3bnkqb6d5pa.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad17.viral.sliceapp",
+            "certificate_hash": "be166afdd6a2c3be58b12411874cb42e848440e4"
+          }
+        },
+        {
+          "client_id": "656475460728-birjk3h3p9atfkouovs63507vn345bea.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "it.polito.mad17.viral.sliceapp",
+            "certificate_hash": "5c02315abe08912e6ed18a1d0109febf77f50f5b"
+          }
+        },
+        {
+          "client_id": "656475460728-k58ofl86oghbftsmcg89j7hlpiguj3ii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOkYRJOQ7WyH0DPcb0k2PgExGY-odEEaA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "656475460728-k58ofl86oghbftsmcg89j7hlpiguj3ii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

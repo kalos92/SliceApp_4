@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:design="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+
+    android:background="@color/tab_bck">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="60dp">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:design="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/tab_bck"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp">
+
+                <Spinner
+                    android:id="@+id/s_category"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginLeft="@dimen/normal_v_margin"
+                    android:background="@drawable/myrect"
+                    android:spinnerMode="dialog" />
+
+                <EditText
+                    android:id="@+id/expense_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="@id/s_category"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="85dp"
+                    android:layout_toEndOf="@+id/s_category"
+                    android:layout_toRightOf="@+id/s_category"
+                    android:hint="Name"
+                    android:inputType="text"
+                    android:textColor="@color/text"
+                    android:textColorHint="@color/text"
+                    android:textColorLink="@color/text" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.02"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <EditText
+                    android:id="@+id/expense_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/normal_v_margin"
+                    android:layout_weight="0.5"
+                    android:hint="00,00"
+                    android:inputType="numberDecimal"
+                    android:textColor="@color/text"
+                    android:textColorHint="@color/text" />
+
+                <Spinner
+                    android:id="@+id/currencies_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="37dp"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="@dimen/normal_v_margin"
+                    android:layout_weight="0.5"
+                    android:entries="@array/country_arrays"
+                    android:spinnerMode="dialog" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1"
+                android:orientation="horizontal">
+
+
+                <Spinner
+                    android:id="@+id/BuyerSpinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="37dp"
+                    android:layout_gravity="left"
+                    android:layout_marginRight="@dimen/normal_v_margin"
+                    android:layout_weight="0.5"
+                    android:spinnerMode="dialog" />
+
+                <ImageButton
+                    android:id="@+id/calendar"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_weight="0.20"
+                    android:background="@drawable/myrect"
+                    android:contentDescription="Calendar"
+                    android:elevation="2dp"
+                    android:gravity="end"
+                    android:onClick="showDatePickerDialog"
+                    android:src="@drawable/img_cal" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1">
+
+                <ImageButton
+                    android:id="@+id/attach_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="@dimen/normal_v_margin"
+                    android:layout_weight="0.15"
+                    android:background="@drawable/myrect"
+                    android:src="@drawable/img_img" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_weight="0.29"
+                    android:text="Click To add a Photo"
+                    android:textAlignment="center"
+                    android:textColor="@color/text"
+                    android:textSize="24sp" />
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_weight="0.29"
+                    android:text="- or -"
+                    android:textAlignment="center"
+                    android:textColor="@color/text"
+                    android:textSize="24sp" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:outlineProvider="bounds"
+                android:weightSum="1">
+
+                <ImageButton
+                    android:id="@+id/attach_pdf"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="@dimen/normal_v_margin"
+                    android:layout_weight="0.14"
+                    android:background="@drawable/myrect"
+                    android:clipToPadding="false"
+
+                    android:src="@drawable/img_pdf" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="47dp"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.37"
+                    android:text="Click to add a PDF"
+                    android:textAlignment="center"
+                    android:textColor="@color/text"
+                    android:textSize="24sp" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.55">
+
+                <ImageView
+                    android:id="@+id/preview"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_gravity="left" />
+
+                <TextView
+                    android:id="@+id/pdfName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/preview"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:textAlignment="center"
+                    android:textColor="@color/text"
+                    android:textSize="24sp" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+</android.support.design.widget.CoordinatorLayout>

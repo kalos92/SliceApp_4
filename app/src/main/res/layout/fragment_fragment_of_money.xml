@@ -1,0 +1,70 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="it.polito.mad17.viral.sliceapp.Fragment_of_money">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:background="#BDC3C7">
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/debts"
+            android:layout_margin="10dp"
+            android:layout_weight="0.25"
+            android:layout_gravity="center"
+            android:text="Your Debts:"
+            android:textColor="@color/debiti"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/debts_number"
+            android:layout_weight="0.25"
+            android:layout_gravity="center"
+            android:layout_alignRight="@+id/debts"
+            android:textColor="@color/debiti"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/credits"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_weight="0.25"
+            android:layout_gravity="center"
+            android:text="Your Credits:"
+            android:textColor="@color/crediti"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+        <TextView android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/credits_number"
+        android:layout_weight="0.25"
+        android:layout_gravity="center"
+        android:layout_alignBottom="@+id/credits"
+            android:textColor="@color/crediti"
+            android:textSize="15sp"
+            android:textStyle="bold"/>
+
+
+
+
+
+
+    </LinearLayout>
+
+
+
+
+</FrameLayout>

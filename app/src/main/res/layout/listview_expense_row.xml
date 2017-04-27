@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="10dp"
+    android:weightSum="1"
+    android:background="?android:attr/activatedBackgroundIndicator">
+
+
+
+    <ImageView android:id="@+id/expIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"/>
+
+    <TextView
+        android:id="@+id/expName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="5.26"
+        android:layout_toRightOf="@id/expIcon"
+        android:layout_centerVertical="true"
+        android:textColor="@color/text"
+        android:textSize="18dp" />
+    <TextView
+        android:id="@+id/buyer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/expName"
+        android:layout_alignStart="@id/expName"
+        android:textSize="10sp"
+        android:textColor="@color/text"
+        android:layout_alignLeft="@id/expName" />
+
+    <TextView
+        android:id="@+id/expPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
+        android:layout_weight="5.26"
+        android:gravity="center"
+        android:textColor="@color/text"
+        android:textSize="22dp"
+        android:layout_alignParentRight="true"/>
+
+    <TextView
+        android:id="@+id/expCurrency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@id/expPrice"
+        android:textColor="@color/text"
+
+        />
+
+
+</RelativeLayout>

@@ -1,0 +1,56 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tab_bck"
+    xmlns:design="http://schemas.android.com/apk/res-auto">
+
+    <LinearLayout
+    android:layout_height="match_parent"
+    android:layout_width="match_parent"
+        android:orientation="vertical">
+
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+
+            />
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/expenseToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="6dp"
+            design:layout_collapseMode="pin"
+            design:layout_scrollFlags="scroll|enterAlways"
+            design:navigationIcon="?attr/homeAsUpIndicator"
+            design:popupTheme="@style/AppTheme"
+            design:subtitleTextColor="#FFFFFF"
+            design:title="Add a new expense"
+            design:titleTextColor="#FFFFFF" />
+    <FrameLayout
+        android:id="@+id/fragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
+
+</LinearLayout>
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+
+        design:itemIconTint="@color/text"
+        design:itemTextColor="@color/text"
+        design:menu="@menu/bottom_nav_bar_add"
+        android:clipToPadding="false"
+        android:background="@drawable/myrect"
+
+        android:elevation="6dp"
+        android:outlineProvider="background"
+
+        />
+
+</android.support.design.widget.CoordinatorLayout>

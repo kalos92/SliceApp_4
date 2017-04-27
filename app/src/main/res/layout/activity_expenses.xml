@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tab_bck"
+    xmlns:design="http://schemas.android.com/apk/res-auto">
+        <LinearLayout
+            android:id="@+id/LinearVerticalLayout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="60dp"
+            android:orientation="vertical"
+            android:background="@color/tab_bck" >
+
+            <android.support.v7.widget.Toolbar
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:layout_width="match_parent"
+                android:id="@+id/expenseToolbar"
+                android:layout_height="?attr/actionBarSize"
+                android:elevation="6dp"
+                app:layout_collapseMode="pin"
+                app:layout_scrollFlags="scroll|enterAlways"
+                app:popupTheme="@style/AppTheme"
+                app:navigationIcon="?attr/homeAsUpIndicator"
+                app:titleTextColor="@android:color/white"
+                app:subtitleTextColor="@android:color/white"
+                android:background="@color/colorPrimary">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                /></android.support.v7.widget.Toolbar>
+
+
+            <FrameLayout
+                android:id="@+id/fragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:name="it.polito.mad17.viral.sliceapp.Fragment_of_money"
+                />
+            <ListView
+                android:id="@+id/listView2"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="0dp"
+                android:background="@color/tab_bck"
+                android:longClickable="true"
+                />
+
+        </LinearLayout>
+
+        <android.support.design.widget.BottomNavigationView
+
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:id="@+id/bottom_nav_bar"
+            android:layout_gravity="bottom"
+            design:menu="@menu/bottom_nav_bar_menu"
+            design:itemIconTint="@color/text"
+            design:itemTextColor="@color/text"/>
+
+
+</android.support.design.widget.CoordinatorLayout>
+
+
