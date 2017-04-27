@@ -16,6 +16,7 @@ import android.widget.Button;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -136,7 +137,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 i.putExtra("User", user);
 
                 if(data!=null)
-               data_s = data.get(Calendar.DAY_OF_MONTH)+"/"+data.get((Calendar.MONTH)+1)+"/"+data.get(Calendar.YEAR);
+                data_s = data.get(Calendar.DAY_OF_MONTH)+"/"+data.get((Calendar.MONTH)+1)+"/"+data.get(Calendar.YEAR);
                 else {
                     final Calendar c = Calendar.getInstance();
                     int year = c.get(Calendar.YEAR);
@@ -151,8 +152,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 s1.setCat(cat);
 
                 double importo = Double.parseDouble(price);
-                // Uso la policy del gruppo visto che la policy deve ancora essere implementata
-
 
                 HashMap<String, Soldo> divisioni = s1.getDivisioni();
                 Collection<Soldo> parti = divisioni.values();
@@ -163,11 +162,14 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 //System.out.println("Gruppo ID " + groupID);
                 DatabaseReference group = groupsRef.child(groupID); // gruppo associato a groupID
                 DatabaseReference expense = group.child("expenses").push();
-                String expenseID = expense.getKey(); // aggiungo key della spesa
-                s1.setExpenseID(expenseID); // leggo key della spesa e lo setto nella spesa
 
-                // aggiungo la spesa alla mappa delle spese del gruppo
-                //gruppo.getMappaSpese().put(expenseID, s);
+                // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
+                // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
+                String expenseID = expense.getKey(); // aggiungo key della spesa
+                gruppo.getMappaSpese().remove(s1.getExpenseID());
+                s1.setExpenseID(expenseID); // leggo key della spesa e lo setto nella spesa
+                gruppo.getMappaSpese().put(expenseID, s1);
+
 
                 // setto i dati della spesa
                 expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
@@ -189,7 +191,23 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     t.child("hasPaid").setValue(pagato);
                 }
 
-
+                // aggiorno le divisioni delle spese del gruppo in questione perhé eventualmente sono
+                // state modificate dal metodo AddSpesa_and_try_repay
+                DatabaseReference expenses = group.child("expenses");
+                ArrayList<Spesa> spese = gruppo.getSpese();
+                for(Spesa s : spese){
+                    DatabaseReference exp = expenses.child(s.getExpenseID());
+                    DatabaseReference div = exp.child("divisions");
+                    Collection<Soldo> divisions = s.getDivisioni().values();
+                    for(Soldo soldo : divisions){
+                        String phoneNumber = String.valueOf(soldo.getPersona().getTelephone());
+                        Double duePart = soldo.getImporto();
+                        Boolean hasPaid = soldo.getHaPagato();
+                        DatabaseReference member = div.child(phoneNumber);
+                        member.child("duePart").setValue(duePart);
+                        member.child("hasPaid").setValue(hasPaid);
+                    }
+                }
 
                 getActivity().startActivity(i);
 

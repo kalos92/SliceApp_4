@@ -9,6 +9,7 @@ import java.util.HashMap;
  */
 
 public class SliceAppDB implements Serializable {
+
     private static ArrayList<Spesa> listaSpese = new ArrayList<Spesa>();
 
     public static HashMap<Integer, Gruppo> getMappaGruppo() {
