@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -25,10 +25,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".ExpensesActivity" />
-        <activity android:name=".AddExpenseActivity" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
-        <activity android:name=".RegisterActivity"/>
-        <activity android:name=".List_Pager_Act"/>
-        <activity android:name=".AddNewGroup"/>
+        <activity
+            android:name=".AddExpenseActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".List_Pager_Act" />
+        <activity android:name=".AddNewGroup" />
+        <activity android:name=".ContactsAdapter"></activity>
     </application>
 
 </manifest>

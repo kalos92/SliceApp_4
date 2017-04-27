@@ -28,6 +28,7 @@ public class Persona implements Serializable {
     private long   telefono;
     private boolean haDebiti=false;
     private String password;
+    private int isInDB=0;
 
     public int getisInDB() {
         return isInDB;
@@ -37,7 +38,6 @@ public class Persona implements Serializable {
         this.isInDB = isInDB;
     }
 
-    private int isInDB;
 
     public Persona(String nome, String cognome, String username, String dob, long telefono){
         this.nome=nome;

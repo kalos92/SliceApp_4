@@ -33,8 +33,6 @@ public class SliceAppDB implements Serializable {
     private static Policy policy;
 
 
-
-
     public static ArrayList<Spesa> getListaSpese(){
         return listaSpese;
     }
@@ -64,6 +62,12 @@ public class SliceAppDB implements Serializable {
 
     public static Policy getPolicy() {
         return policy;
+    }
+
+    public void addGroups(Gruppo g){
+        lista_gruppi.add(g);
+        gruppo.put(20,g);
+        gruppi.put(g.getGroupName(),g);
     }
 }
 

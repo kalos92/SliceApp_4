@@ -92,9 +92,7 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-
                         percentages[position]= new Double(-1);
-
                 } else {
 
                     checkMarks[position] = false;
@@ -165,8 +163,6 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
     static class PayerHolder2{
         public CheckBox cb;
         TextView name;
-
-
     }
 
     @Override

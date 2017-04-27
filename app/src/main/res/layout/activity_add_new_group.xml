@@ -3,18 +3,37 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    xmlns:design="http://schemas.android.com/apk/res-auto">
 
-    <Button android:layout_width="match_parent"
-        android:id="@+id/phoneBook"
-        android:layout_height="wrap_content"
-        android:text="Select a Contact"
-         />
+        <android.support.design.widget.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            />
 
-    <ImageView android:id="@+id/img_contact"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:adjustViewBounds="true"
-        android:contentDescription="Contacts Image"
-        />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/expenseToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            android:elevation="6dp"
+            design:layout_collapseMode="pin"
+            design:layout_scrollFlags="scroll|enterAlways"
+            design:navigationIcon="?attr/homeAsUpIndicator"
+            design:popupTheme="@style/AppTheme"
+            design:subtitleTextColor="#FFFFFF"
+            design:title="Select contacts"
+            design:titleTextColor="#FFFFFF" />
+
+        <ListView
+            android:id="@+id/listViewContacts"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/tab_bck"
+            android:layout_weight="1"
+            android:descendantFocusability="afterDescendants" />
+
+
 </LinearLayout>
+
