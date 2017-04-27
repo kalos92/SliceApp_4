@@ -74,7 +74,7 @@ public class Persona implements Serializable {
 
         ArrayList<Spesa> spese = g.getSpese();
             for (Spesa s: spese){
-                if(!s.getPagante().getUsername().equals(username)){ //controllo solo le spese che NON ho fatto io
+                if(!s.getPagante().getUserName().equals(username)){ //controllo solo le spese che NON ho fatto io
                      if(!s.getDivisioni().get(this.getUserName()).getHaPagato()) {
                          result=1;
                          break;
@@ -115,9 +115,6 @@ public class Persona implements Serializable {
     }
 
 
-    public String getUsername() {
-        return username;
-    }
     public String getDob() {
         return dob;
     }
