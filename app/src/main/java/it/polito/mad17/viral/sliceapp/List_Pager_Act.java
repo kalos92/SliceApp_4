@@ -37,13 +37,16 @@ public class List_Pager_Act extends AppCompatActivity {
     private int[]  tabIcons = {R.drawable.img_contestation, R.drawable.img_gruppi , R.drawable.img_bilancio};
     private ViewPager vpPager;
 
+    ProgressDialog progress;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final String userphone = String.valueOf(SliceAppDB.getUser().getTelephone());
+        //final String userphone = String.valueOf(SliceAppDB.getUser().getTelephone());
 
+        /*
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
         DatabaseReference rootRef = database.getReference();
         rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -170,6 +173,7 @@ public class List_Pager_Act extends AppCompatActivity {
 
             }
         });
+        */
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
 

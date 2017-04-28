@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity{
                     SliceAppDB.setUser(p);
 
                     prefEditor.putString("nome", nome);
-                    prefEditor.putString("cogome", cognome);
+                    prefEditor.putString("cognome", cognome);
                     prefEditor.putString("username", username);
                     prefEditor.putString("dob", dob);
                     prefEditor.putLong("telefono", telefono);
@@ -142,7 +142,7 @@ public class LoginActivity extends AppCompatActivity{
                     //progressDialog.dismiss();
                     finish();
                     Intent intent  = getIntent();
-                    Intent i = new Intent(LoginActivity.this, List_Pager_Act.class);
+                    Intent i = new Intent(LoginActivity.this, SplashScreen.class);
                     startActivity(i);
                 } else {
                     mPhoneView.requestFocus();
