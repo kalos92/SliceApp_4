@@ -14,7 +14,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map.
+import java.util.Map;
 
 
 public class SplashScreen extends AppCompatActivity {
