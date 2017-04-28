@@ -58,7 +58,7 @@ public class SecondFragment extends Fragment {
 
                 for(Spesa s : allExpenses){
                     if(s.getGruppo().getGroupID().equals(groupID)){
-                        Collection<Soldo> ss = s.getDivisioni().values();
+                        Collection<Soldo> ss = s.getDivisioni().values()
                         for(Soldo so : ss){
                             String ncname = new String(so.getPersona().getName()+" "+so.getPersona().getSurname());
 
