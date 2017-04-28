@@ -3,6 +3,7 @@ package it.polito.mad17.viral.sliceapp;
 
 
 import android.graphics.Bitmap;
+import android.widget.Toast;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -61,18 +62,22 @@ public class Gruppo implements Serializable, Observer {
 
     public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
 
-    public Spesa AddSpesa_and_try_repay(Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
+        public Spesa AddSpesa_and_try_repay(Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
 
-        gestore=new Gestore();
-        spesa= new Spesa(nome_spesa,data,policy,pagante,importo,this);
-        spesa.setParti(gestore.Calculate_Credits_To_Buyer_With_Repaing(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),spese,user,this));
-        //metto il debito a tutti
+            if(user.getHaDebiti()){
+            gestore=new Gestore();
+            spesa= new Spesa(nome_spesa,data,policy,pagante,importo,this);
 
-        spese.put(spesa.getNome()+spesa.getData(),spesa);
-        listaSpeseGruppo.add(spesa);
-        return spesa;
+            spesa.setParti(gestore.Calculate_Credits_To_Buyer_With_Repaing(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),spese,user,this));
+            //metto il debito a tutti
 
-    }
+            spese.put(spesa.getNome()+spesa.getData(),spesa);
+            listaSpeseGruppo.add(spesa);
+            return spesa;}
+            else
+                return null;
+
+        }
 
 
     public Spesa AddSpesa(Persona pagante,Policy policy, String nome_spesa, String data, Double importo){

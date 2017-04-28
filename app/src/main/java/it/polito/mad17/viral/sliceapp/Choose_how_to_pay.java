@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
+
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import java.util.ArrayList;
@@ -143,6 +145,10 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     data_s=day+"/"+month+1+"/"+year;
                 }
                 Spesa s1 = gruppo.AddSpesa_and_try_repay(buyer, policy, nome, data_s, Double.parseDouble(price));
+                if(s1==null){
+                    Toast.makeText(getContext(),"You do not have any debts", Toast.LENGTH_LONG).show();
+                    return;
+                }
                 s1.setValuta(values);
                 s1.setBitmap_spesa(b);
                 s1.setUri(uri);
