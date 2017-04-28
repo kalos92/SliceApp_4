@@ -98,6 +98,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 gruppo.getMappaSpese().put(expenseID, s1);
 
                 // setto i dati della spesa
+                expense.child(expenseID).push();
                 expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
                 expense.child("currency").setValue(""); // Manca l'adapter del spinner
                 expense.child("date").setValue(data_s);

@@ -73,6 +73,7 @@ public class SecondFragment extends Fragment {
                                     amici.put(so.getPagante().getName()+ " "+ so.getPagante().getSurname(),importo);
                                 }
 
+
                         }
 
                     }

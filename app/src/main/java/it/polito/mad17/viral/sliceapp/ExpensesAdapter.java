@@ -99,7 +99,7 @@ public class ExpensesAdapter extends ArrayAdapter<Spesa>  {
     @Override
     public int getViewTypeCount() {
 
-        return getCount();
+        return 1;
     }
 
     @Override

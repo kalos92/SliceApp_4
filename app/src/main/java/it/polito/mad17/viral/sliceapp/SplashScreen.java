@@ -77,8 +77,8 @@ public class SplashScreen extends AppCompatActivity {
                             DataSnapshot member = users.child(phonenumber);
                             String nome = (String) member.child("name").getValue();
                             String cognome = (String) member.child("surname").getValue();
-                            String username = (String) member.child("username").getValue();
-                            String dob = (String) member.child("birthdate").getValue();
+                            String username = (String) member.child("userName").getValue();
+                            String dob = (String) member.child("dob").getValue();
                             long telefono = (long) member.child("telephone").getValue();
                             Persona p = new Persona(nome, cognome, username, dob, telefono);
                             partecipanti.add(p);

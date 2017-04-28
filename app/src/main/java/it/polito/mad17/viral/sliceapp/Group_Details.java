@@ -27,7 +27,7 @@ public class Group_Details extends AppCompatActivity {
 
     ArrayList<Persona> listP = new ArrayList<Persona>();
 
-
+    private  boolean flag = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,62 +61,78 @@ public class Group_Details extends AppCompatActivity {
         final ArrayList<Persona> tmpList = new ArrayList<Persona>();
         final EditText groupName =  (EditText) findViewById(R.id.groupTitle);
 
+
         Log.d("NomeGruppo",groupName.getText().toString());
         if(id == R.id.action_continue){
            // Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
             final FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-            DatabaseReference users = database.getReference().child("otherusers");
+            final DatabaseReference users = database.getReference().child("otherusers");
+            final DatabaseReference groups= database.getReference().child("othergroups");
+            final DatabaseReference groupLink = groups.push();
+            final String groupID = groupLink.getKey();
+            final int numMembers = listP.size()+1;
             users.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    for(Persona p: listP) {
-                        String telephone = String.valueOf(p.getTelephone());
-                        //  Log.d("TelefonoLista",telephone);
-                        DataSnapshot member = dataSnapshot.child(telephone);
-                        String nome = (String) member.child("name").getValue();
-                        String cognome = (String) member.child("surname").getValue();
-                        String username = (String) member.child("username").getValue();
-                        String dob = (String) member.child("birthdate").getValue();
-                        long telefono = (long) member.child("telephone").getValue();
+                   if(flag) {
+                       for (Persona p : listP) {
+                           String telephone = String.valueOf(p.getTelephone());
+                           //  Log.d("TelefonoLista",telephone);
+                           DataSnapshot member = dataSnapshot.child(telephone);
+                           String nome = (String) member.child("name").getValue();
+                           String cognome = (String) member.child("surname").getValue();
+                           String username = (String) member.child("userName").getValue();
+                           String dob = (String) member.child("dob").getValue();
+                           long telefono = (long) member.child("telephone").getValue();
 
-                        Log.d("Member",nome+" "+cognome+" "+username+" "+dob+" "+new String(""+telefono));
+                           users.child(telephone).child("belongsToGroups").child(groupID).setValue("true");
+                           Persona owner = SliceAppDB.getUser();
+                           String phoneOwner = new String("" + owner.getTelephone());
+                           users.child(phoneOwner).child("belongsToGroups").child(groupID).setValue("true");
 
-                        Persona per = new Persona(nome, cognome, username, dob, telefono);
-                        tmpList.add(per);
-                    }
-                    //CREO GRUPPO
+                           Log.d("Member", nome + " " + cognome + " " + username + " " + dob + " " + new String("" + telefono));
 
-                    DatabaseReference groups= database.getReference().child("othergroups");
-                    final DatabaseReference groupLink = groups.push();
-                    final String groupID = groupLink.getKey();
-                    Gruppo g = new Gruppo(groupName.getText().toString(),tmpList.size(),tmpList,null);
-                    g.setGroupID(groupID);
-                    Log.d("GroupID",groupID);
-                    SliceAppDB.addGruppo(g);
-                   groups.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
+                           Persona per = new Persona(nome, cognome, username, dob, telefono);
+                           tmpList.add(per);
+                       }
+                       //CREO GRUPPO
+                       tmpList.add(SliceAppDB.getUser());
 
-                            groupLink.child("name").setValue(groupName.getText().toString());
-                            groupLink.child("icon").setValue("ok");
-                            groupLink.child("numMembers").setValue(tmpList.size());
-                            groupLink.child("policy").setValue("");
-                            groupLink.child("expenses").setValue("");
+                       Gruppo g = new Gruppo(groupName.getText().toString(), tmpList.size(), tmpList, null);
+                       g.setGroupID(groupID);
+                       g.setUser(SliceAppDB.getUser());
 
-                            for(Persona p: tmpList){
-                                groupLink.child("members").child(new String(""+p.getTelephone())).setValue("true");
-                            }
-                            Intent i = new Intent(Group_Details.this,List_Pager_Act.class);
-                            startActivity(i);
-                        }
+                       Log.d("GroupID", groupID);
+                       SliceAppDB.addGruppo(g);
+                       groups.addValueEventListener(new ValueEventListener() {
+                           @Override
+                           public void onDataChange(DataSnapshot dataSnapshot) {
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
+                               groupLink.child("name").setValue(groupName.getText().toString());
+                               groupLink.child("icon").setValue("ok");
+                               //groupLink.child("numMembers").setValue(tmpList.size());
+                               groupLink.child("policy").setValue("");
+                               groupLink.child("expenses").setValue("");
 
-                        }
-                    });
+                               Persona owner = SliceAppDB.getUser();
+                               String phoneOwner = new String("" + owner.getTelephone());
+                               groupLink.child("members").child(new String("" + phoneOwner)).setValue("true");
 
+                               for (Persona p : tmpList) {
+                                   groupLink.child("members").child(new String("" + p.getTelephone())).setValue("true");
+                               }
+                               groupLink.child("numMembers").setValue(numMembers);
+                               Intent i = new Intent(Group_Details.this, List_Pager_Act.class);
+                               startActivity(i);
+                           }
 
+                           @Override
+                           public void onCancelled(DatabaseError databaseError) {
+
+                           }
+                       });
+                        flag=false;
+                   }
                 }
 
                 @Override
