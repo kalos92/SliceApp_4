@@ -4,24 +4,25 @@
     android:background="@color/colorPrimary"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-<android.support.v7.widget.Toolbar
-android:id="@+id/groupToolbar"
-android:layout_width="match_parent"
-android:layout_height="?attr/actionBarSize"
-android:background="@color/colorPrimary"
-android:elevation="6dp"
-design:layout_collapseMode="pin"
-design:layout_scrollFlags="scroll|enterAlways"
-design:navigationIcon="?attr/homeAsUpIndicator"
-design:popupTheme="@style/AppTheme"
-design:subtitleTextColor="#FFFFFF"
-design:title="Select contacts"
-design:titleTextColor="#FFFFFF" />
+    <android.support.v7.widget.Toolbar
+    android:id="@+id/groupToolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/colorPrimary"
+    android:elevation="6dp"
+    design:layout_collapseMode="pin"
+    design:layout_scrollFlags="scroll|enterAlways"
+    design:navigationIcon="?attr/homeAsUpIndicator"
+    design:popupTheme="@style/AppTheme"
+    design:subtitleTextColor="#FFFFFF"
+    design:title="Select contacts"
+    design:titleTextColor="#FFFFFF" />
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
+    android:background="@color/tab_bck"
     xmlns:design="http://schemas.android.com/apk/res-auto">
 
 

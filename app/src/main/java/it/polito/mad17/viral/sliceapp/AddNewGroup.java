@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import android.Manifest;
@@ -50,6 +51,7 @@ public class AddNewGroup extends AppCompatActivity {
     private  ContactsAdapter adapter;
     private  Map<String,Persona> tmpMap = new TreeMap<>();
     private Toolbar toolbar;
+    private EditText groupName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -209,12 +211,13 @@ public class AddNewGroup extends AppCompatActivity {
 
         ArrayList<Persona> listP = new ArrayList<Persona>();
         final ListView list = (ListView) findViewById(R.id.listViewContacts);
-if(tmpMap.size()!=0){
-        listP.addAll(tmpMap.values());
-        adapter = new ContactsAdapter(this.getBaseContext(),R.layout.contactsrow,R.layout.contactsrowbutton,listP);
+        if(tmpMap.size()!=0){
+            listP.addAll(tmpMap.values());
+            adapter = new ContactsAdapter(this.getBaseContext(),R.layout.contactsrow,R.layout.contactsrowbutton,listP);
 
-        list.setAdapter(adapter);
-    }}
+            list.setAdapter(adapter);
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
@@ -229,12 +232,11 @@ if(tmpMap.size()!=0){
         ArrayList<Persona> listPersone = new ArrayList<Persona>();
 
         if(id == R.id.action_continue){
-
-
             listPersone.addAll(adapter.getGroupMembers().values());
             if(listPersone.size()!=0){
             Intent i = new Intent(AddNewGroup.this,Group_Details.class);
             i.putExtra("ListaPersone",listPersone);
+              //  i.putExtra("NomeGruppo",)
             startActivity(i);}
             else{
                 Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();

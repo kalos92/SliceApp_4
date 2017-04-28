@@ -46,6 +46,12 @@ public class SliceAppDB implements Serializable {
         listaSpese.add(s);
     }
     public static long getUserPhoneNumber(){ return user.getTelephone(); }
+    public static void addGruppo(Gruppo g){
+        lista_gruppi.add(g);
+        gruppi.put(g.getGroupID(),g);
+        gruppo.put(20,g);
+    }
+
 
 }
 
