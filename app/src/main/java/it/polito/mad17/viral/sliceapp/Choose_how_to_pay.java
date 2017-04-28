@@ -115,6 +115,8 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     t.child("hasPaid").setValue(pagato);
                 }
 
+                SliceAppDB.getListaSpese().add(s1);
+
                 getActivity().startActivity(i);
                 getActivity().finish();
             }
@@ -201,6 +203,10 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                         member.child("hasPaid").setValue(hasPaid);
                     }
                 }
+
+                // Aggiungo la spesa alla lista delle spese globali
+                SliceAppDB.getListaSpese().add(s1);
+
                 getActivity().startActivity(i);
                 getActivity().finish();
             }

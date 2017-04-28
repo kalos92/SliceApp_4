@@ -3,6 +3,7 @@ package it.polito.mad17.viral.sliceapp;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -19,14 +20,19 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.ArrayList;
+
 public class ExpensesActivity extends AppCompatActivity {
 
     Gruppo gruppo;
     Persona user;
     FragmentManager fm;
-
-    private ListView mlist;
-    private ExpensesAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +66,14 @@ public class ExpensesActivity extends AppCompatActivity {
         Bitmap b=  bm.scaleDown(gruppo.getImg(),100,true);
         Drawable d = new BitmapDrawable(getResources(), b);
         t.setLogo(d);
-        mlist = (ListView) findViewById(R.id.listView2);
+        ListView mlist = (ListView) findViewById(R.id.listView2);
 
-        adapter = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, gruppo.getSpese(),user);
+        final ArrayList<Spesa> speseGruppo = new ArrayList<Spesa>();
+        for(Spesa s : SliceAppDB.getListaSpese()){
+            if(s.getGruppo().getGroupID().equals(gruppo.getGroupID()))
+                speseGruppo.add(s);
+        }
+        ExpensesAdapter adapter = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, speseGruppo, user);
         mlist.setAdapter(adapter);
 
         // What to do when user press the toolbar back button
@@ -70,8 +81,6 @@ public class ExpensesActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent appInfo= new Intent(ExpensesActivity.this, List_Pager_Act.class);
-                //startActivity(appInfo);
                 finish();
             }
         });
@@ -94,7 +103,7 @@ public class ExpensesActivity extends AppCompatActivity {
                         appInfo.putExtra("Gruppo",gruppo);
                         appInfo.putExtra("User",user);
                         ExpensesActivity.this.startActivity(appInfo);
-                        //finish();
+                        finish();
                         return false;
                 }
         });
@@ -104,11 +113,4 @@ public class ExpensesActivity extends AppCompatActivity {
     public void onBackPressed() {
         finish();
     }
-
-    @Override
-    public void onResume(){
-        super.onResume();
-        adapter.notifyDataSetChanged();
-    }
-
 }

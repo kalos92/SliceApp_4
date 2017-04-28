@@ -47,8 +47,5 @@ public class SliceAppDB implements Serializable {
     }
     public static long getUserPhoneNumber(){ return user.getTelephone(); }
 
-
-
-
 }
 

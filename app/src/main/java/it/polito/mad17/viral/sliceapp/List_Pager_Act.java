@@ -147,6 +147,7 @@ public class List_Pager_Act extends AppCompatActivity {
                         }
                         // Aggiungo la spesa al gruppo
                         Spesa spesa = new Spesa(description, date, expensePolicy, pagante, price, g);
+                        SliceAppDB.getListaSpese().add(spesa);
                         spesa.setExpenseID(expenseID); // setto expenseID
                         spesa.getCat().setName(category); // setto categoria
 
@@ -158,6 +159,7 @@ public class List_Pager_Act extends AppCompatActivity {
                     //inserisco il gruppo nella lista dei gruppi e nella mappa dei gruppi
                     SliceAppDB.getListaGruppi().add(g);
                     SliceAppDB.getMappaGruppo().put(positionGroup, g);
+                    SliceAppDB.getGruppi().put(groupID, g);
                     positionGroup++;
                 }
                 System.out.println("onDataChange ha finito il suo lavoro!");
