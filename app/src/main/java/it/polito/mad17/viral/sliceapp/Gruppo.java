@@ -27,6 +27,7 @@ public class Gruppo implements Serializable, Observer {
     private Persona user;
     private Spesa spesa;
     private HashMap<String, Spesa> spese = new HashMap <String, Spesa>();
+    private ArrayList<Spesa> listaSpeseGruppo = new ArrayList<Spesa>();
     private Gestore gestore;
     private String groupID;
 
@@ -50,6 +51,7 @@ public class Gruppo implements Serializable, Observer {
         setImg(img);
     }
 
+    public ArrayList<Spesa> getSpeseGruppo(){ return listaSpeseGruppo; }
     public void setUser(Persona user){
         this.user=user;
     }
@@ -67,7 +69,7 @@ public class Gruppo implements Serializable, Observer {
         //metto il debito a tutti
 
         spese.put(spesa.getNome()+spesa.getData(),spesa);
-
+        listaSpeseGruppo.add(spesa);
         return spesa;
 
     }
@@ -80,7 +82,7 @@ public class Gruppo implements Serializable, Observer {
         //metto il debito a tutti
 
         spese.put(spesa.getNome()+spesa.getData(),spesa);
-
+        listaSpeseGruppo.add(spesa);
         return spesa;
 
     }

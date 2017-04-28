@@ -42,17 +42,12 @@ public class FirstFragment extends Fragment{
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent appInfo= new Intent(getActivity(), ExpensesActivity.class);
-                appInfo.putExtra("Gruppo",SliceAppDB.getGruppo(new Integer(position)));
-                appInfo.putExtra("User",SliceAppDB.getUser());
+                appInfo.putExtra("Gruppo", SliceAppDB.getGruppo(position));
+                appInfo.putExtra("User", SliceAppDB.getUser());
                 //getActivity().finish();
                 startActivity(appInfo);
             }
         });
         return v;
-    }
-
-    public void onResume(){
-        super.onResume();
-        adapter.notifyDataSetChanged();
     }
 }

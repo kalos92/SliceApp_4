@@ -56,6 +56,8 @@ public class Spesa extends Observable implements Serializable {
         return importo;
     }
 
+    public Gruppo getGruppo(){ return gruppo; }
+
     public void setParti(Soldo[] calcolo_debiti) {
 
         for(Soldo s: calcolo_debiti){
