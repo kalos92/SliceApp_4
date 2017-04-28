@@ -12,8 +12,13 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.Manifest;
 
@@ -22,8 +27,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 
 public class AddNewGroup extends AppCompatActivity {
@@ -34,11 +42,13 @@ public class AddNewGroup extends AppCompatActivity {
  //   private ArrayList<Persona> contacts = new ArrayList<Persona>();
     private Map<String,Persona> contactsMap = new HashMap<String,Persona>();
     private FirebaseDatabase database ;
+    private  ContactsAdapter adapter;
+    private  Map<String,Persona> tmpMap = new TreeMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_group);
-askForContactPermission();
+        askForContactPermission();
        // Log.d(TAG, "Response: " + data.toString());
 
 
@@ -91,13 +101,11 @@ askForContactPermission();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CONTACT: {
                 // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getContact();
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
@@ -116,18 +124,18 @@ askForContactPermission();
     }
 
         public void getContact(){
-        Button b = (Button) findViewById(R.id.phoneBook);
+ //       Button b = (Button) findViewById(R.id.phoneBook);
 
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+  //      b.setOnClickListener(new View.OnClickListener() {
+     //       @Override
+        //    public void onClick(View v) {
 
                 Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
                 while(phones.moveToNext()) {
                     String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
                     String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                     if(phoneNumber.contains("+")){
-                        phoneNumber.replace("+"," ");
+                        phoneNumber.replace("+","");
                         Log.d("PIU",phoneNumber);
                     }else{
                         StringBuilder s = new StringBuilder();
@@ -138,7 +146,7 @@ askForContactPermission();
                     }
                     phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
 
-                    Persona p = new Persona(null,null,null,null,Long.parseLong(phoneNumber));
+                    Persona p = new Persona(name,null,null,null,Long.parseLong(phoneNumber));
                     contactsMap.put(phoneNumber,p);
                     Log.d("Phone", phoneNumber);
                     //  Log.d("Name", name);
@@ -150,7 +158,7 @@ askForContactPermission();
                 DatabaseReference users = database.getReference().child("otherusers");
 
 
-                users.addListenerForSingleValueEvent(new ValueEventListener() {
+                users.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for(Persona p: contactsMap.values()){
@@ -160,13 +168,16 @@ askForContactPermission();
                             //   Log.d("TelephoneDB",telephoneDB.getKey());
                             if(userDB==null){
                                 //User is not into the DB
-                                //       Log.d("Falso","FALSE "+telephone);
+                                Log.d("Falso","FALSE "+telephone);
                                 p.setisInDB(0);
+                                tmpMap.put(telephone,p);
                             }else{
-                                //      Log.d("Vero","VERO "+ telephone);
+                                Log.d("Vero","VERO "+ telephone);
                                 p.setisInDB(1); //User is into the DB.
+                                tmpMap.put(telephone,p);
                             }
                         }
+                        createListViewContatcs(tmpMap);
                     }
 
                     @Override
@@ -174,8 +185,42 @@ askForContactPermission();
 
                     }
                 });
-            }
-        });
+      //      }
+
         Log.d("Fine","SIAMO FUORI");
+
+        //createListViewContatcs(tmpMap);
     }
+
+    public void createListViewContatcs(Map<String, Persona> tmpMap){
+
+        ArrayList<Persona> listP = new ArrayList<Persona>();
+        final ListView list = (ListView) findViewById(R.id.listViewContacts);
+if(tmpMap.size()!=0){
+        listP.addAll(tmpMap.values());
+        adapter = new ContactsAdapter(this.getBaseContext(),R.layout.contactsrow,R.layout.contactsrowbutton,listP);
+
+        list.setAdapter(adapter);
+    }}
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.contacts_menu,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+
+        if(id == R.id.action_continue){
+            ArrayList<Persona> listPersone = new ArrayList<Persona>();
+            listPersone.addAll(adapter.getGroupMembers().values());
+            Gruppo g = new Gruppo("GruppoAAAA",adapter.getGroupMembers().values().size(),listPersone,null);
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 }
