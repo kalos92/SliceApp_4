@@ -67,8 +67,6 @@ public class Little_fragment_2 extends Fragment {
 
 
 
-        final TextView tv = (TextView) v.findViewById(R.id.prova2);
-
 
         Button b = (Button) v.findViewById(R.id.save2);
         b.setOnClickListener(new View.OnClickListener() {
@@ -78,14 +76,9 @@ public class Little_fragment_2 extends Fragment {
                 v.setFocusableInTouchMode(true);
                 v.requestFocus();
 
-                StringBuilder ciao = new StringBuilder();
+
                 if(adapter.getAllTheSame()!=null) {
                     p = new Policy(adapter.getAllTheSame(), g.getN_partecipanti());
-                    for (Double f : adapter.getAllTheSame()) {
-                        ciao.append(f.toString() + " ");
-                    }
-
-                    tv.setText(ciao.toString());
                 }
 
                 if(alltheSame!=null)

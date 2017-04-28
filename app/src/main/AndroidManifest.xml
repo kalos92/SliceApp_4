@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".SplashScreen"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -31,7 +31,10 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".List_Pager_Act" />
         <activity android:name=".AddNewGroup" />
-        <activity android:name=".ContactsAdapter"></activity>
+        <activity android:name=".LoginActivity" />
+        <activity
+            android:name=".Group_Details"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

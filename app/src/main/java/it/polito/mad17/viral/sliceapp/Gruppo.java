@@ -3,7 +3,6 @@ package it.polito.mad17.viral.sliceapp;
 
 
 import android.graphics.Bitmap;
-import android.widget.Toast;
 
 import java.io.Serializable;
 import java.nio.ByteBuffer;
@@ -12,14 +11,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.Set;
 
 /**
  * Created by Kalos on 25/03/2017.
  */
 
-public class Gruppo extends Observable implements Serializable, HashMap_Subject {
-    protected ArrayList<Observer> observers;
+public class Gruppo implements Serializable, Observer {
+
     private String groupName;
     private int n_partecipanti;
     private HashMap<String, Persona> partecipanti = new HashMap<String,Persona>();
@@ -29,6 +27,7 @@ public class Gruppo extends Observable implements Serializable, HashMap_Subject 
     private Persona user;
     private Spesa spesa;
     private HashMap<String, Spesa> spese = new HashMap <String, Spesa>();
+    private ArrayList<Spesa> listaSpeseGruppo = new ArrayList<Spesa>();
     private Gestore gestore;
     private String groupID;
 
@@ -38,7 +37,6 @@ public class Gruppo extends Observable implements Serializable, HashMap_Subject 
     private int img;
 
     public Gruppo(String groupName, int n, ArrayList<Persona> partecipanti, Policy policy ){
-        this.observers = new ArrayList<Observer>();
         this.groupName=groupName;
         this.n_partecipanti=n;
         int i=0;
@@ -53,6 +51,7 @@ public class Gruppo extends Observable implements Serializable, HashMap_Subject 
         setImg(img);
     }
 
+    public ArrayList<Spesa> getSpeseGruppo(){ return listaSpeseGruppo; }
     public void setUser(Persona user){
         this.user=user;
     }
@@ -63,22 +62,15 @@ public class Gruppo extends Observable implements Serializable, HashMap_Subject 
     public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
 
     public Spesa AddSpesa_and_try_repay(Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
-        if(user.getHaDebiti()){
+
         gestore=new Gestore();
         spesa= new Spesa(nome_spesa,data,policy,pagante,importo,this);
-
         spesa.setParti(gestore.Calculate_Credits_To_Buyer_With_Repaing(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),spese,user,this));
         //metto il debito a tutti
 
         spese.put(spesa.getNome()+spesa.getData(),spesa);
-
-        setChanged();
-        notifyObservers();
-        return spesa;}
-
-       else{
-           return null;
-        }
+        listaSpeseGruppo.add(spesa);
+        return spesa;
 
     }
 
@@ -90,9 +82,7 @@ public class Gruppo extends Observable implements Serializable, HashMap_Subject 
         //metto il debito a tutti
 
         spese.put(spesa.getNome()+spesa.getData(),spesa);
-
-        setChanged();
-        notifyObservers();
+        listaSpeseGruppo.add(spesa);
         return spesa;
 
     }
@@ -174,20 +164,9 @@ public class Gruppo extends Observable implements Serializable, HashMap_Subject 
         return spese;
     }
 
-
     @Override
-    public void register(Observer subscriber) {
-        observers.add(subscriber);
-    }
-
-    @Override
-    public void unregister(Observer unsubscriber) {
-        int observerIndex = observers.indexOf(unsubscriber);
-        observers.remove(observerIndex);
-    }
-
-    @Override
-    public void notityObserver() {
-        notifyObservers();
+    public void update(Observable o, Object arg) {
+        if(o.hasChanged())
+            o.notifyObservers();
     }
 }

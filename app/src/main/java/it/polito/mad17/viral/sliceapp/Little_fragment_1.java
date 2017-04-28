@@ -67,7 +67,7 @@ public class Little_fragment_1 extends Fragment {
 
 
 
-        final TextView tv = (TextView) v.findViewById(R.id.prova);
+
 
 
         Button b = (Button) v.findViewById(R.id.save);
@@ -78,14 +78,9 @@ public class Little_fragment_1 extends Fragment {
                 v.setFocusableInTouchMode(true);
                 v.requestFocus();
 
-                StringBuilder ciao = new StringBuilder();
+
                 p = new Policy(adapter.getPercentages(), g.getN_partecipanti());
-                for(Double f: adapter.getPercentages()){
-                    ciao.append(f.toString()+" ");
-                }
 
-
-                tv.setText(ciao.toString());
                 if(getPercentages!=null)
                     getPercentages.getPercentages(p);
                 v.setFocusable(false);
