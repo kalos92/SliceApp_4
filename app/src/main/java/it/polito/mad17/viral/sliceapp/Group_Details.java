@@ -13,6 +13,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +29,8 @@ public class Group_Details extends AppCompatActivity {
     ArrayList<Persona> listP = new ArrayList<Persona>();
 
     private  boolean flag = true;
+    private Policy policy = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,6 +48,18 @@ public class Group_Details extends AppCompatActivity {
                 count++;
             }
         }
+        Double[] perc = new Double[listP.size()+1];
+        RadioGroup rg = (RadioGroup) findViewById(R.id.rg3);
+        rg.setVisibility(View.GONE);
+        rg.check(R.id.b5);
+       // int i;
+   /*     Double c = (double) 100/(listP.size()+1);
+        long[] l = new long[listP.size()+1];
+        for(i=0;i<listP.size();i++) {
+            perc[i] = c;
+            l[i]=listP.get(i).getTelephone();
+        }
+        policy = new Policy(perc,listP.size()+1,l);*/
     }
 
     @Override
@@ -98,7 +113,8 @@ public class Group_Details extends AppCompatActivity {
                        //CREO GRUPPO
                        tmpList.add(SliceAppDB.getUser());
 
-                       Gruppo g = new Gruppo(groupName.getText().toString(), tmpList.size(), tmpList, null);
+
+                       Gruppo g = new Gruppo(groupName.getText().toString(), tmpList.size(), tmpList, policy);
                        g.setGroupID(groupID);
                        g.setUser(SliceAppDB.getUser());
 
@@ -110,14 +126,18 @@ public class Group_Details extends AppCompatActivity {
 
                                groupLink.child("name").setValue(groupName.getText().toString());
                                groupLink.child("icon").setValue("ok");
+                              groupLink.child("policy").setValue("");
                                //groupLink.child("numMembers").setValue(tmpList.size());
-                               groupLink.child("policy").setValue("");
+                            //   for(Persona p: tmpList){
+
+                              // groupLink.child("policy").child(new String(""+p.getTelephone())).setValue(policy.getMyPolicy(p.getTelephone()));
+                              // }
                                groupLink.child("expenses").setValue("");
 
                                Persona owner = SliceAppDB.getUser();
                                String phoneOwner = new String("" + owner.getTelephone());
                                groupLink.child("members").child(new String("" + phoneOwner)).setValue("true");
-
+                                groupLink.child("policy").setValue("");
                                for (Persona p : tmpList) {
                                    groupLink.child("members").child(new String("" + p.getTelephone())).setValue("true");
                                }

@@ -17,12 +17,21 @@ public class Policy implements Serializable {
 
     Double[] percentuali;
     int n_persone;
+    long[] telefono;
 
     public Policy(Double[] percentuali, int n_persone) {
         this.percentuali= new Double[n_persone];
         this.percentuali=percentuali;
         this.n_persone=n_persone;
 
+    }
+
+    public Policy(Double[] percentuali, int n_persone,long[] telefono) {
+        this.percentuali= new Double[n_persone];
+        this.percentuali=percentuali;
+        this.n_persone=n_persone;
+        telefono = new long[n_persone];
+        this.telefono=telefono;
     }
 
 
@@ -40,8 +49,13 @@ public class Policy implements Serializable {
 
 
 
-
-
-
+    public Double getMyPolicy(long tel){
+        int i=0;
+        for(i=0;i<telefono.length;i++){
+            if(tel==telefono[i])
+                return percentuali[i];
+        }
+        return (double)0;
+    }
 
 }

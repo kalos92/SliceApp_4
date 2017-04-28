@@ -103,8 +103,13 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
         returnSelection_2 = (ReturnSelection_2) getActivity();
         rg = (RadioGroup) v.findViewById(R.id.rg);
 
-       rg.check(R.id.b3);
-        policy=gruppo.getPolicy();
+       rg.check(R.id.b1);
+        //policy=gruppo.getPolicy();
+        fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.f1, Little_fragment_2.newInstance(gruppo));
+        ft.addToBackStack(null);
+        ft.commit();
 
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -133,13 +138,17 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
                 if(group.getCheckedRadioButtonId()== R.id.b3){
 
-                    policy=gruppo.getPolicy();
+                   /* policy=gruppo.getPolicy();
                     fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
                     if(fm.findFragmentById(R.id.f1)!=null){
                     ft.remove(fm.findFragmentById(R.id.f1));
                     ft.addToBackStack(null);
-                    ft.commit();}
+                    ft.commit();*/
+                   group.check(R.id.b1);
+
+
+
 
 
                 }

@@ -54,6 +54,35 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_choose_how_to_pay, container, false);
+        setRetainInstance(true);
+        if(savedInstanceState!=null){
+            if(savedInstanceState.getParcelable("Uri")!=null)
+                uri = savedInstanceState.getParcelable("Uri");
+
+            if(savedInstanceState.getParcelable("Bitmap")!=null)
+                b = savedInstanceState.getParcelable("Bitmap");
+
+            if(savedInstanceState.getSerializable("Date")!=null)
+                data = (GregorianCalendar) savedInstanceState.getSerializable("Date");
+
+            if(savedInstanceState.getSerializable("Value")!=null)
+                values = (String) savedInstanceState.getSerializable("Value");
+
+            if(savedInstanceState.getSerializable("Cat")!=null)
+                cat = (String) savedInstanceState.getSerializable("Cat");
+
+            if(savedInstanceState.getSerializable("Buyer")!=null)
+                buyer = (Persona) savedInstanceState.getSerializable("Buyer");
+
+            if(savedInstanceState.getSerializable("Price")!=null)
+                price = (String) savedInstanceState.getSerializable("Price");
+
+            if(savedInstanceState.getSerializable("Name")!=null)
+                nome = (String) savedInstanceState.getSerializable("Name");
+
+            if(savedInstanceState.getSerializable("Policy")!=null)
+                policy = (Policy) savedInstanceState.getSerializable("Policy");
+        }
         Button save = (Button) v.findViewById(R.id.save_b);
 
         save.setOnClickListener(new View.OnClickListener() {
@@ -236,5 +265,41 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
         this.user=user;//
         this.policy=policy;//
         this.price=price;
+    }
+
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+
+        if(savedInstanceState!=null){
+            if(savedInstanceState.getParcelable("Uri")!=null)
+                uri = savedInstanceState.getParcelable("Uri");
+
+            if(savedInstanceState.getParcelable("Bitmap")!=null)
+                b = savedInstanceState.getParcelable("Bitmap");
+
+            if(savedInstanceState.getSerializable("Date")!=null)
+                data = (GregorianCalendar) savedInstanceState.getSerializable("Date");
+
+            if(savedInstanceState.getSerializable("Value")!=null)
+                values = (String) savedInstanceState.getSerializable("Value");
+
+            if(savedInstanceState.getSerializable("Cat")!=null)
+                cat = (String) savedInstanceState.getSerializable("Cat");
+
+            if(savedInstanceState.getSerializable("Buyer")!=null)
+                buyer = (Persona) savedInstanceState.getSerializable("Buyer");
+
+            if(savedInstanceState.getSerializable("Price")!=null)
+                price = (String) savedInstanceState.getSerializable("Price");
+
+            if(savedInstanceState.getSerializable("Name")!=null)
+                nome = (String) savedInstanceState.getSerializable("Name");
+
+            if(savedInstanceState.getSerializable("Policy")!=null)
+                policy = (Policy) savedInstanceState.getSerializable("Policy");
+
+
+        }
     }
 }

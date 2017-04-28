@@ -77,7 +77,8 @@
                     android:buttonTint="@color/crediti"
                     android:text="Do not modify group policy"
                     android:textColor="@color/text"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    android:visibility="gone"/>
             </RadioGroup>
 
 
