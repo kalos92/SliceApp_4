@@ -37,7 +37,7 @@ public class FirstFragment extends Fragment{
         mylist = (ListView) v.findViewById(R.id.listView1);
         adapter = new GroupAdapter(v.getContext(), R.layout.listview_group_row, SliceAppDB.getListaGruppi());
         mylist.setAdapter(adapter);
-int n;
+
         mylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
