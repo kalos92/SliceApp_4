@@ -15,7 +15,7 @@
         >
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/groupToolbar"
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
@@ -50,6 +50,7 @@
 
         <EditText
             android:layout_width="match_parent"
+            android:id="@+id/groupTitle"
             android:layout_height="wrap_content"
             android:shadowColor="@color/text"
             android:layout_marginTop="10dp"

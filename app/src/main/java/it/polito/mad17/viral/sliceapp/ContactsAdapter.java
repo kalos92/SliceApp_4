@@ -29,7 +29,7 @@ public class ContactsAdapter extends  ArrayAdapter<Persona> {
     private Map<Integer,Persona> membersMap = new HashMap<Integer,Persona>();
 
     public ContactsAdapter(Context context, int layoutResourceIdCheckBox,int layoutResourceButton, List<Persona> members) {
-        super(context, layoutResourceIdCheckBox,members);
+        super(context,layoutResourceIdCheckBox,members);
 
         this.layoutResourceIdCheckBox = layoutResourceIdCheckBox;
         this.layoutResourceButton = layoutResourceButton;
@@ -42,10 +42,6 @@ public class ContactsAdapter extends  ArrayAdapter<Persona> {
     public View getView(final int position, View view, ViewGroup parent) {
 
         View row = view;
-
-
-
-
             if(row == null){
                 Log.d("CheckBox","Sono qui");
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -59,46 +55,20 @@ public class ContactsAdapter extends  ArrayAdapter<Persona> {
                 Button b = (Button) row.findViewById(R.id.SelectButton);
 
                 if (members.get(position).getisInDB() == 1){
-
-                holder.cb = cb;
-                    holder.b=b;
-                    holder.b.setVisibility(View.GONE);
-                }
-
-                else  if (members.get(position).getisInDB() == 0){
-                    holder.cb=cb;
-                    holder.b = b;
-                    holder.cb.setVisibility(View.GONE);
-                }
+                    holder.cb = cb;
+                        holder.b=b;
+                        holder.b.setVisibility(View.GONE);
+                    }
+                    else  if (members.get(position).getisInDB() == 0){
+                        holder.cb=cb;
+                        holder.b = b;
+                        holder.cb.setVisibility(View.GONE);
+                    }
                 row.setTag(holder);
             }
             else holder = (ContactHolder) row.getTag();
 
 
-
-       /* if (row == null) {
-            LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            row = inflater.inflate(layoutResourceId, parent, false);
-            holder = new ContactHolder();
-
-            TextView tv = (TextView) row.findViewById(R.id.ContactName);
-            tv.setText(new String(""+members.get(position).getTelephone()));
-            holder.name = tv;
-
-            if (members.get(position).getisInDB() == 1) {
-                CheckBox cb = (CheckBox) row.findViewById(R.id.checkInvite);
-                holder.cb = cb;
-                holder.b = null;
-            } else {
-                Button b = (Button) row.findViewById(R.id.Select);
-                holder.b = b;
-                holder.cb = null;
-            }
-
-            row.setTag(holder);
-        } else holder = (ContactHolder) row.getTag();
-
-*/
         if (holder.cb != null) {
             holder.cb.setTag(position);
 
