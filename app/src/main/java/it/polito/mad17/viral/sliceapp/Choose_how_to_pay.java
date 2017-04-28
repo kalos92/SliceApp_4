@@ -12,14 +12,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
 
 public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragment.ReturnSelection_2{
     private View v;
@@ -82,22 +79,21 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                 double importo = Double.parseDouble(price);
                 // Uso la policy del gruppo visto che la policy deve ancora essere implementata
-
-
                 HashMap<String, Soldo> divisioni = s1.getDivisioni();
                 Collection<Soldo> parti = divisioni.values();
 
                 FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
                 DatabaseReference groupsRef = database.getReference().child("othergroups");
                 String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
-                //System.out.println("Gruppo ID " + groupID);
                 DatabaseReference group = groupsRef.child(groupID); // gruppo associato a groupID
                 DatabaseReference expense = group.child("expenses").push();
-                String expenseID = expense.getKey(); // aggiungo key della spesa
-                s1.setExpenseID(expenseID); // leggo key della spesa e lo setto nella spesa
 
-                // aggiungo la spesa alla mappa delle spese del gruppo
-                //gruppo.getMappaSpese().put(expenseID, s);
+                // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
+                // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
+                String expenseID = expense.getKey(); // aggiungo key della spesa
+                gruppo.getMappaSpese().remove(s1.getNome()+s1.getData());
+                s1.setExpenseID(expenseID); // leggo key della spesa e lo setto nella spesa
+                gruppo.getMappaSpese().put(expenseID, s1);
 
                 // setto i dati della spesa
                 expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
@@ -120,8 +116,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 }
 
                 getActivity().startActivity(i);
-
-
+                getActivity().finish();
             }
         });
 
@@ -159,17 +154,15 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
                 DatabaseReference groupsRef = database.getReference().child("othergroups");
                 String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
-                //System.out.println("Gruppo ID " + groupID);
                 DatabaseReference group = groupsRef.child(groupID); // gruppo associato a groupID
                 DatabaseReference expense = group.child("expenses").push();
 
                 // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
                 // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
                 String expenseID = expense.getKey(); // aggiungo key della spesa
-                gruppo.getMappaSpese().remove(s1.getExpenseID());
+                gruppo.getMappaSpese().remove(s1.getNome()+s1.getData());
                 s1.setExpenseID(expenseID); // leggo key della spesa e lo setto nella spesa
                 gruppo.getMappaSpese().put(expenseID, s1);
-
 
                 // setto i dati della spesa
                 expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
@@ -208,9 +201,8 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                         member.child("hasPaid").setValue(hasPaid);
                     }
                 }
-
                 getActivity().startActivity(i);
-
+                getActivity().finish();
             }
         });
 

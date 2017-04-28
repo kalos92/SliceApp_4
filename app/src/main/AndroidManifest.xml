@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".SplashScreen"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,10 +25,15 @@
             </intent-filter>
         </activity>
         <activity android:name=".ExpensesActivity" />
-        <activity android:name=".AddExpenseActivity" android:windowSoftInputMode="stateAlwaysHidden|adjustPan"/>
-        <activity android:name=".RegisterActivity"/>
-        <activity android:name=".List_Pager_Act"/>
-        <activity android:name=".AddNewGroup"/>
+        <activity
+            android:name=".AddExpenseActivity"
+            android:windowSoftInputMode="stateAlwaysHidden|adjustPan" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".List_Pager_Act" />
+        <activity android:name=".AddNewGroup" />
+        <activity
+            android:name=".LoginActivity"/>
+
     </application>
 
 </manifest>

@@ -32,7 +32,7 @@ public class Spesa extends Observable implements Serializable {
     private String expenseID;
 
     public Spesa(String nome_spesa, String data, Policy policy, Persona pagante, Double importo, Gruppo gruppo){
-cat=new Categoria("General Expenditure");
+        cat=new Categoria("General Expenditure");
         this.gruppo=gruppo;
         this.importo=importo;
         this.pagante=pagante;
