@@ -88,8 +88,7 @@
                 android:layout_marginBottom="@dimen/activity_horizontal_margin"
                 android:layout_marginEnd="@dimen/activity_vertical_margin"
                 android:layout_marginStart="@dimen/activity_vertical_margin"
-
-                android:background="@color/colorPrimary" />
+                />
 
 
         </LinearLayout>

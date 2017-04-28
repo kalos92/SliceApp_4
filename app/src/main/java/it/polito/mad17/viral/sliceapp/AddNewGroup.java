@@ -1,16 +1,21 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -44,10 +49,22 @@ public class AddNewGroup extends AppCompatActivity {
     private FirebaseDatabase database ;
     private  ContactsAdapter adapter;
     private  Map<String,Persona> tmpMap = new TreeMap<>();
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_group);
+        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
+        ((Activity)this).setTaskDescription(taskDescription);
+
+        toolbar = (Toolbar) findViewById(R.id.groupToolbar);
+        toolbar.setTitleTextColor(getResources().getColor(R.color.slider_tab));
+
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(0);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         askForContactPermission();
        // Log.d(TAG, "Response: " + data.toString());
 
@@ -124,11 +141,7 @@ public class AddNewGroup extends AppCompatActivity {
     }
 
         public void getContact(){
- //       Button b = (Button) findViewById(R.id.phoneBook);
 
-  //      b.setOnClickListener(new View.OnClickListener() {
-     //       @Override
-        //    public void onClick(View v) {
 
                 Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
                 while(phones.moveToNext()) {
@@ -213,11 +226,19 @@ if(tmpMap.size()!=0){
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         int id = item.getItemId();
+        ArrayList<Persona> listPersone = new ArrayList<Persona>();
 
         if(id == R.id.action_continue){
-            ArrayList<Persona> listPersone = new ArrayList<Persona>();
+
+
             listPersone.addAll(adapter.getGroupMembers().values());
-            Gruppo g = new Gruppo("GruppoAAAA",adapter.getGroupMembers().values().size(),listPersone,null);
+            if(listPersone.size()!=0){
+            Intent i = new Intent(AddNewGroup.this,Group_Details.class);
+            i.putExtra("ListaPersone",listPersone);
+            startActivity(i);}
+            else{
+                Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
+                return false;}
 
         }
         return super.onOptionsItemSelected(item);

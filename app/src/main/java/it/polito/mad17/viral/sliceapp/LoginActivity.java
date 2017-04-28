@@ -61,7 +61,7 @@ public class LoginActivity extends AppCompatActivity{
         });
 
         //Execute Registration
-        TextView registerView = (TextView) findViewById(R.id.RegisterView);
+        Button registerView = (Button) findViewById(R.id.RegisterView);
         registerView.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 Intent registerIntent = new Intent(LoginActivity.this, RegisterActivity.class);

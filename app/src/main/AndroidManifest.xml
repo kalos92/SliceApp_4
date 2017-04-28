@@ -31,9 +31,10 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".List_Pager_Act" />
         <activity android:name=".AddNewGroup" />
+        <activity android:name=".LoginActivity" />
         <activity
-            android:name=".LoginActivity"/>
-
+            android:name=".Group_Details"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

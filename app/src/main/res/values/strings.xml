@@ -19,9 +19,9 @@
     <string name="title_activity_register">RegisterActivity</string>
     <string name="title_activity_login">LoginActivity</string>
     <!-- Strings related to login -->
-    <string name="prompt_email">Phone</string>
+    <string name="prompt_email">Phone number</string>
     <string name="prompt_password">Password</string>
-    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="error_invalid_phone">This phone number is invalid</string>
     <string name="error_empty_password">The password field is empty</string>
@@ -32,4 +32,5 @@
     <string name="error_short_password">"The password you insert is wrong"</string>
     <string name="wrong_phone_pwd">"The email or password are wrong!"</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
+    <string name="title_activity_group__details">Group_Details</string>
 </resources>
