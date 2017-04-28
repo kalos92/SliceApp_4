@@ -289,6 +289,11 @@ public class List_Pager_Act extends AppCompatActivity {
             Log.d("WINNER", "Ci siamo");
             return true;
         }
+        if(id == R.id.action_settings){
+
+
+            //TODO ABDEL DAJE
+        }
         return super.onOptionsItemSelected(item);
     }
 
