@@ -68,7 +68,7 @@ class BalanceAdapter extends ArrayAdapter<Riga_Bilancio> {
         if(soldo.getImporto()<0) {
             String str = String.format("%.2f",soldo.getImporto()*-1);
             holder.money.setText("-" + str);
-            holder.name.setText(soldo.getNcname()+" you owe");
+            holder.name.setText("You owe to "+ soldo.getNcname()+":");
             holder.money.setTextColor(context.getResources().getColor(R.color.row_non_pagate_bck));
             holder.name.setTextColor(context.getResources().getColor(R.color.row_non_pagate_bck));
         }

@@ -43,7 +43,7 @@ public class SecondFragment extends Fragment {
 
         ArrayList<Gruppo> allGroups = SliceAppDB.getListaGruppi();
         ArrayList<Spesa> allExpenses = SliceAppDB.getListaSpese();
-        ArrayList<Soldo> soldi = new ArrayList<Soldo>();
+
 
         Map<String, Double> amici = new HashMap<String, Double>();
         String uncname = new String(user.getName()+" "+user.getSurname());
@@ -62,15 +62,15 @@ public class SecondFragment extends Fragment {
                         for(Soldo so : ss){
                             String ncname = new String(so.getPersona().getName()+" "+so.getPersona().getSurname());
 
-                                if(so.getPagante().getTelephone() == user.getTelephone() && !ncname.equals(uncname) ){
+                                if(so.getPagante().getTelephone() == user.getTelephone() && !ncname.equals(uncname) && !so.getHaPagato()){
                                     Double importo = amici.get(ncname);
                                     importo += so.getImporto();
                                     amici.put(ncname,importo);
                                 }
-                                else if(so.getPagante().getTelephone() != user.getTelephone() && !ncname.equals(uncname)){
-                                    Double importo = amici.get(ncname);
+                                else if(so.getPagante().getTelephone() != user.getTelephone() && !ncname.equals(uncname) && !so.getHaPagato()){
+                                    Double importo = amici.get(so.getPagante().getName()+ " "+ so.getPagante().getSurname());
                                     importo -= so.getImporto();
-                                    amici.put(ncname,importo);
+                                    amici.put(so.getPagante().getName()+ " "+ so.getPagante().getSurname(),importo);
                                 }
 
                         }

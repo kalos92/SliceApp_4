@@ -96,7 +96,7 @@ public class Persona implements Serializable {
 
 
 
-    public void AddToGroup(Gruppo gruppo,int pos ){
+    public void AddToGroup(Gruppo gruppo,int pos){
 
         gruppi_partecipo.add(gruppo);
         posizione_gruppi.put(gruppo.getGroupName(), new Integer(pos));
