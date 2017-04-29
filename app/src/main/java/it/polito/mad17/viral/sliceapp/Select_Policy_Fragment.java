@@ -17,7 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
-
+import android.widget.Toast;
 
 
 public class Select_Policy_Fragment extends Fragment implements AddExpenseFragment.ReturnSelection, Little_fragment_1.GetPercentages, Little_fragment_2.AlltheSame{
@@ -103,8 +103,13 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
         returnSelection_2 = (ReturnSelection_2) getActivity();
         rg = (RadioGroup) v.findViewById(R.id.rg);
 
-       rg.check(R.id.b3);
-        policy=gruppo.getPolicy();
+       rg.check(R.id.b1);
+        //policy=gruppo.getPolicy();
+        fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.f1, Little_fragment_2.newInstance(gruppo));
+        ft.addToBackStack(null);
+        ft.commit();
 
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -113,7 +118,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
                 if(group.getCheckedRadioButtonId()== R.id.b1){
 
-
+                    policy = null;
                     fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
                     ft.replace(R.id.f1, Little_fragment_2.newInstance(gruppo));
@@ -122,7 +127,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
                 }
 
                 if(group.getCheckedRadioButtonId()== R.id.b2){
-
+                    policy=null;
                     fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
                     ft.replace(R.id.f1, Little_fragment_1.newInstance(gruppo));
@@ -133,13 +138,17 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
                 if(group.getCheckedRadioButtonId()== R.id.b3){
 
-                    policy=gruppo.getPolicy();
+                   /* policy=gruppo.getPolicy();
                     fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
                     if(fm.findFragmentById(R.id.f1)!=null){
                     ft.remove(fm.findFragmentById(R.id.f1));
                     ft.addToBackStack(null);
-                    ft.commit();}
+                    ft.commit();*/
+                   group.check(R.id.b1);
+
+
+
 
 
                 }
@@ -165,22 +174,24 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
             @Override
             public boolean onMenuItemClick(MenuItem item) {
 
+                if(policy!=null) {
+                    if (returnSelection_2 != null)
+                        returnSelection_2.returnSelection_2(values, cat, data, buyer, b, uri, nome, price, gruppo, user, chtp, policy);
 
-                if (returnSelection_2 != null)
-                    returnSelection_2.returnSelection_2(values, cat, data, buyer, b, uri, nome, price, gruppo, user,chtp,policy);
+
+                    FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+                    transaction.replace(R.id.fragment, chtp);
+                    transaction.addToBackStack("TRE");
 
 
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-// Replace whatever is in the fragment_container view with this fragment,
-// and add the transaction to the back stack if needed
-                transaction.replace(R.id.fragment, chtp);
-                transaction.addToBackStack("TRE");
-
-// Commit the transaction
-                transaction.commit();
-                return true;
-
+                    transaction.commit();
+                    return true;
+                }
+                else{
+                    Toast.makeText(getContext(),"Policy is not setted",Toast.LENGTH_SHORT).show();
+                    return false;
+                }
             }
         });
 

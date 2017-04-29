@@ -82,7 +82,17 @@ public class GroupAdapter extends ArrayAdapter<Gruppo> {
     }
 
 
+    @Override
+    public int getViewTypeCount() {
 
+        return 1;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+
+        return position;
+    }
 
     static class GroupHolder
     {

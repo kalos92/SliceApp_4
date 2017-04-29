@@ -126,8 +126,8 @@ public class LoginActivity extends AppCompatActivity{
                     DataSnapshot ds = dataSnapshot.child(phone);
                     String nome = ds.child("name").getValue().toString();
                     String cognome = ds.child("surname").getValue().toString();
-                    String username = ds.child("username").getValue().toString();
-                    String dob = ds.child("birthdate").getValue().toString();
+                    String username = ds.child("userName").getValue().toString();
+                    String dob = ds.child("dob").getValue().toString();
                     long telefono = ds.child("telephone").getValue(long.class);
                     Persona p = new Persona(nome, cognome, username, dob, telefono);
                     SliceAppDB.setUser(p);

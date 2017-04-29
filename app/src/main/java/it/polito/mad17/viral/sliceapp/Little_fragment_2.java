@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,6 +87,7 @@ public class Little_fragment_2 extends Fragment {
                 v.setFocusable(false);
                 v.setFocusableInTouchMode(false);
                 v.clearFocus();
+                Toast.makeText(getContext(),"Policy Setted",Toast.LENGTH_LONG).show();
 
             }
         });

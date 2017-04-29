@@ -52,6 +52,7 @@ public class SliceAppDB implements Serializable {
         gruppo.put(20,g);
     }
 
+    public static Gruppo getGruppoArray(Integer i){return lista_gruppi.get(i);}
 
 }
 
