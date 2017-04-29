@@ -170,7 +170,7 @@ public class AddNewGroup extends AppCompatActivity {
 
                 //Firebase connection:
                 database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference users = database.getReference().child("otherusers");
+                DatabaseReference users = database.getReference().child("users");
 
 
                 users.addValueEventListener(new ValueEventListener() {

@@ -82,7 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Please wait while registering...");
-                final DatabaseReference users = database.getReference("otherusers");
+                final DatabaseReference users = database.getReference("users");
                 final Persona p = new Persona(nome, cognome, nomeutente, dob, tel);
                 users.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override

@@ -81,8 +81,8 @@ public class Group_Details extends AppCompatActivity {
         if(id == R.id.action_continue){
            // Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
             final FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-            final DatabaseReference users = database.getReference().child("otherusers");
-            final DatabaseReference groups= database.getReference().child("othergroups");
+            final DatabaseReference users = database.getReference().child("users");
+            final DatabaseReference groups= database.getReference().child("groups");
             final DatabaseReference groupLink = groups.push();
             final String groupID = groupLink.getKey();
             final int numMembers = listP.size()+1;

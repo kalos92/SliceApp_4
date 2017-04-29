@@ -114,7 +114,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 Collection<Soldo> parti = divisioni.values();
 
                 FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference groupsRef = database.getReference().child("othergroups");
+                DatabaseReference groupsRef = database.getReference().child("groups");
                 String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
                 DatabaseReference group = groupsRef.child(groupID); // gruppo associato a groupID
                 DatabaseReference expense = group.child("expenses").push();
@@ -190,7 +190,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 Collection<Soldo> parti = divisioni.values();
 
                 FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference groupsRef = database.getReference().child("othergroups");
+                DatabaseReference groupsRef = database.getReference().child("groups");
                 String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
                 DatabaseReference group = groupsRef.child(groupID); // gruppo associato a groupID
                 DatabaseReference expense = group.child("expenses").push();

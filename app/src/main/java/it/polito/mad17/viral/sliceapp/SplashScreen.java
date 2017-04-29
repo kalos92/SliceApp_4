@@ -1,17 +1,14 @@
 package it.polito.mad17.viral.sliceapp;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -50,12 +47,12 @@ public class SplashScreen extends AppCompatActivity {
             rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    DataSnapshot ds = dataSnapshot.child("otherusers").child(userphone);
+                    DataSnapshot ds = dataSnapshot.child("users").child(userphone);
                     Iterator<DataSnapshot> iterdata = ds.child("belongsToGroups").getChildren().iterator();
                     int positionGroup = 0;
                     while (iterdata.hasNext()) {
                         String groupID = iterdata.next().getKey();
-                        DataSnapshot groups = dataSnapshot.child("othergroups");
+                        DataSnapshot groups = dataSnapshot.child("groups");
                         String groupName = (String) groups.child(groupID).child("name").getValue();
                         long numMembers = (long) groups.child(groupID).child("numMembers").getValue();
                         // estrazione policy di default associata a groupID
@@ -70,15 +67,15 @@ public class SplashScreen extends AppCompatActivity {
 
                         // iterare sulle persone, crearle e aggiungerle ai gruppi
                         Iterator<DataSnapshot> members = groups.child(groupID).child("members").getChildren().iterator();
-                        DataSnapshot users = dataSnapshot.child("otherusers");
+                        DataSnapshot users = dataSnapshot.child("users");
                         ArrayList<Persona> partecipanti = new ArrayList<Persona>();
                         while (members.hasNext()) {
                             String phonenumber = members.next().getKey();
                             DataSnapshot member = users.child(phonenumber);
                             String nome = (String) member.child("name").getValue();
                             String cognome = (String) member.child("surname").getValue();
-                            String username = (String) member.child("userName").getValue();
-                            String dob = (String) member.child("dob").getValue();
+                            String username = (String) member.child("username").getValue();
+                            String dob = (String) member.child("birthdate").getValue();
                             long telefono = (long) member.child("telephone").getValue();
                             Persona p = new Persona(nome, cognome, username, dob, telefono);
                             partecipanti.add(p);
