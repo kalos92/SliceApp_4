@@ -42,7 +42,7 @@ public class Gruppo implements Serializable, Observer {
         this.n_partecipanti=n;
         int i=0;
         for(Persona p: partecipanti){
-            this.partecipanti.put(p.getUserName(),p);
+            this.partecipanti.put(p.getUsername(),p);
             p.setPosizione_inGroup(this, i);
             p.AddToGroup(this,i);
             i++;
@@ -64,7 +64,7 @@ public class Gruppo implements Serializable, Observer {
 
         public Spesa AddSpesa_and_try_repay(Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
 
-            if(user.getHaDebiti()){
+            if(user.getHasDebts()){
             gestore=new Gestore();
             spesa= new Spesa(nome_spesa,data,policy,pagante,importo,this);
 
@@ -95,9 +95,9 @@ public class Gruppo implements Serializable, Observer {
     public Double getAllDebts(){ //i debiti sono calcolati nelle spese che NON ho fatto io e devo ancora pagare
         Double f= new Double(0);
         for(Spesa s: spese.values()){
-            if(!s.getPagante().getUserName().equals(user.getUserName())){
+            if(!s.getPagante().getUsername().equals(user.getUsername())){
                 for(Soldo soldo: s.getDivisioni().values())
-                    if(!soldo.getHaPagato() && soldo.getPersona().getUserName().equals(user.getUserName()))
+                    if(!soldo.getHaPagato() && soldo.getPersona().getUsername().equals(user.getUsername()))
                         f+=soldo.getImporto();
 
 
@@ -111,9 +111,9 @@ public class Gruppo implements Serializable, Observer {
     public Double getAllCredits(){  //i crediti sono calcolti nelle spese che HO fatto io e gli altri non mi hanno pagato
         Double f= new Double(0);
         for(Spesa s: spese.values()){
-            if(s.getPagante().getUserName().equals(user.getUserName())){
+            if(s.getPagante().getUsername().equals(user.getUsername())){
                 for(Soldo soldo: s.getDivisioni().values())
-                    if(!soldo.getHaPagato() && !soldo.getPersona().getUserName().equals(user.getUserName()))
+                    if(!soldo.getHaPagato() && !soldo.getPersona().getUsername().equals(user.getUsername()))
                         f+=soldo.getImporto();
             }
 
@@ -123,7 +123,7 @@ public class Gruppo implements Serializable, Observer {
 
     private void AddPartecipant(Persona p){
 
-        partecipanti.put(p.getUserName(), p);
+        partecipanti.put(p.getUsername(), p);
 
     }
 

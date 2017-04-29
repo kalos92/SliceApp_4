@@ -48,7 +48,7 @@ public class SecondFragment extends Fragment {
         Map<String, Double> amici = new HashMap<String, Double>();
         String uncname = new String(user.getName()+" "+user.getSurname());
         for(Gruppo g : allGroups){
-            if(g.getPartecipante(user.getUserName()) != null){
+            if(g.getPartecipante(user.getUsername()) != null){
                 String groupID = g.getGroupID();
 
                 for(Persona p: g.getPartecipanti().values() ) {

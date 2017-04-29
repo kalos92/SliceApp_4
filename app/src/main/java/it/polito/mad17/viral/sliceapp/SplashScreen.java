@@ -154,7 +154,7 @@ public class SplashScreen extends AppCompatActivity {
 
                             Map<String, Soldo> mappaSoldo = spesa.getDivisioni();
                             for (Soldo soldo : divisioni)
-                                mappaSoldo.put(soldo.getPersona().getUserName(), soldo);
+                                mappaSoldo.put(soldo.getPersona().getUsername(), soldo);
                             g.getMappaSpese().put(spesa.getExpenseID(), spesa);
                         }
                         //inserisco il gruppo nella lista dei gruppi e nella mappa dei gruppi
@@ -168,8 +168,6 @@ public class SplashScreen extends AppCompatActivity {
                     Intent i = new Intent(SplashScreen.this, List_Pager_Act.class);
                     startActivity(i);
                     finish();
-
-
                 }
 
                 @Override

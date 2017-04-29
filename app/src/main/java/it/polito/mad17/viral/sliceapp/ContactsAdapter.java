@@ -54,12 +54,12 @@ public class ContactsAdapter extends  ArrayAdapter<Persona> {
                 CheckBox cb = (CheckBox) row.findViewById(R.id.checkInviteCheckBox);
                 Button b = (Button) row.findViewById(R.id.SelectButton);
 
-                if (members.get(position).getisInDB() == 1){
+                if (members.get(position).getIsInDB() == 1){
                     holder.cb = cb;
                         holder.b=b;
                         holder.b.setVisibility(View.GONE);
                     }
-                    else  if (members.get(position).getisInDB() == 0){
+                    else  if (members.get(position).getIsInDB() == 0){
                         holder.cb=cb;
                         holder.b = b;
                         holder.cb.setVisibility(View.GONE);

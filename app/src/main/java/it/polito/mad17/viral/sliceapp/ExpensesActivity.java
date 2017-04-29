@@ -60,7 +60,7 @@ public class ExpensesActivity extends AppCompatActivity {
 
         Toolbar t = (Toolbar)findViewById(R.id.expenseToolbar);
         t.setTitle(" " + gruppo.getGroupName());
-        t.setSubtitle(" " + gruppo.getUser().getUserName());
+        t.setSubtitle(" " + gruppo.getUser().getUsername());
         BitmapManager  bm = new BitmapManager(this,gruppo.getImg(),50,70);
 
         Bitmap b=  bm.scaleDown(gruppo.getImg(),100,true);

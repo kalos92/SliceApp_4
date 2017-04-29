@@ -184,11 +184,11 @@ public class AddNewGroup extends AppCompatActivity {
                             if(userDB==null){
                                 //User is not into the DB
                                 Log.d("Falso","FALSE "+telephone);
-                                p.setisInDB(0);
+                                p.setIsInDB(0);
                                 tmpMap.put(telephone,p);
                             }else{
                                 Log.d("Vero","VERO "+ telephone);
-                                p.setisInDB(1); //User is into the DB.
+                                p.setIsInDB(1); //User is into the DB.
                                 tmpMap.put(telephone,p);
                             }
                         }

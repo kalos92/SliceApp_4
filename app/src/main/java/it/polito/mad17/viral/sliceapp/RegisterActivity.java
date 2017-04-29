@@ -2,6 +2,7 @@ package it.polito.mad17.viral.sliceapp;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -49,8 +50,8 @@ public class RegisterActivity extends AppCompatActivity {
                 catch (NumberFormatException notLong){
                     phonenumber.setError("Only number are accepted");
                     return;
-
                 }
+                // get user data from gui
                 final String telephone = Long.toString(tel);
                 final String pass = password.getText().toString();
                 int passLenght = pass.length();
@@ -59,7 +60,7 @@ public class RegisterActivity extends AppCompatActivity {
                 final String cognome = secondName.getText().toString();
                 final String nomeutente = username.getText().toString();
                 final String dob = birthdate.getText().toString();
-
+                // check user data
                 if(telephone.length() < 10 || telephone.length() > 13 || telephone.isEmpty()) {
                     phonenumber.requestFocus();
                     phonenumber.setError("Invalid Phone number!");
@@ -80,7 +81,7 @@ public class RegisterActivity extends AppCompatActivity {
                     return;
                 }
 
-                progressDialog = ProgressDialog.show(RegisterActivity.this, null, "Please wait while registering...");
+                progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Please wait while registering...");
                 final DatabaseReference users = database.getReference("otherusers");
                 final Persona p = new Persona(nome, cognome, nomeutente, dob, tel);
                 users.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -91,15 +92,30 @@ public class RegisterActivity extends AppCompatActivity {
                             Toast.makeText(getBaseContext(), "Phone number already exists", Toast.LENGTH_SHORT).show();
                         }
                         else{
+                            // register user
                             p.setPassword(pass);
                             users.child(telephone).setValue(p);
+                            users.child(telephone).child("belongToGroups").setValue("");
+                            users.child(telephone).child("isInDB").setValue(1);
                             progressDialog.dismiss();
                             Toast.makeText(getBaseContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
+
+                            SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+                            SharedPreferences.Editor prefEditor = sharedPref.edit();
+                            prefEditor.putInt("isLogged", 1);
+
                             SliceAppDB.setUser(p);
+
+                            prefEditor.putString("nome", nome);
+                            prefEditor.putString("cognome", cognome);
+                            prefEditor.putString("username", nomeutente);
+                            prefEditor.putString("dob", dob);
+                            prefEditor.putLong("telefono", tel);
+                            prefEditor.commit();
+
                             finish();
                             Intent i = new Intent(RegisterActivity.this, List_Pager_Act.class);
-                            i.putExtra("userphone", telephone);
-                            startActivity(new Intent(RegisterActivity.this, List_Pager_Act.class));
+                            startActivity(i);
                         }
                     }
                     @Override
@@ -110,8 +126,4 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
 }

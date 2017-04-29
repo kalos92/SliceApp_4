@@ -219,7 +219,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
         final List<String> names = new ArrayList<>();
         for(Persona p : gruppo.getPartecipanti().values()){
-            names.add(p.getUserName());
+            names.add(p.getUsername());
 
         }
 
@@ -227,7 +227,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         Spinner buyer_spinner = (Spinner) v.findViewById(R.id.BuyerSpinner);
         buyer_spinner.setAdapter(new Buyer_Adapter(getContext(),names,gruppo));
 
-        buyer_spinner.setSelection(getIndex(buyer_spinner, user.getUserName()));
+        buyer_spinner.setSelection(getIndex(buyer_spinner, user.getUsername()));
         buyer_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override

@@ -64,7 +64,7 @@ public class ExpensesAdapter extends ArrayAdapter<Spesa>  {
             price.setText(Double.toString(data.get(position).getImporto()));
             holder.price= price;
             TextView buyer = (TextView)row.findViewById(R.id.buyer);
-            buyer.setText("Buyer: "+data.get(position).getPagante().getUserName());
+            buyer.setText("Buyer: "+data.get(position).getPagante().getUsername());
             holder.buyer=buyer;
 
             TextView currency = (TextView)row.findViewById(R.id.expCurrency);
@@ -72,7 +72,7 @@ public class ExpensesAdapter extends ArrayAdapter<Spesa>  {
             holder.currency= currency;
 
 
-            if(!data.get(position).getDivisioni().get(user.getUserName()).getHaPagato())
+            if(!data.get(position).getDivisioni().get(user.getUsername()).getHaPagato())
                row.setBackgroundColor(context.getResources().getColor(R.color.row_non_pagate_bck));
 
 

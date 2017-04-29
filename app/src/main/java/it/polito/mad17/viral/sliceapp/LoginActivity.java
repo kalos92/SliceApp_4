@@ -27,11 +27,8 @@ public class LoginActivity extends AppCompatActivity{
 
     private AutoCompleteTextView mPhoneView;
     private EditText mPasswordView;
-    private String pwdDB,phoneDB;
-    private  DatabaseReference db;
     private String phone, password;
-    //private CountDownLatch latch = new CountDownLatch(1);
-
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -105,26 +102,28 @@ public class LoginActivity extends AppCompatActivity{
             return;
         }
 
-        //final ProgressDialog progressDialog = ProgressDialog.show(this, "","Please wait while loading your data...", true);
-        db = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference("otherusers");
-        db.addListenerForSingleValueEvent(new ValueEventListener() {
+        progressDialog = new ProgressDialog(this);
+        progressDialog = ProgressDialog.show(this, "","Please wait while loading your data...", true);
+        DatabaseReference usersRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference("otherusers");
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot.hasChild(phone)) {
-                    pwdDB = dataSnapshot.child(phone).child("password").getValue().toString();
+                    String pwdDB = (String) dataSnapshot.child(phone).child("password").getValue();
                     if (!pwdDB.equals(password)) {
+                        progressDialog.dismiss();
                         mPasswordView.requestFocus();
                         mPasswordView.setError("The password is wrong!");
                         return;
                     }
+                    // Inserted data ae correct
                     //Open the login activity and set this so that next it value is 1 then this conditin will be false.
                     SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
                     SharedPreferences.Editor prefEditor = sharedPref.edit();
                     prefEditor.putInt("isLogged", 1);
 
                     DataSnapshot ds = dataSnapshot.child(phone);
-                    phoneDB = ds.getKey();
                     String nome = ds.child("name").getValue().toString();
                     String cognome = ds.child("surname").getValue().toString();
                     String username = ds.child("username").getValue().toString();
@@ -139,15 +138,15 @@ public class LoginActivity extends AppCompatActivity{
                     prefEditor.putString("dob", dob);
                     prefEditor.putLong("telefono", telefono);
                     prefEditor.commit();
-                    //progressDialog.dismiss();
+                    progressDialog.dismiss();
                     finish();
                     Intent intent  = getIntent();
                     Intent i = new Intent(LoginActivity.this, SplashScreen.class);
                     startActivity(i);
                 } else {
+                    progressDialog.dismiss();
                     mPhoneView.requestFocus();
                     mPhoneView.setError("The phone number field is wrong!");
-                    //progressDialog.dismiss();
                     return;
                 }
             }

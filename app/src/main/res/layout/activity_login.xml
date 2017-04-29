@@ -10,119 +10,99 @@
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay"
-        >
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-<android.support.v7.widget.Toolbar
-    android:id="@+id/groupToolbar"
-    android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="@color/colorPrimary"
-    design:layout_collapseMode="pin"
-    design:layout_scrollFlags="scroll|enterAlways"
-
-    design:popupTheme="@style/AppTheme"
-    design:subtitleTextColor="#FFFFFF"
-    design:title="Welcome in SliceApp"
-    design:titleTextColor="#FFFFFF" />
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    xmlns:design="http://schemas.android.com/apk/res-auto"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="it.polito.mad17.viral.sliceapp.LoginActivity"
-    android:background="@color/tab_bck">
-
-    <!-- Login progress -->
-    <ProgressBar
-        android:id="@+id/login_progress"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:visibility="gone" />
-
-    <ScrollView
-        android:id="@+id/login_form"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <LinearLayout
-            android:id="@+id/email_login_form"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/groupToolbar"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            design:layout_collapseMode="pin"
+            design:layout_scrollFlags="scroll|enterAlways"
+            design:popupTheme="@style/AppTheme"
+            design:subtitleTextColor="#FFFFFF"
+            design:title="Welcome in SliceApp"
+            design:titleTextColor="#FFFFFF" />
 
-            <!-- phonenumber -->
-            <android.support.design.widget.TextInputLayout
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:textColorHint="@color/crediti">
+                android:layout_height="match_parent"
+                xmlns:design="http://schemas.android.com/apk/res-auto"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingBottom="@dimen/activity_vertical_margin"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:paddingTop="@dimen/activity_vertical_margin"
+                tools:context="it.polito.mad17.viral.sliceapp.LoginActivity"
+                android:background="@color/tab_bck">
 
-                <AutoCompleteTextView
-                    android:id="@+id/phoneNumber"
+                <LinearLayout
+                    android:id="@+id/email_login_form"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:digits="0123456789"
-                    android:hint="@string/prompt_email"
-                    android:inputType="phone"
-                    android:maxLines="1"
-                    android:singleLine="true"
-                    android:textColorHint="@color/text" />
+                    android:orientation="vertical">
 
-            </android.support.design.widget.TextInputLayout>
+                    <!-- phonenumber -->
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:textColorHint="@color/crediti">
+                        <AutoCompleteTextView
+                            android:id="@+id/phoneNumber"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits="0123456789"
+                            android:hint="@string/prompt_email"
+                            android:inputType="phone"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColorHint="@color/text" />
 
-            <!-- password -->
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:textColorHint="@color/crediti">
+                    </android.support.design.widget.TextInputLayout>
 
-                <EditText
-                    android:id="@+id/password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/prompt_password"
-                    android:imeActionId="@+id/login"
-                    android:imeActionLabel="@string/action_sign_in_short"
-                    android:imeOptions="actionUnspecified"
-                    android:inputType="textPassword"
-                    android:maxLines="1"
-                    android:singleLine="true" />
+                    <!-- password -->
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:textColorHint="@color/crediti">
+                        <EditText
+                            android:id="@+id/password"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="@string/prompt_password"
+                            android:imeActionId="@+id/login"
+                            android:imeActionLabel="@string/action_sign_in_short"
+                            android:imeOptions="actionUnspecified"
+                            android:inputType="textPassword"
+                            android:maxLines="1"
+                            android:singleLine="true" />
 
-            </android.support.design.widget.TextInputLayout>
+                    </android.support.design.widget.TextInputLayout>
 
-            <Button
-                android:id="@+id/phone_sign_in_button"
-
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Sign In"
-                android:textStyle="bold" />
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
-            <Button xmlns:android="http://schemas.android.com/apk/res/android"
-                android:id="@+id/RegisterView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Register"
-                android:textStyle="bold"
-                android:autoLink="phone">
-            </Button>
-</LinearLayout>
-        </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+                    <Button
+                        android:id="@+id/phone_sign_in_button"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Sign In"
+                        android:textStyle="bold" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+                            <Button xmlns:android="http://schemas.android.com/apk/res/android"
+                                android:id="@+id/RegisterView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:text="Register"
+                                android:textStyle="bold"
+                                android:autoLink="phone">
+                            </Button>
+                        </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
     </android.support.design.widget.AppBarLayout>
 </android.support.design.widget.CoordinatorLayout>

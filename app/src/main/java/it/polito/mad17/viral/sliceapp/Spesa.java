@@ -64,7 +64,7 @@ public class Spesa extends Observable implements Serializable {
             if(s.getImporto()==0){
                 s.setHaPagato(true);
             }
-            divisioni.put(s.getPersona().getUserName(), s);
+            divisioni.put(s.getPersona().getUsername(), s);
 
         }
     }
