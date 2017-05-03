@@ -20,9 +20,6 @@ public class RegisterActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private ProgressDialog progressDialog;
-    private long tel;
-
-
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -43,16 +40,8 @@ public class RegisterActivity extends AppCompatActivity {
         signButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // check fields(nome, cognome, username, dob,tel);
-                try {
-                    tel = Long.parseLong(phonenumber.getText().toString());
-                }
-                catch (NumberFormatException notLong){
-                    phonenumber.setError("Only number are accepted");
-                    return;
-                }
                 // get user data from gui
-                final String telephone = Long.toString(tel);
+                final String telephone = phonenumber.getText().toString();
                 final String pass = password.getText().toString();
                 int passLenght = pass.length();
                 String confPass = confirmedPassword.getText().toString();
@@ -83,7 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 progressDialog = ProgressDialog.show(RegisterActivity.this, "", "Please wait while registering...");
                 final DatabaseReference users = database.getReference("users");
-                final Persona p = new Persona(nome, cognome, nomeutente, dob, tel);
+                final Persona p = new Persona(nome, cognome, nomeutente, dob, telephone);
                 users.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
@@ -110,7 +99,7 @@ public class RegisterActivity extends AppCompatActivity {
                             prefEditor.putString("cognome", cognome);
                             prefEditor.putString("username", nomeutente);
                             prefEditor.putString("dob", dob);
-                            prefEditor.putLong("telefono", tel);
+                            prefEditor.putString("telefono", telephone);
                             prefEditor.commit();
 
                             finish();

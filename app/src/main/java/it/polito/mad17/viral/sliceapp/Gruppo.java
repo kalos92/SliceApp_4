@@ -31,11 +31,12 @@ public class Gruppo implements Serializable, Observer {
     private ArrayList<Spesa> listaSpeseGruppo = new ArrayList<Spesa>();
     private Gestore gestore;
     private String groupID;
-
-
-
     private Policy policy;
     private int img;
+
+    public Gruppo(){
+        // needed for FirebaseListAdapter
+    }
 
     public Gruppo(String groupName, int n, ArrayList<Persona> partecipanti, Policy policy ){
         this.groupName=groupName;
@@ -49,17 +50,37 @@ public class Gruppo implements Serializable, Observer {
         }
         this.policy=policy;
         img= R.drawable.default_img;
-        setImg(img);
+        setIcon(img);
     }
 
+    public String getName(){
+        return groupName;
+    }
     public ArrayList<Spesa> getSpeseGruppo(){ return listaSpeseGruppo; }
+    public String getGroupID(){ return groupID; }
+    public int getIcon(){
+        return img;
+    }
+    public HashMap<String, Persona> getPartecipanti() {
+        return partecipanti;
+    }
+    public int getN_partecipanti(){
+        return n_partecipanti;
+    }
+    public Policy getPolicy() {
+        return policy;
+    }
+    public HashMap<String,Spesa> getMappaSpese() {
+        return spese;
+    }
+
     public void setUser(Persona user){
         this.user=user;
     }
-
-    public String getGroupID(){ return groupID; }
     public void setGroupID(String groupID){ this.groupID = groupID; }
-
+    public void setIcon(int icon){ img = icon; }
+    public void setPolicy(Policy policy) {this.policy = policy;
+    }
     public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
 
         public Spesa AddSpesa_and_try_repay(Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
@@ -99,12 +120,8 @@ public class Gruppo implements Serializable, Observer {
                 for(Soldo soldo: s.getDivisioni().values())
                     if(!soldo.getHaPagato() && soldo.getPersona().getUsername().equals(user.getUsername()))
                         f+=soldo.getImporto();
-
-
             }
-
         }
-
         return f;
     }
 
@@ -116,58 +133,33 @@ public class Gruppo implements Serializable, Observer {
                     if(!soldo.getHaPagato() && !soldo.getPersona().getUsername().equals(user.getUsername()))
                         f+=soldo.getImporto();
             }
-
         }
         return f;
     }
 
     private void AddPartecipant(Persona p){
-
         partecipanti.put(p.getUsername(), p);
-
     }
 
-    public void setImg(int icon){
 
-        img=icon;
-    }
 
-    public String getGroupName(){
-        return groupName;
-    }
-    public int getImg(){
-        return img;
-    }
+
+
 
     public ArrayList<Spesa> getSpese(){
-
         ArrayList<Spesa> spese_arr = new ArrayList<Spesa>(spese.values());
         return spese_arr;
     }
 
-    public HashMap<String, Persona> getPartecipanti() {
-        return partecipanti;
-    }
+
 
     public Persona getPartecipante(String username){
      return partecipanti.get(username);
-
-    }
-    public int getN_partecipanti(){
-        return n_partecipanti;
     }
 
-    public Policy getPolicy() {
-        return policy;
-    }
 
-    public void setPolicy(Policy policy) {
-        this.policy = policy;
-    }
 
-    public HashMap<String,Spesa> getMappaSpese() {
-        return spese;
-    }
+
 
     @Override
     public void update(Observable o, Object arg) {

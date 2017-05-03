@@ -46,9 +46,9 @@ public class GroupAdapter extends ArrayAdapter<Gruppo> {
         View row = convertView;
         GroupHolder holder= null;
 
-        BitmapManager bm = new BitmapManager(context,data.get(position).getImg(),50,70);
+        BitmapManager bm = new BitmapManager(context,data.get(position).getIcon(),50,70);
 
-        Bitmap b=  bm.scaleDown(data.get(position).getImg(),100,true);
+        Bitmap b=  bm.scaleDown(data.get(position).getIcon(),100,true);
 
 
         if(row == null)
@@ -60,7 +60,7 @@ public class GroupAdapter extends ArrayAdapter<Gruppo> {
             holder.imgIcon = (ImageView) row.findViewById(R.id.imgIcon);
             TextView title = (TextView)row.findViewById(R.id.groupName);
 
-            title.setText(data.get(position).getGroupName());
+            title.setText(data.get(position).getName());
             holder.txtTitle = title;
             holder.imgIcon.setImageBitmap(b);
 
@@ -73,7 +73,7 @@ public class GroupAdapter extends ArrayAdapter<Gruppo> {
         }
 
         Gruppo gruppo = data.get(position);
-        holder.txtTitle.setText(gruppo.getGroupName());
+        holder.txtTitle.setText(gruppo.getName());
         holder.imgIcon.setImageBitmap(b);
 
 

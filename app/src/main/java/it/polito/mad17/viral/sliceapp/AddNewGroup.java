@@ -161,7 +161,7 @@ public class AddNewGroup extends AppCompatActivity {
                     }
                     phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
 
-                    Persona p = new Persona(name,null,null,null,Long.parseLong(phoneNumber));
+                    Persona p = new Persona(name,null,null,null,phoneNumber);
                     contactsMap.put(phoneNumber,p);
                     Log.d("Phone", phoneNumber);
                     //  Log.d("Name", name);

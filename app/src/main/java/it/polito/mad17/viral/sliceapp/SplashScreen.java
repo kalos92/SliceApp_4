@@ -1,9 +1,17 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
+
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,6 +23,8 @@ import java.util.Map;
 
 
 public class SplashScreen extends AppCompatActivity {
+
+    private DataSnapshot users;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +46,7 @@ public class SplashScreen extends AppCompatActivity {
             String cognome = sharedPref.getString("cognome", null);
             String username = sharedPref.getString("username", null);
             String dob = sharedPref.getString("dob", null);
-            long telefono = sharedPref.getLong("telefono", 0);
+            String telefono = sharedPref.getString("telefono", null);
             Persona p = new Persona(nome, cognome, username, dob, telefono);
             SliceAppDB.setUser(p);
 
@@ -76,7 +86,7 @@ public class SplashScreen extends AppCompatActivity {
                             String cognome = (String) member.child("surname").getValue();
                             String username = (String) member.child("username").getValue();
                             String dob = (String) member.child("birthdate").getValue();
-                            long telefono = (long) member.child("telephone").getValue();
+                            String telefono = (String) member.child("telephone").getValue();
                             Persona p = new Persona(nome, cognome, username, dob, telefono);
                             partecipanti.add(p);
                         }
@@ -156,15 +166,16 @@ public class SplashScreen extends AppCompatActivity {
                         }
                         //inserisco il gruppo nella lista dei gruppi e nella mappa dei gruppi
                         SliceAppDB.getListaGruppi().add(g);
-                        SliceAppDB.getMappaGruppo().put(positionGroup, g);
+                        SliceAppDB.getMappaGruppi().put(positionGroup, g);
                         SliceAppDB.getGruppi().put(groupID, g);
                         positionGroup++;
                     }
                     //progress.dismiss();
                     System.out.println("onDataChange ha finito il suo lavoro!");
                     Intent i = new Intent(SplashScreen.this, List_Pager_Act.class);
-                    startActivity(i);
                     finish();
+                    startActivity(i);
+
                 }
 
                 @Override
@@ -173,5 +184,91 @@ public class SplashScreen extends AppCompatActivity {
                 }
             });
         }
+
+        // listen for database change
+        DatabaseReference rootRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
+        final DatabaseReference groupsRef = rootRef.child("groups");
+        final DatabaseReference usersRef = rootRef.child("users");
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                users = dataSnapshot;
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        groupsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                System.out.println("onChildAdded " + dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                //System.out.println("onChildChanged " + dataSnapshot);
+                if(dataSnapshot.child("numMembers").getValue() != null){
+                    String groupID = dataSnapshot.getKey();
+                    String groupName = dataSnapshot.child("name").getValue().toString();
+                    long numMembers = (long) dataSnapshot.child("numMembers").getValue();
+                    Policy policy = null;
+                    Iterator<DataSnapshot> members = dataSnapshot.child("members").getChildren().iterator();
+
+                    ArrayList<Persona> partecipanti = new ArrayList<Persona>();
+                    while (members.hasNext()) {
+                        String phonenumber = members.next().getKey();
+                        DataSnapshot member = users.child(phonenumber);
+                        String nome = (String) member.child("name").getValue();
+                        String cognome = (String) member.child("surname").getValue();
+                        String username = (String) member.child("username").getValue();
+                        String dob = (String) member.child("birthdate").getValue();
+                        String telefono = (String) member.child("telephone").getValue();
+                        Persona p = new Persona(nome, cognome, username, dob, telefono);
+                        partecipanti.add(p);
+                    }
+                    Gruppo g = new Gruppo(groupName, (int) numMembers, partecipanti, null);
+                    g.setGroupID(groupID);
+                    //SliceAppDB.getListaGruppi().add(g);
+                    //SliceAppDB.getMappaGruppi().put(positionGroup, g);
+                    //SliceAppDB.getGruppi().put(groupID, g);
+
+                    //ssgdfgdf
+                    Intent intent = new Intent();
+                    PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+                    android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                            .setTicker("Ticker Title").setContentTitle("Sei stato aggiunto ad un nuovo gruppo")
+                            .setContentText(groupName)
+                            .setSmallIcon(R.drawable.com_facebook_button_icon)
+                            .setContentIntent(pIntent);
+                    Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    builder.setSound(notificationSound);
+                    Notification noti = builder.build();
+                    noti.flags = Notification.FLAG_AUTO_CANCEL;
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    notificationManager.notify(0, noti);
+                    int n;
+                    //grgergerger
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 }

@@ -1,5 +1,8 @@
 package it.polito.mad17.viral.sliceapp;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,48 +14,49 @@ import java.util.HashMap;
 public class SliceAppDB implements Serializable {
 
     // fields
-    private static HashMap<Integer,Gruppo> gruppo = new HashMap<Integer, Gruppo>();
-    private static ArrayList<Gruppo> lista_gruppi=new ArrayList<Gruppo>();
-    private static ArrayList<Spesa> listaSpese = new ArrayList<Spesa>();
-    public static HashMap<String, Gruppo> gruppi = new HashMap<String, Gruppo>();
     private static Persona user;
 
+    private static ArrayList<Gruppo> listaGruppi=new ArrayList<Gruppo>();
+    public static HashMap<String, Gruppo> gruppi = new HashMap<String, Gruppo>();
+    private static HashMap<Integer,Gruppo> mappaGruppi = new HashMap<Integer, Gruppo>();
+    private static ArrayList<Spesa> listaSpese = new ArrayList<Spesa>();
+
     // Getters
-    public static ArrayList<Gruppo> getListaGruppi() {
-        return lista_gruppi;
-    }
-    public static HashMap<Integer, Gruppo> getMappaGruppo() {
-        return gruppo;
-    }
     public static Persona getUser(){
         return user;
+    }
+    public static ArrayList<Gruppo> getListaGruppi() { return listaGruppi; }
+    public static HashMap<String, Gruppo> getGruppi() {
+        return gruppi;
+    }
+    public static HashMap<Integer, Gruppo> getMappaGruppi() {
+        return mappaGruppi;
     }
     public static ArrayList<Spesa> getListaSpese(){
         return listaSpese;
     }
-    public static HashMap<String, Gruppo> getGruppi() {
-        return gruppi;
-    }
+
 
     // Setters
-    public static void setMappaGruppo(HashMap<Integer, Gruppo> gruppo) { SliceAppDB.gruppo = gruppo; }
     public static void setUser(Persona p){
         user = p;
     }
 
     // Other methods
-    public static Gruppo getGruppo(Integer i){ return gruppo.get(i); }
+    public static Gruppo getGruppo(Integer i){
+        return mappaGruppi.get(i);
+    }
+
     public static void addSpesa(Spesa s){
         listaSpese.add(s);
     }
-    public static long getUserPhoneNumber(){ return user.getTelephone(); }
+
     public static void addGruppo(Gruppo g){
-        lista_gruppi.add(g);
-        gruppi.put(g.getGroupID(),g);
-        gruppo.put(20,g);
+        listaGruppi.add(g);
+        gruppi.put(g.getGroupID(), g);
     }
-
-    public static Gruppo getGruppoArray(Integer i){return lista_gruppi.get(i);}
-
+    public static Gruppo getGruppoArray(Integer i){
+        return listaGruppi.get(i);
+    }
 }
 

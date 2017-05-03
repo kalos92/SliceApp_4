@@ -155,10 +155,8 @@ public class List_Pager_Act extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_add) {
-            Log.d("PhoneBook","Prima di phonebook");
-            Intent i = new Intent(List_Pager_Act.this,AddNewGroup.class);
+            Intent i = new Intent(List_Pager_Act.this, AddNewGroup.class);
             startActivity(i);
-            Log.d("WINNER", "Ci siamo");
             return true;
         }
         if(id == R.id.action_settings){
@@ -167,8 +165,10 @@ public class List_Pager_Act extends AppCompatActivity {
             SharedPreferences.Editor prefEditor = sharedPref.edit();
             prefEditor.putInt("isLogged", 1);
             prefEditor.commit();
-
+            SliceAppDB.getListaGruppi().clear();
+            SliceAppDB.getListaSpese().clear();
             Intent i = new Intent(List_Pager_Act.this,  LoginActivity.class);
+            finish();
             startActivity(i);
 
             return true;

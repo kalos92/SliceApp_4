@@ -16,6 +16,11 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
+
+        //The repair for your issue with twitter
+        maven {
+            url 'https://maven.fabric.io/public'
+        }
     }
 }
 

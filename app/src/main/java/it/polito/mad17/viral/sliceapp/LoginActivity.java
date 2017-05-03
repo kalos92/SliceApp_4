@@ -124,11 +124,11 @@ public class LoginActivity extends AppCompatActivity{
                     prefEditor.putInt("isLogged", 1);
 
                     DataSnapshot ds = dataSnapshot.child(phone);
-                    String nome = ds.child("name").getValue().toString();
-                    String cognome = ds.child("surname").getValue().toString();
-                    String username = ds.child("username").getValue().toString();
-                    String dob = ds.child("birthdate").getValue().toString();
-                    long telefono = ds.child("telephone").getValue(long.class);
+                    String nome = (String) ds.child("name").getValue();
+                    String cognome = (String) ds.child("surname").getValue();
+                    String username = (String) ds.child("username").getValue();
+                    String dob = (String) ds.child("birthdate").getValue();
+                    String telefono = (String) ds.child("telephone").getValue();
                     Persona p = new Persona(nome, cognome, username, dob, telefono);
                     SliceAppDB.setUser(p);
 
@@ -136,13 +136,14 @@ public class LoginActivity extends AppCompatActivity{
                     prefEditor.putString("cognome", cognome);
                     prefEditor.putString("username", username);
                     prefEditor.putString("dob", dob);
-                    prefEditor.putLong("telefono", telefono);
+                    prefEditor.putString("telefono", telefono);
                     prefEditor.commit();
                     progressDialog.dismiss();
-                    finish();
+
                     Intent intent  = getIntent();
                     Intent i = new Intent(LoginActivity.this, SplashScreen.class);
                     startActivity(i);
+                    finish();
                 } else {
                     progressDialog.dismiss();
                     mPhoneView.requestFocus();

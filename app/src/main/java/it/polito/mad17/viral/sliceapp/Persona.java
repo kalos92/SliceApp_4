@@ -25,13 +25,13 @@ public class Persona implements Serializable {
     private String surname;
     private String username;
     private String  birthdate;
-    private long telephone;
+    private String telephone;
     private boolean hasDebts = false;
     private String password;
     private int isInDB = 0;
 
     // Constructor
-    public Persona(String name, String surname, String username, String birthdate, long telephone){
+    public Persona(String name, String surname, String username, String birthdate, String telephone){
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -52,7 +52,7 @@ public class Persona implements Serializable {
     public String getBirthdate() {
         return birthdate;
     }
-    public long getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
     public String getPassword() { return password; }
@@ -80,7 +80,7 @@ public class Persona implements Serializable {
     public void setBirthdate(String birthdate){ this.birthdate = birthdate; }
     // Other methods
     public int getPosizione(Gruppo g) {
-        return posizione_gruppi.get(g.getGroupName());
+        return posizione_gruppi.get(g.getName());
     }
 
     public Integer CheckIfHasDebts(Gruppo g){
@@ -98,17 +98,17 @@ public class Persona implements Serializable {
     }
 
     public void setPosizione_inGroup(Gruppo g, int  i){
-        posizione_gruppi.put(g.getGroupName(),new Integer(i));
+        posizione_gruppi.put(g.getName(),new Integer(i));
     }
 
     public void AddToGroup(Gruppo gruppo,int pos ){
         gruppi_partecipo.add(gruppo);
-        posizione_gruppi.put(gruppo.getGroupName(), new Integer(pos));
-        dove_ho_debito.put(gruppo.getGroupName(),new Integer(0));
+        posizione_gruppi.put(gruppo.getName(), new Integer(pos));
+        dove_ho_debito.put(gruppo.getName(),new Integer(0));
     }
 
     public void setDove_Ho_debito(Gruppo g , Integer i) {
-        this.dove_ho_debito.put(g.getGroupName(),i);
+        this.dove_ho_debito.put(g.getName(),i);
     }
 
     public Drawable getProPic(Context context){

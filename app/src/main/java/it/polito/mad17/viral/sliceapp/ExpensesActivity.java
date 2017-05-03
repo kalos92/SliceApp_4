@@ -2,6 +2,8 @@ package it.polito.mad17.viral.sliceapp;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
@@ -12,6 +14,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -59,11 +62,11 @@ public class ExpensesActivity extends AppCompatActivity {
         ft.commit();
 
         Toolbar t = (Toolbar)findViewById(R.id.expenseToolbar);
-        t.setTitle(" " + gruppo.getGroupName());
+        t.setTitle(" " + gruppo.getName());
         t.setSubtitle(" " + gruppo.getUser().getUsername());
-        BitmapManager  bm = new BitmapManager(this,gruppo.getImg(),50,70);
+        BitmapManager  bm = new BitmapManager(this,gruppo.getIcon(),50,70);
 
-        Bitmap b=  bm.scaleDown(gruppo.getImg(),100,true);
+        Bitmap b=  bm.scaleDown(gruppo.getIcon(),100,true);
         Drawable d = new BitmapDrawable(getResources(), b);
         t.setLogo(d);
         ListView mlist = (ListView) findViewById(R.id.listView2);
