@@ -24,8 +24,6 @@ import java.util.Map;
 
 public class SplashScreen extends AppCompatActivity {
 
-    private DataSnapshot users;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
