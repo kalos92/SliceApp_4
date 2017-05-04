@@ -52,8 +52,8 @@ public class SplashScreen extends AppCompatActivity {
 
             //Caricamento da Firebase
             final String userphone = new String("" + telefono);
-            FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-            DatabaseReference rootRef = database.getReference();
+            final FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+            final DatabaseReference rootRef = database.getReference();
             rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -101,76 +101,85 @@ public class SplashScreen extends AppCompatActivity {
                                 break;
                             }
                         }
-
-                        // estrazione delle spese e loro aggiunta al gruppo
-                        DataSnapshot expenses = groups.child(groupID).child("expenses");
-                        Iterator<DataSnapshot> iterExpenses = expenses.getChildren().iterator();
-                        while (iterExpenses.hasNext()) {
-                            String expenseID = iterExpenses.next().getKey();
-                            DataSnapshot expense = expenses.child(expenseID);
-                            String payer = (String) expense.child("payer").getValue();
-                            String currency = (String) expense.child("currency").getValue();
-                            String date = (String) expense.child("date").getValue();
-                            String description = (String) expense.child("description").getValue();
-                            double price = expense.child("price").getValue(double.class);
-                            String category = (String) expense.child("category").getValue();
-                            // estrarre categoria successivamente
-                            DataSnapshot ps = expense.child("policy");
-                            Iterator<DataSnapshot> iterpercentages = ps.getChildren().iterator();
-                            Double[] percentuali = new Double[(int) numMembers];
-                            int j = 0;
-                            while (iterpercentages.hasNext()) {
-                                DataSnapshot t = iterpercentages.next();
-                                Double percentage = (double) t.getValue();
-                                percentuali[j++] = percentage;
-                            }
-                            Policy expensePolicy = new Policy(percentuali, percentuali.length);
-                            // estrazione del payer dai partecipanti
-                            Persona pagante = null;
-                            for (Persona p : partecipanti) {
-                                if (String.valueOf(p.getTelephone()).equals(payer)) {
-                                    pagante = p;
-                                    break;
-                                }
-                            }
-
-                            // estrazione delle divisioni
-                            ArrayList<Soldo> divisioni = new ArrayList<Soldo>();
-                            DataSnapshot divisions = expense.child("divisions");
-                            Iterator<DataSnapshot> iterUsers = divisions.getChildren().iterator();
-                            while (iterUsers.hasNext()) {
-                                DataSnapshot t = iterUsers.next();
-                                String phonenumber = t.getKey();
-                                double duePart = t.child("duePart").getValue(double.class);
-                                boolean hasPaid = t.child("hasPaid").getValue(boolean.class);
-                                Persona currentUser = null;
-                                for (Persona p : partecipanti) {
-                                    if (String.valueOf(p.getTelephone()).equals(phonenumber)) {
-                                        currentUser = p;
-                                        break;
-                                    }
-                                }
-                                Soldo soldo = new Soldo(currentUser, duePart, hasPaid, pagante);
-                                divisioni.add(soldo);
-                            }
-                            // Aggiungo la spesa al gruppo
-                            Spesa spesa = new Spesa(description, date, expensePolicy, pagante, price, g);
-                            SliceAppDB.getListaSpese().add(spesa);
-                            spesa.setExpenseID(expenseID); // setto expenseID
-                            spesa.getCat().setName(category); // setto categoria
-
-                            Map<String, Soldo> mappaSoldo = spesa.getDivisioni();
-                            for (Soldo soldo : divisioni)
-                                mappaSoldo.put(soldo.getPersona().getUsername(), soldo);
-                            g.getMappaSpese().put(spesa.getExpenseID(), spesa);
-                        }
                         //inserisco il gruppo nella lista dei gruppi e nella mappa dei gruppi
                         SliceAppDB.getListaGruppi().add(g);
                         SliceAppDB.getMappaGruppi().put(positionGroup, g);
                         SliceAppDB.getGruppi().put(groupID, g);
                         positionGroup++;
                     }
-                    //progress.dismiss();
+
+                    // estrazione delle spese e loro aggiunta al gruppo
+                    DataSnapshot expenses = dataSnapshot.child("expenses");
+                    Iterator<DataSnapshot> iterExpenses = expenses.getChildren().iterator();
+                    while (iterExpenses.hasNext()) {
+                        String expenseID = iterExpenses.next().getKey();
+                        DataSnapshot expense = expenses.child(expenseID);
+                        String payer = (String) expense.child("payer").getValue();
+                        String currency = (String) expense.child("currency").getValue();
+                        String date = (String) expense.child("date").getValue();
+                        String description = (String) expense.child("description").getValue();
+                        double price = expense.child("price").getValue(double.class);
+                        String category = (String) expense.child("category").getValue();
+                        String expenseGroup = (String) expense.child("group").getValue();
+
+                        long numMembers = (long)dataSnapshot.child("groups").child(expenseGroup).child("numMembers").getValue();
+                        // estrarre categoria successivamente
+                        DataSnapshot ps = expense.child("policy");
+                        Iterator<DataSnapshot> iterpercentages = ps.getChildren().iterator();
+                        Double[] percentuali = new Double[(int) numMembers];
+                        int j = 0;
+                        while (iterpercentages.hasNext()) {
+                            DataSnapshot t = iterpercentages.next();
+                            Double percentage = (double) t.getValue();
+                            percentuali[j++] = percentage;
+                        }
+                        Policy expensePolicy = new Policy(percentuali, percentuali.length);
+                        ArrayList<Persona> partecipanti = new ArrayList<Persona>();
+                        partecipanti.addAll(SliceAppDB.getGruppi().get(expenseGroup).getPartecipanti().values());
+
+                        // estrazione del payer dai partecipanti
+                        Persona pagante = null;
+                        for (Persona p : partecipanti) {
+                            if (String.valueOf(p.getTelephone()).equals(payer)) {
+                                pagante = p;
+                                break;
+                            }
+                        }
+
+                        // estrazione delle divisioni
+                        ArrayList<Soldo> divisioni = new ArrayList<Soldo>();
+                        DataSnapshot divisions = expense.child("divisions");
+                        Iterator<DataSnapshot> iterUsers = divisions.getChildren().iterator();
+
+                        while (iterUsers.hasNext()) {
+                            DataSnapshot t = iterUsers.next();
+                            String phonenumber = t.getKey();
+                            double duePart = t.child("duePart").getValue(double.class);
+                            boolean hasPaid = t.child("hasPaid").getValue(boolean.class);
+                            Persona currentUser = null;
+
+                            for (Persona p : partecipanti) {
+                                if (String.valueOf(p.getTelephone()).equals(phonenumber)) {
+                                    currentUser = p;
+                                    break;
+                                }
+                            }
+                            Soldo soldo = new Soldo(currentUser, duePart, hasPaid, pagante);
+                            divisioni.add(soldo);
+                        }
+                        // Aggiungo la spesa al gruppo
+                        Gruppo g = SliceAppDB.getGruppi().get(expenseGroup);
+                        Spesa spesa = new Spesa(description, date, expensePolicy, pagante, price, g);
+                        SliceAppDB.getListaSpese().add(spesa);
+                        spesa.setExpenseID(expenseID); // setto expenseID
+                        spesa.getCat().setName(category); // setto categoria
+
+                        Map<String, Soldo> mappaSoldo = spesa.getDivisioni();
+                        for (Soldo soldo : divisioni)
+                            mappaSoldo.put(soldo.getPersona().getUsername(), soldo);
+                        g.getMappaSpese().put(spesa.getExpenseID(), spesa);
+                    }
+
                     System.out.println("onDataChange ha finito il suo lavoro!");
                     Intent i = new Intent(SplashScreen.this, List_Pager_Act.class);
                     finish();
@@ -184,91 +193,5 @@ public class SplashScreen extends AppCompatActivity {
                 }
             });
         }
-
-        // listen for database change
-        DatabaseReference rootRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
-        final DatabaseReference groupsRef = rootRef.child("groups");
-        final DatabaseReference usersRef = rootRef.child("users");
-
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                users = dataSnapshot;
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
-
-        groupsRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildAdded " + dataSnapshot);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                //System.out.println("onChildChanged " + dataSnapshot);
-                if(dataSnapshot.child("numMembers").getValue() != null){
-                    String groupID = dataSnapshot.getKey();
-                    String groupName = dataSnapshot.child("name").getValue().toString();
-                    long numMembers = (long) dataSnapshot.child("numMembers").getValue();
-                    Policy policy = null;
-                    Iterator<DataSnapshot> members = dataSnapshot.child("members").getChildren().iterator();
-
-                    ArrayList<Persona> partecipanti = new ArrayList<Persona>();
-                    while (members.hasNext()) {
-                        String phonenumber = members.next().getKey();
-                        DataSnapshot member = users.child(phonenumber);
-                        String nome = (String) member.child("name").getValue();
-                        String cognome = (String) member.child("surname").getValue();
-                        String username = (String) member.child("username").getValue();
-                        String dob = (String) member.child("birthdate").getValue();
-                        String telefono = (String) member.child("telephone").getValue();
-                        Persona p = new Persona(nome, cognome, username, dob, telefono);
-                        partecipanti.add(p);
-                    }
-                    Gruppo g = new Gruppo(groupName, (int) numMembers, partecipanti, null);
-                    g.setGroupID(groupID);
-                    //SliceAppDB.getListaGruppi().add(g);
-                    //SliceAppDB.getMappaGruppi().put(positionGroup, g);
-                    //SliceAppDB.getGruppi().put(groupID, g);
-
-                    //ssgdfgdf
-                    Intent intent = new Intent();
-                    PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-                    android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                            .setTicker("Ticker Title").setContentTitle("Sei stato aggiunto ad un nuovo gruppo")
-                            .setContentText(groupName)
-                            .setSmallIcon(R.drawable.com_facebook_button_icon)
-                            .setContentIntent(pIntent);
-                    Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    builder.setSound(notificationSound);
-                    Notification noti = builder.build();
-                    noti.flags = Notification.FLAG_AUTO_CANCEL;
-                    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                    notificationManager.notify(0, noti);
-
-                    //grgergerger
-                }
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
     }
 }
