@@ -250,7 +250,7 @@ public class SplashScreen extends AppCompatActivity {
                     noti.flags = Notification.FLAG_AUTO_CANCEL;
                     NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                     notificationManager.notify(0, noti);
-                    int n;
+
                     //grgergerger
                 }
             }

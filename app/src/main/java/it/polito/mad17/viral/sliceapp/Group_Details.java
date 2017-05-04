@@ -95,8 +95,8 @@ public class Group_Details extends AppCompatActivity {
                        DataSnapshot member = dataSnapshot.child(telephone);
                        String nome = (String) member.child("name").getValue();
                        String cognome = (String) member.child("surname").getValue();
-                       String username = (String) member.child("userName").getValue();
-                       String dob = (String) member.child("dob").getValue();
+                       String username = (String) member.child("username").getValue();
+                       String dob = (String) member.child("birthday").getValue();
                        String telefono = (String)member.child("telephone").getValue();
 
                        users.child(telephone).child("belongsToGroups").child(groupID).setValue("true");

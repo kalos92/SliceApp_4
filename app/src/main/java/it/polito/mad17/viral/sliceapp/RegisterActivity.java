@@ -57,7 +57,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 else if(passLenght < 8 || passLenght > 16) {
                     password.requestFocus();
-                    password.setError("Choose a password from 8 to 16 charachetrs");
+                    password.setError("Choose a password between 8 and 16 characters");
                     return;
                 }
                 else if(!confPass.equals(pass)){
@@ -84,7 +84,7 @@ public class RegisterActivity extends AppCompatActivity {
                             // register user
                             p.setPassword(pass);
                             users.child(telephone).setValue(p);
-                            users.child(telephone).child("belongToGroups").setValue("");
+                            users.child(telephone).child("belongsToGroups").setValue("");
                             users.child(telephone).child("isInDB").setValue(1);
                             progressDialog.dismiss();
                             Toast.makeText(getBaseContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
