@@ -32,13 +32,7 @@ class Buyer_Adapter extends BaseAdapter {
         c=context;
 
     }
-    public int getIdofMe(String userName){
-        for(String s: data){
-            if(s.equals(userName))
-                return data.indexOf(s);
-        }
-        return 0;
-    }
+
 
 
     @Override

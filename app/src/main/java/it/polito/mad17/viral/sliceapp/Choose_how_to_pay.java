@@ -132,7 +132,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 expense.child("currency").setValue(""); // Manca l'adapter del spinner
                 expense.child("date").setValue(data_s);
                 expense.child("description").setValue(nome);
-                expense.child("payer").setValue(String.valueOf(user.getTelephone())); // l'utente dell'app che sta aggiungendo la spesa
+                expense.child("payer").setValue(String.valueOf(buyer.getTelephone())); // l'utente dell'app che sta aggiungendo la spesa
                 expense.child("recepitPDF").setValue(""); // Devo capire come salvare i bit
                 expense.child("receiptPhoto").setValue("");
                 expense.child("policy").setValue(""); // Manca l'alert dialog per scegliere le percentuali
@@ -207,7 +207,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 expense.child("currency").setValue(""); // Manca l'adapter del spinner
                 expense.child("date").setValue(data_s);
                 expense.child("description").setValue(nome);
-                expense.child("payer").setValue(String.valueOf(user.getTelephone())); // l'utente dell'app che sta aggiungendo la spesa
+                expense.child("payer").setValue(String.valueOf(buyer.getTelephone())); // l'utente dell'app che sta aggiungendo la spesa
                 expense.child("recepitPDF").setValue(""); // Devo capire come salvare i bit
                 expense.child("receiptPhoto").setValue("");
                 expense.child("policy").setValue(""); // Manca l'alert dialog per scegliere le percentuali

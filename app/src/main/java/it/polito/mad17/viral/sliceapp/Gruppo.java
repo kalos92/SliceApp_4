@@ -43,7 +43,7 @@ public class Gruppo implements Serializable, Observer {
         this.n_partecipanti=n;
         int i=0;
         for(Persona p: partecipanti){
-            this.partecipanti.put(p.getUsername(),p);
+            this.partecipanti.put(p.getTelephone(),p);
             p.setPosizione_inGroup(this, i);
             p.AddToGroup(this,i);
             i++;
@@ -92,7 +92,7 @@ public class Gruppo implements Serializable, Observer {
             spesa.setParti(gestore.Calculate_Credits_To_Buyer_With_Repaing(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),spese,user,this));
             //metto il debito a tutti
 
-            spese.put(spesa.getNome()+spesa.getData(),spesa);
+            spese.put(spesa.getExpenseID(),spesa);
             listaSpeseGruppo.add(spesa);
             return spesa;}
             else
@@ -107,7 +107,7 @@ public class Gruppo implements Serializable, Observer {
         spesa.setParti(gestore.Calculate_Credits(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),user,this));
         //metto il debito a tutti
 
-        spese.put(spesa.getNome()+spesa.getData(),spesa);
+        spese.put(spesa.getExpenseID(),spesa);
         listaSpeseGruppo.add(spesa);
         return spesa;
 
@@ -116,9 +116,9 @@ public class Gruppo implements Serializable, Observer {
     public Double getAllDebts(){ //i debiti sono calcolati nelle spese che NON ho fatto io e devo ancora pagare
         Double f= new Double(0);
         for(Spesa s: spese.values()){
-            if(!s.getPagante().getUsername().equals(user.getUsername())){
+            if(!s.getPagante().getTelephone().equals(user.getTelephone())){
                 for(Soldo soldo: s.getDivisioni().values())
-                    if(!soldo.getHaPagato() && soldo.getPersona().getUsername().equals(user.getUsername()))
+                    if(!soldo.getHaPagato() && soldo.getPersona().getTelephone().equals(user.getTelephone()))
                         f+=soldo.getImporto();
             }
         }
@@ -128,9 +128,9 @@ public class Gruppo implements Serializable, Observer {
     public Double getAllCredits(){  //i crediti sono calcolti nelle spese che HO fatto io e gli altri non mi hanno pagato
         Double f= new Double(0);
         for(Spesa s: spese.values()){
-            if(s.getPagante().getUsername().equals(user.getUsername())){
+            if(s.getPagante().getTelephone().equals(user.getTelephone())){
                 for(Soldo soldo: s.getDivisioni().values())
-                    if(!soldo.getHaPagato() && !soldo.getPersona().getUsername().equals(user.getUsername()))
+                    if(!soldo.getHaPagato() && !soldo.getPersona().getTelephone().equals(user.getTelephone()))
                         f+=soldo.getImporto();
             }
         }
@@ -138,7 +138,7 @@ public class Gruppo implements Serializable, Observer {
     }
 
     private void AddPartecipant(Persona p){
-        partecipanti.put(p.getUsername(), p);
+        partecipanti.put(p.getTelephone(), p);
     }
 
 
@@ -153,8 +153,8 @@ public class Gruppo implements Serializable, Observer {
 
 
 
-    public Persona getPartecipante(String username){
-     return partecipanti.get(username);
+    public Persona getPartecipante(String telephone){
+     return partecipanti.get(telephone);
     }
 
 

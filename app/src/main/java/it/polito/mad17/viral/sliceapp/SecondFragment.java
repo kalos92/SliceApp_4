@@ -48,11 +48,11 @@ public class SecondFragment extends Fragment {
         Map<String, Double> amici = new HashMap<String, Double>();
         String uncname = new String(user.getName()+" "+user.getSurname());
         for(Gruppo g : allGroups){
-            if(g.getPartecipante(user.getUsername()) != null){
+            if(g.getPartecipante(user.getTelephone()) != null){
                 String groupID = g.getGroupID();
 
                 for(Persona p: g.getPartecipanti().values() ) {
-                    if (p.getTelephone() != user.getTelephone() && amici.get(p.getName() + " " + p.getSurname()) == null)
+                    if (!p.getTelephone().equals(user.getTelephone()) && amici.get(p.getName() + " " + p.getSurname()) == null)
                         amici.put(p.getName() + " " + p.getSurname(), 0d);
                 }
 
@@ -62,12 +62,12 @@ public class SecondFragment extends Fragment {
                         for(Soldo so : ss){
                             String ncname = new String(so.getPersona().getName()+" "+so.getPersona().getSurname());
 
-                                if(so.getPagante().getTelephone() == user.getTelephone() && !ncname.equals(uncname) && !so.getHaPagato()){
+                                if(so.getPagante().getTelephone().equals(user.getTelephone()) && !ncname.equals(uncname) && !so.getHaPagato()){
                                     Double importo = amici.get(ncname);
                                     importo += so.getImporto();
                                     amici.put(ncname,importo);
                                 }
-                                else if(so.getPagante().getTelephone() != user.getTelephone() && !ncname.equals(uncname) && !so.getHaPagato()){
+                                else if(!so.getPagante().getTelephone().equals(user.getTelephone()) && ncname.equals(uncname) && !so.getHaPagato()){
                                     Double importo = amici.get(so.getPagante().getName()+ " "+ so.getPagante().getSurname());
                                     importo -= so.getImporto();
                                     amici.put(so.getPagante().getName()+ " "+ so.getPagante().getSurname(),importo);

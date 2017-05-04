@@ -72,10 +72,18 @@ class BalanceAdapter extends ArrayAdapter<Riga_Bilancio> {
             holder.money.setTextColor(context.getResources().getColor(R.color.row_non_pagate_bck));
             holder.name.setTextColor(context.getResources().getColor(R.color.row_non_pagate_bck));
         }
-        else{
+        else if (soldo.getImporto()>0){
             String str = String.format("%.2f",soldo.getImporto());
             holder.money.setText("+"+ str);
             holder.name.setText(soldo.getNcname()+ " owe to you:");
+
+            holder.money.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+            holder.name.setTextColor(context.getResources().getColor(R.color.colorPrimary));
+        }
+        else if (soldo.getImporto()==0){
+
+            holder.money.setText("");
+            holder.name.setText(soldo.getNcname()+ " has no problem with you");
 
             holder.money.setTextColor(context.getResources().getColor(R.color.colorPrimary));
             holder.name.setTextColor(context.getResources().getColor(R.color.colorPrimary));

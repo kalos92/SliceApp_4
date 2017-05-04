@@ -37,7 +37,7 @@ public class Persona implements Serializable {
         this.username = username;
         this.birthdate = birthdate;
         this.telephone = telephone;
-        //int n;
+
     }
 
     // Getters

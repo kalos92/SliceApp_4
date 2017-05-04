@@ -219,7 +219,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
         final List<String> names = new ArrayList<>();
         for(Persona p : gruppo.getPartecipanti().values()){
-            names.add(p.getUsername());
+            names.add(p.getTelephone());
 
         }
 
@@ -227,7 +227,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         Spinner buyer_spinner = (Spinner) v.findViewById(R.id.BuyerSpinner);
         buyer_spinner.setAdapter(new Buyer_Adapter(getContext(),names,gruppo));
 
-        buyer_spinner.setSelection(getIndex(buyer_spinner, user.getUsername()));
+        buyer_spinner.setSelection(getIndex(buyer_spinner, user.getTelephone()));
         buyer_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
@@ -310,7 +310,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 // Replace whatever is in the fragment_container view with this fragment,
 // and add the transaction to the back stack if needed
                 transaction.replace(R.id.fragment, spf);
-                transaction.addToBackStack("DUE");
+                transaction.addToBackStack(null);
 
 // Commit the transaction
                 transaction.commit();

@@ -19,7 +19,7 @@ public class Gestore implements Serializable {
 
         //suppongo che ci sia corrispondenza 1:1 prima casella di ogni cosa rappresenta il primo username nell'hashmap e così via;
         for(Persona p: persone.values()){
-            if(p.getUsername().equals(pagante.getUsername())){
+            if(p.getTelephone().equals(pagante.getTelephone())){
                 Double parte= importo*(percentages[p.getPosizione(g)]/100);
                 c= new Soldo(p, parte,true,pagante);
                 crediti[p.getPosizione(g)]=c;
@@ -31,7 +31,7 @@ public class Gestore implements Serializable {
                 Double parte= importo*(percentages[p.getPosizione(g)]/100);
                 c= new Soldo(p, parte,false,pagante);
                 crediti[p.getPosizione(g)]=c;
-
+                p.setHasDebts(true);
             }
         }
 
@@ -43,13 +43,9 @@ public class Gestore implements Serializable {
 
         Soldo[] crediti = new Soldo[n_persone];
         Double[] percentages;
-        //ogni casella coincide con 1 partecipante
         percentages=policy.getPercentage();
         Soldo c;
-        int i=0;
 
-        //DecimalFormat df = new DecimalFormat("#.###");
-        //df.setRoundingMode(RoundingMode.CEILING); //da capire bene, ritornano stringhe
 
         //suppongo che ci sia corrispondenza 1:1 prima casella di ogni cosa rappresenta il primo username nell'hashmap e così via;
 
@@ -62,7 +58,7 @@ public class Gestore implements Serializable {
 
             for(Persona p: persone.values()){
 
-                if(p.getUsername().equals(pagante.getUsername())){
+                if(p.getTelephone().equals(pagante.getTelephone())){
                     Double parte= importo*(percentages[p.getPosizione(g)]/100);
                     c= new Soldo(p, parte,true,pagante);
                     crediti[p.getPosizione(g)]=c;
@@ -72,6 +68,7 @@ public class Gestore implements Serializable {
                     c= new Soldo(p, parte,false,pagante);
                     crediti[p.getPosizione(g)]=c;
                     p.setDove_Ho_debito(g,new Integer(1));
+                    p.setHasDebts(true);
                 }
             } //calcolo tutte le parti che devono le persone secondo la policy stabilita per la spesa.
 
@@ -79,11 +76,11 @@ public class Gestore implements Serializable {
 
             for(Spesa s:spese.values()){ //ora voglio ripagare quelli con cui ho debiti -> vado a fare la ricerca di tutte le spese passate dove non ho pagato io
                 boolean done=false;
-                if(!user.getUsername().equals(s.getPagante().getUsername())){  //se non ho pagato io
+                if(!user.getTelephone().equals(s.getPagante().getTelephone())){  //se non ho pagato io
 
                     Persona creditore  = s.getPagante(); //ora so a chi devo dei soldi
                     debiti_da_ripagare.putAll(s.getDivisioni()); //mi prendo le divisioni per quella spesa
-                    Soldo importo_da_ridare = debiti_da_ripagare.get(user.getUsername()); //vedo quanti soldi gli devo
+                    Soldo importo_da_ridare = debiti_da_ripagare.get(user.getTelephone()); //vedo quanti soldi gli devo
                     if(!importo_da_ridare.getHaPagato()){//-> ora ho di una spesa in cui io sono in debito //vedo se li ho dati o meno
                         //caso 1 il mio debito vecchio è maggiore di quanto lui deve mettere per questa spesa 8€> 6€ -> il suo debito nei miei confronti scende a zero e lui ha pagato
                         if(importo_da_ridare.getImporto() > crediti[creditore.getPosizione(g)].getImporto() && !done){ // il mio debito è maggiore di quanto posso pagare per lui
@@ -102,7 +99,7 @@ public class Gestore implements Serializable {
                             importo_da_ridare.sottraiImporto(f); //ho tolto tutto il mio debito
                             crediti[user.getPosizione(g)].aggiungiImporto(f); //ho aggiunto tutto il mio debito alla nuova spesa
                             crediti[creditore.getPosizione(g)].sottraiImporto(f);
-                            s.getDivisioni().get(user.getUsername()).setHaPagato(true);
+                            s.getDivisioni().get(user.getTelephone()).setHaPagato(true);
                             user.setDove_Ho_debito(g,user.CheckIfHasDebts(g));
                             done=true;
                         }
@@ -114,7 +111,7 @@ public class Gestore implements Serializable {
                             importo_da_ridare.sottraiImporto(f); //ho tolto tutto il mio debito
                             crediti[user.getPosizione(g)].aggiungiImporto(f); //ho aggiunto tutto il mio debito alla nuova spesa
                             crediti[creditore.getPosizione(g)].sottraiImporto(f);
-                            s.getDivisioni().get(user.getUsername()).setHaPagato(true);
+                            s.getDivisioni().get(user.getTelephone()).setHaPagato(true);
                             crediti[creditore.getPosizione(g)].setHaPagato(true);
                             user.setDove_Ho_debito(g,user.CheckIfHasDebts(g));
                             creditore.setDove_Ho_debito(g,creditore.CheckIfHasDebts(g));
