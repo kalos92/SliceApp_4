@@ -163,10 +163,13 @@ public class List_Pager_Act extends AppCompatActivity {
 
             SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
             SharedPreferences.Editor prefEditor = sharedPref.edit();
-            prefEditor.putInt("isLogged", 1);
+            prefEditor.putInt("isLogged", 0);
             prefEditor.commit();
+            // pulire lista gruppi e lista spese, altrimenti la visualizzazione è doppia
             SliceAppDB.getListaGruppi().clear();
             SliceAppDB.getListaSpese().clear();
+            SliceAppDB.getMappaGruppi().clear();
+            SliceAppDB.getGruppi().clear();
             Intent i = new Intent(List_Pager_Act.this,  LoginActivity.class);
             finish();
             startActivity(i);

@@ -28,7 +28,7 @@ public class GroupAdapter extends ArrayAdapter<Gruppo> {
 
     Context context;
     int layoutResourceId;
-    ArrayList<Gruppo> data = null;
+    ArrayList<Gruppo> data;
 
 
     public GroupAdapter(Context context, int layoutResourceId, ArrayList<Gruppo> objects) {
@@ -37,8 +37,6 @@ public class GroupAdapter extends ArrayAdapter<Gruppo> {
         this.context = context;
         this.data = objects;
     }
-
-
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

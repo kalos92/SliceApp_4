@@ -1,23 +1,28 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v7.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import com.firebase.ui.database.FirebaseListAdapter;
-import com.google.firebase.analytics.FirebaseAnalytics;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
-import java.util.ArrayList;
+import com.google.firebase.database.ValueEventListener;
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 
 /**
@@ -25,6 +30,8 @@ import java.util.ArrayList;
  */
 
 public class FirstFragment extends Fragment{
+
+    private DataSnapshot users;
 
     public static FirstFragment newInstance() {
         FirstFragment fragmentFirst = new FirstFragment();
@@ -34,6 +41,88 @@ public class FirstFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // listen for database changes
+        DatabaseReference rootRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
+        final DatabaseReference groupsRef = rootRef.child("groups");
+        final DatabaseReference usersRef = rootRef.child("users");
+
+        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) { users = dataSnapshot; }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
+
+        groupsRef.addChildEventListener(new ChildEventListener() {
+
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                System.out.println("onChildAdded " + dataSnapshot);
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                System.out.println("onChildChanged " + dataSnapshot);
+                if(dataSnapshot.child("numMembers").getValue() != null){
+                    String groupName = (String) dataSnapshot.child("name").getValue();
+                    //String groupID = dataSnapshot.getKey();
+                    /*
+                    long numMembers = (long) dataSnapshot.child("numMembers").getValue();
+                    Policy policy = null;
+                    Iterator<DataSnapshot> members = dataSnapshot.child("members").getChildren().iterator();
+                    ArrayList<Persona> partecipanti = new ArrayList<Persona>();
+                    while (members.hasNext()) {
+                        String phonenumber = members.next().getKey();
+                        DataSnapshot member = users.child(phonenumber);
+                        String nome = (String) member.child("name").getValue();
+                        String cognome = (String) member.child("surname").getValue();
+                        String username = (String) member.child("username").getValue();
+                        String dob = (String) member.child("birthdate").getValue();
+                        String telefono = (String) member.child("telephone").getValue();
+                        Persona p = new Persona(nome, cognome, username, dob, telefono);
+                        partecipanti.add(p);
+                    }
+                    Gruppo g = new Gruppo(groupName, (int) numMembers, partecipanti, null);
+                    g.setGroupID(groupID);
+                    adapter.notifyDataSetChanged(); // non ne vuol sapere di aggiornarsi in questo modo
+                    */
+                    // La soluzione è ricaricare i dati dallo SplashScreen (che li scarica da firebase)
+                    // send the notification only to the users that have been added to the groups
+                    Persona currentUser = SliceAppDB.getUser();
+                    String currentPhone = currentUser.getTelephone();
+                    if(dataSnapshot.child("members").hasChild(currentPhone)){
+                        SliceAppDB.getListaGruppi().clear();
+                        SliceAppDB.getListaSpese().clear();
+                        SliceAppDB.getGruppi().clear();
+                        SliceAppDB.getMappaGruppi().clear();
+                        //startActivity(new Intent(getContext(), SplashScreen.class));
+                        //getActivity().finish();
+
+                        // Notification for the addition of a new group,
+                        Intent intent = new Intent();
+                        PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                .setContentTitle("You have been added to a new group!")
+                                .setContentText(groupName)
+                                .setSmallIcon(R.drawable.added_to_group)
+                                .setContentIntent(pIntent)
+                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
+                        Notification noti = builder.build();
+                        noti.flags = Notification.FLAG_AUTO_CANCEL;
+                        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
+                        notificationManager.notify(0, noti);
+                    }
+                }
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) { }
+            @Override
+            public void onCancelled(DatabaseError databaseError) { }
+        });
     }
 
     @Override
@@ -41,9 +130,6 @@ public class FirstFragment extends Fragment{
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.slide_groups, container, false);
         ListView mylist = (ListView) v.findViewById(R.id.listView1);
-
-        //DatabaseReference groupsRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference("groups");
-
         GroupAdapter adapter = new GroupAdapter(v.getContext(), R.layout.listview_group_row, SliceAppDB.getListaGruppi());
         mylist.setAdapter(adapter);
 
@@ -53,8 +139,8 @@ public class FirstFragment extends Fragment{
                 Intent appInfo= new Intent(getActivity(), ExpensesActivity.class);
                 appInfo.putExtra("Gruppo", SliceAppDB.getGruppoArray(position));
                 appInfo.putExtra("User", SliceAppDB.getUser());
-                //getActivity().finish();
                 startActivity(appInfo);
+                //getActivity().finish();
             }
         });
         return v;
