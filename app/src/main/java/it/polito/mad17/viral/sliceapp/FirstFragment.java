@@ -99,7 +99,7 @@ public class FirstFragment extends Fragment{
                         //startActivity(new Intent(getContext(), SplashScreen.class));
                         //getActivity().finish();
 
-                        // Notification for the addition of a new group
+                        // Notification for the addition of a new group,
                         Intent intent = new Intent();
                         PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
                         android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
