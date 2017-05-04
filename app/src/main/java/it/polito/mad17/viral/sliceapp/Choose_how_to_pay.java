@@ -114,10 +114,9 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 Collection<Soldo> parti = divisioni.values();
 
                 FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference groupsRef = database.getReference().child("groups");
+                DatabaseReference expensesRef = database.getReference().child("expenses");
                 String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
-                DatabaseReference group = groupsRef.child(groupID); // gruppo associato a groupID
-                DatabaseReference expense = group.child("expenses").push();
+                DatabaseReference expense = expensesRef.push();
 
                 // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
                 // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
@@ -127,7 +126,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 gruppo.getMappaSpese().put(expenseID, s1);
 
                 // setto i dati della spesa
-                expense.child(expenseID).push();
                 expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
                 expense.child("currency").setValue(""); // Manca l'adapter del spinner
                 expense.child("date").setValue(data_s);
@@ -137,6 +135,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 expense.child("receiptPhoto").setValue("");
                 expense.child("policy").setValue(""); // Manca l'alert dialog per scegliere le percentuali
                 expense.child("price").setValue(importo);
+                expense.child("group").setValue(groupID);
                 // carico le divisioni nella spesa
                 for(Soldo soldo : parti){
                     String phone = String.valueOf(soldo.getPersona().getTelephone());
@@ -190,10 +189,9 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 Collection<Soldo> parti = divisioni.values();
 
                 FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference groupsRef = database.getReference().child("groups");
+                DatabaseReference expensesRef = database.getReference().child("expenses");
                 String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
-                DatabaseReference group = groupsRef.child(groupID); // gruppo associato a groupID
-                DatabaseReference expense = group.child("expenses").push();
+                DatabaseReference expense = expensesRef.push();
 
                 // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
                 // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
@@ -212,6 +210,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 expense.child("receiptPhoto").setValue("");
                 expense.child("policy").setValue(""); // Manca l'alert dialog per scegliere le percentuali
                 expense.child("price").setValue(importo);
+                expense.child("group").setValue(groupID);
                 // carico le divisioni nella spesa
                 for(Soldo soldo : parti){
                     String phone = String.valueOf(soldo.getPersona().getTelephone());
@@ -224,10 +223,10 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                 // aggiorno le divisioni delle spese del gruppo in questione perhé eventualmente sono
                 // state modificate dal metodo AddSpesa_and_try_repay
-                DatabaseReference expenses = group.child("expenses");
+
                 ArrayList<Spesa> spese = gruppo.getSpese();
                 for(Spesa s : spese){
-                    DatabaseReference exp = expenses.child(s.getExpenseID());
+                    DatabaseReference exp = expensesRef.child(s.getExpenseID());
                     DatabaseReference div = exp.child("divisions");
                     Collection<Soldo> divisions = s.getDivisioni().values();
                     for(Soldo soldo : divisions){

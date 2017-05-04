@@ -66,29 +66,7 @@ public class FirstFragment extends Fragment{
                 System.out.println("onChildChanged " + dataSnapshot);
                 if(dataSnapshot.child("numMembers").getValue() != null){
                     String groupName = (String) dataSnapshot.child("name").getValue();
-                    //String groupID = dataSnapshot.getKey();
-                    /*
-                    long numMembers = (long) dataSnapshot.child("numMembers").getValue();
-                    Policy policy = null;
-                    Iterator<DataSnapshot> members = dataSnapshot.child("members").getChildren().iterator();
-                    ArrayList<Persona> partecipanti = new ArrayList<Persona>();
-                    while (members.hasNext()) {
-                        String phonenumber = members.next().getKey();
-                        DataSnapshot member = users.child(phonenumber);
-                        String nome = (String) member.child("name").getValue();
-                        String cognome = (String) member.child("surname").getValue();
-                        String username = (String) member.child("username").getValue();
-                        String dob = (String) member.child("birthdate").getValue();
-                        String telefono = (String) member.child("telephone").getValue();
-                        Persona p = new Persona(nome, cognome, username, dob, telefono);
-                        partecipanti.add(p);
-                    }
-                    Gruppo g = new Gruppo(groupName, (int) numMembers, partecipanti, null);
-                    g.setGroupID(groupID);
-                    adapter.notifyDataSetChanged(); // non ne vuol sapere di aggiornarsi in questo modo
-                    */
-                    // La soluzione è ricaricare i dati dallo SplashScreen (che li scarica da firebase)
-                    // send the notification only to the users that have been added to the groups
+
                     Persona currentUser = SliceAppDB.getUser();
                     String currentPhone = currentUser.getTelephone();
                     if(dataSnapshot.child("members").hasChild(currentPhone)){
@@ -96,8 +74,8 @@ public class FirstFragment extends Fragment{
                         SliceAppDB.getListaSpese().clear();
                         SliceAppDB.getGruppi().clear();
                         SliceAppDB.getMappaGruppi().clear();
-                        //startActivity(new Intent(getContext(), SplashScreen.class));
-                        //getActivity().finish();
+                        startActivity(new Intent(getContext(), SplashScreen.class));
+                        getActivity().finish();
 
                         // Notification for the addition of a new group,
                         Intent intent = new Intent();
