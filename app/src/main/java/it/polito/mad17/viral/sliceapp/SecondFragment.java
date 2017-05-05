@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,6 +88,18 @@ public class SecondFragment extends Fragment {
             amici_2.add(new Riga_Bilancio(s,amici.get(s)));
 
         }
+
+        Collections.sort(amici_2, new Comparator<Riga_Bilancio>() {
+            @Override
+            public int compare(Riga_Bilancio o1, Riga_Bilancio o2) {
+                return o1.getNcname().compareTo(o2.getNcname());
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return false;
+            }
+        });
         final BalanceAdapter adapter = new BalanceAdapter(v.getContext(), R.layout.listview_balance_row, amici_2,user);
         mylist.setAdapter(adapter);
 

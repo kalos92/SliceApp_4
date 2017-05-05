@@ -3,6 +3,7 @@ package it.polito.mad17.viral.sliceapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,9 +44,9 @@ public class ContactsAdapter extends  ArrayAdapter<Persona> {
 
         View row = view;
             if(row == null){
-                Log.d("CheckBox","Sono qui");
+
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                row = inflater.inflate(layoutResourceIdCheckBox, parent, false);
+                row = inflater.inflate(layoutResourceButton, parent, false);
                 holder = new ContactHolder();
 
                 TextView tv = (TextView) row.findViewById(R.id.ContactNameCheckBox);
@@ -54,22 +55,34 @@ public class ContactsAdapter extends  ArrayAdapter<Persona> {
                 CheckBox cb = (CheckBox) row.findViewById(R.id.checkInviteCheckBox);
                 Button b = (Button) row.findViewById(R.id.SelectButton);
 
-                if (members.get(position).getIsInDB() == 1){
-                    holder.cb = cb;
+                if (members.get(position).getIsInDB() == 1 && !members.get(position).getTelephone().equals("null_$")){
+                        holder.cb = cb;
                         holder.b=b;
                         holder.b.setVisibility(View.GONE);
                     }
-                    else  if (members.get(position).getIsInDB() == 0){
+                else  if (members.get(position).getIsInDB() == 0 && !members.get(position).getTelephone().equals("null_$")){
                         holder.cb=cb;
                         holder.b = b;
                         holder.cb.setVisibility(View.GONE);
                     }
+
+                else if (members.get(position).getTelephone().equals("null_$") && members.get(position).getSurname().equals("null_$") && members.get(position).getUsername().equals("null_$") ){
+                    holder.cb=cb;
+                    holder.cb.setVisibility(View.GONE);
+                    holder.b=b;
+                    holder.b.setVisibility(View.GONE);
+                    holder.name.setText("Person who are not using SliceApp");
+                    holder.name.setTextSize(20);
+                    holder.name.setTypeface(null, Typeface.BOLD);
+                }
+
+
                 row.setTag(holder);
             }
             else holder = (ContactHolder) row.getTag();
 
 
-        if (holder.cb != null) {
+        if (holder.b.getVisibility() == View.GONE && holder.cb.getVisibility() != View.GONE) {
             holder.cb.setTag(position);
 
 
@@ -85,7 +98,7 @@ public class ContactsAdapter extends  ArrayAdapter<Persona> {
             });
         }
 
-        if(holder.b != null){
+        if(holder.b.getVisibility() != View.GONE && holder.cb.getVisibility() == View.GONE){
             holder.b.setTag(position);
 
             holder.b.setOnClickListener(new View.OnClickListener() {
@@ -95,13 +108,16 @@ public class ContactsAdapter extends  ArrayAdapter<Persona> {
                     Intent smsIntent = new Intent(Intent.ACTION_SENDTO);
                     smsIntent.setType("vnd.android-dir/mms-mms");
                     smsIntent.setData(Uri.parse("sms: " + phone));
-                    smsIntent.putExtra("sms_body","Hey ti sto invitando a usare sliceApp.");
+                    smsIntent.putExtra("sms_body","Hey I want to use SliceApp with you, Go to the PlayStore and download it!.");
                     smsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     context.startActivity(smsIntent);
                 }
             });
         }
 
+        if(holder.b.getVisibility() == View.GONE && holder.cb.getVisibility() == View.GONE){
+            holder.name.setText("Person who are not using SliceApp");
+        }
 
         return row;
     }

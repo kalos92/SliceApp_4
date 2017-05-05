@@ -74,7 +74,7 @@ public class FirstFragment extends Fragment{
                         SliceAppDB.getListaSpese().clear();
                         SliceAppDB.getGruppi().clear();
                         SliceAppDB.getMappaGruppi().clear();
-                        startActivity(new Intent(getContext(), SplashScreen.class));
+                        startActivity(new Intent(getActivity(), SplashScreen.class));
                         getActivity().finish();
 
                         // Notification for the addition of a new group,

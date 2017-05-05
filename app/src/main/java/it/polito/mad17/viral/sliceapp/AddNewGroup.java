@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -35,6 +36,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -178,16 +181,14 @@ public class AddNewGroup extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for(Persona p: contactsMap.values()){
                             String telephone = String.valueOf(p.getTelephone());
-                            //  Log.d("TelefonoLista",telephone);
                             Object userDB = dataSnapshot.child(telephone).getValue();
-                            //   Log.d("TelephoneDB",telephoneDB.getKey());
                             if(userDB==null){
                                 //User is not into the DB
-                                Log.d("Falso","FALSE "+telephone);
                                 p.setIsInDB(0);
                                 tmpMap.put(telephone,p);
+
                             }else{
-                                Log.d("Vero","VERO "+ telephone);
+
                                 p.setIsInDB(1); //User is into the DB.
                                 tmpMap.put(telephone,p);
                             }
@@ -200,11 +201,8 @@ public class AddNewGroup extends AppCompatActivity {
 
                     }
                 });
-      //      }
 
-        Log.d("Fine","SIAMO FUORI");
 
-        //createListViewContatcs(tmpMap);
     }
 
     public void createListViewContatcs(Map<String, Persona> tmpMap){
@@ -212,7 +210,51 @@ public class AddNewGroup extends AppCompatActivity {
         ArrayList<Persona> listP = new ArrayList<Persona>();
         final ListView list = (ListView) findViewById(R.id.listViewContacts);
         if(tmpMap.size()!=0){
-            listP.addAll(tmpMap.values());
+
+            for(Persona p: tmpMap.values()){
+                if(p.getIsInDB()==1)
+                    listP.add(p);
+            }
+
+Collections.sort(listP, new Comparator<Persona>() {
+    @Override
+    public int compare(Persona o1, Persona o2) {
+        int compare = (o1.getName()+" "+o1.getSurname()).compareTo(o2.getName()+" "+o2.getSurname());
+        return compare;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return false;
+    }
+});
+
+
+            listP.add(new Persona("null_$","null_$","null_$","null_$","null_$"));
+
+            for(Persona p: tmpMap.values()){
+                if(p.getIsInDB()==0)
+                    listP.add(p);
+            }
+
+
+            Collections.sort(listP, new Comparator<Persona>() {
+                @Override
+                public int compare(Persona o1, Persona o2) {
+                    if(o1.getIsInDB()==0  && o2.getIsInDB()==0 && !o1.getTelephone().equals("null_$") && !o2.getTelephone().equals("null_$")){
+                    int compare = (o1.getName()+" "+o1.getSurname()).compareTo(o2.getName()+" "+o2.getSurname());
+                    return compare;}
+                    return 0;
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                    return false;
+                }
+            });
+
+
+           // listP.addAll(tmpMap.values());
             adapter = new ContactsAdapter(this.getBaseContext(),R.layout.contactsrow,R.layout.contactsrowbutton,listP);
 
             list.setAdapter(adapter);
@@ -245,5 +287,8 @@ public class AddNewGroup extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
 
 }

@@ -77,7 +77,7 @@ public class Group_Details extends AppCompatActivity {
         final EditText groupName =  (EditText) findViewById(R.id.groupTitle);
 
 
-        Log.d("NomeGruppo",groupName.getText().toString());
+
         if(id == R.id.action_continue){
            // Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
             final FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");

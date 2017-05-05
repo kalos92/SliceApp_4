@@ -19,13 +19,12 @@
 
     <CheckBox
         android:id="@+id/checkInviteCheckBox"
-        android:layout_width="40dp"
-        android:layout_height="50dp"
-       android:layout_weight="0.15"
-        android:layout_gravity="top|right"
+        android:layout_width="50dp"
+        android:layout_height="52dp"
+        android:buttonTint="@color/crediti"
         android:button="@null"
         android:background="?android:attr/listChoiceIndicatorMultiple"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:checked="false"
 
         />
 
@@ -35,7 +34,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_gravity="top|right"
-android:layout_weight="0.15"
+        android:layout_weight="0.15"
         android:layout_marginRight="@dimen/activity_vertical_margin"
         android:text="Invite"
 

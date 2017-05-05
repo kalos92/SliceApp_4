@@ -99,8 +99,9 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     final Calendar c = Calendar.getInstance();
                     int year = c.get(Calendar.YEAR);
                     int month = c.get(Calendar.MONTH);
+                    month++;
                     int day = c.get(Calendar.DAY_OF_MONTH);
-                    data_s=day+"/"+month+1+"/"+year;
+                    data_s=day+"/"+month+"/"+year;
                 }
                 Spesa s1 = gruppo.AddSpesa(buyer, policy, nome, data_s, Double.parseDouble(price));
                 s1.setValuta(values);
