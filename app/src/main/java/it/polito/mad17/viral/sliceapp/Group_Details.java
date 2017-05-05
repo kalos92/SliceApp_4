@@ -131,7 +131,6 @@ public class Group_Details extends AppCompatActivity {
 
                           // groupLink.child("policy").child(new String(""+p.getTelephone())).setValue(policy.getMyPolicy(p.getTelephone()));
                           // }
-                           groupLink.child("expenses").setValue("");
 
                            Persona owner = SliceAppDB.getUser();
                            String phoneOwner = new String("" + owner.getTelephone());

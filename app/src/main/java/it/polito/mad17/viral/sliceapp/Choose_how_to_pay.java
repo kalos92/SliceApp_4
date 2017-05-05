@@ -1,24 +1,37 @@
 package it.polito.mad17.viral.sliceapp;
 
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.icu.util.Calendar;
 import android.icu.util.GregorianCalendar;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.NotificationCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+
+import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragment.ReturnSelection_2{
     private View v;
@@ -45,9 +58,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-
-        }
+        if (getArguments() != null) { }
     }
 
     @Override
@@ -136,7 +147,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 expense.child("receiptPhoto").setValue("");
                 expense.child("policy").setValue(""); // Manca l'alert dialog per scegliere le percentuali
                 expense.child("price").setValue(importo);
-                expense.child("group").setValue(groupID);
                 // carico le divisioni nella spesa
                 for(Soldo soldo : parti){
                     String phone = String.valueOf(soldo.getPersona().getTelephone());
@@ -146,7 +156,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     boolean pagato = soldo.getHaPagato();
                     t.child("hasPaid").setValue(pagato);
                 }
-
+                expense.child("group").setValue(groupID);
                 SliceAppDB.getListaSpese().add(s1);
 
                 getActivity().startActivity(i);
@@ -270,36 +280,25 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-
         if(savedInstanceState!=null){
             if(savedInstanceState.getParcelable("Uri")!=null)
                 uri = savedInstanceState.getParcelable("Uri");
-
             if(savedInstanceState.getParcelable("Bitmap")!=null)
                 b = savedInstanceState.getParcelable("Bitmap");
-
             if(savedInstanceState.getSerializable("Date")!=null)
                 data = (GregorianCalendar) savedInstanceState.getSerializable("Date");
-
             if(savedInstanceState.getSerializable("Value")!=null)
                 values = (String) savedInstanceState.getSerializable("Value");
-
             if(savedInstanceState.getSerializable("Cat")!=null)
                 cat = (String) savedInstanceState.getSerializable("Cat");
-
             if(savedInstanceState.getSerializable("Buyer")!=null)
                 buyer = (Persona) savedInstanceState.getSerializable("Buyer");
-
             if(savedInstanceState.getSerializable("Price")!=null)
                 price = (String) savedInstanceState.getSerializable("Price");
-
             if(savedInstanceState.getSerializable("Name")!=null)
                 nome = (String) savedInstanceState.getSerializable("Name");
-
             if(savedInstanceState.getSerializable("Policy")!=null)
                 policy = (Policy) savedInstanceState.getSerializable("Policy");
-
-
         }
     }
 }

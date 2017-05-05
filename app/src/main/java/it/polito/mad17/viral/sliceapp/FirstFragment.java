@@ -41,66 +41,6 @@ public class FirstFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // listen for database changes
-        DatabaseReference rootRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
-        final DatabaseReference groupsRef = rootRef.child("groups");
-        final DatabaseReference usersRef = rootRef.child("users");
-
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) { users = dataSnapshot; }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
-
-        groupsRef.addChildEventListener(new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildAdded " + dataSnapshot);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildChanged " + dataSnapshot);
-                if(dataSnapshot.child("numMembers").getValue() != null){
-                    String groupName = (String) dataSnapshot.child("name").getValue();
-
-                    Persona currentUser = SliceAppDB.getUser();
-                    String currentPhone = currentUser.getTelephone();
-                    if(dataSnapshot.child("members").hasChild(currentPhone)){
-                        SliceAppDB.getListaGruppi().clear();
-                        SliceAppDB.getListaSpese().clear();
-                        SliceAppDB.getGruppi().clear();
-                        SliceAppDB.getMappaGruppi().clear();
-                        startActivity(new Intent(getActivity(), SplashScreen.class));
-                        getActivity().finish();
-
-                        // Notification for the addition of a new group,
-                        Intent intent = new Intent();
-                        PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                .setContentTitle("You have been added to a new group!")
-                                .setContentText(groupName)
-                                .setSmallIcon(R.drawable.added_to_group)
-                                .setContentIntent(pIntent)
-                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-                        Notification noti = builder.build();
-                        noti.flags = Notification.FLAG_AUTO_CANCEL;
-                        NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService(Context.NOTIFICATION_SERVICE);
-                        notificationManager.notify(0, noti);
-                    }
-                }
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) { }
-            @Override
-            public void onCancelled(DatabaseError databaseError) { }
-        });
     }
 
     @Override

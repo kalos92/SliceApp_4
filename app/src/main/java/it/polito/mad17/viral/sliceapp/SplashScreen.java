@@ -112,76 +112,80 @@ public class SplashScreen extends AppCompatActivity {
                     while (iterExpenses.hasNext()) {
                         String expenseID = iterExpenses.next().getKey();
                         DataSnapshot expense = expenses.child(expenseID);
-                        String payer = (String) expense.child("payer").getValue();
-                        String currency = (String) expense.child("currency").getValue();
-                        String date = (String) expense.child("date").getValue();
-                        String description = (String) expense.child("description").getValue();
-                        double price = expense.child("price").getValue(double.class);
-                        String category = (String) expense.child("category").getValue();
                         String expenseGroup = (String) expense.child("group").getValue();
+                        // Bisogna controllare se la spesa è una spesa di un gruppo di cui l'utente fa parte
+                        if(ds.child("belongsToGroups").hasChild(expenseGroup)) {
+                            String payer = (String) expense.child("payer").getValue();
+                            String currency = (String) expense.child("currency").getValue();
+                            String date = (String) expense.child("date").getValue();
+                            String description = (String) expense.child("description").getValue();
+                            double price = expense.child("price").getValue(double.class);
+                            String category = (String) expense.child("category").getValue();
 
-                        long numMembers = (long)dataSnapshot.child("groups").child(expenseGroup).child("numMembers").getValue();
-                        // estrarre categoria successivamente
-                        DataSnapshot ps = expense.child("policy");
-                        Iterator<DataSnapshot> iterpercentages = ps.getChildren().iterator();
-                        Double[] percentuali = new Double[(int) numMembers];
-                        int j = 0;
-                        while (iterpercentages.hasNext()) {
-                            DataSnapshot t = iterpercentages.next();
-                            Double percentage = (double) t.getValue();
-                            percentuali[j++] = percentage;
-                        }
-                        Policy expensePolicy = new Policy(percentuali, percentuali.length);
-                        ArrayList<Persona> partecipanti = new ArrayList<Persona>();
-                        partecipanti.addAll(SliceAppDB.getGruppi().get(expenseGroup).getPartecipanti().values());
-
-                        // estrazione del payer dai partecipanti
-                        Persona pagante = null;
-                        for (Persona p : partecipanti) {
-                            if (String.valueOf(p.getTelephone()).equals(payer)) {
-                                pagante = p;
-                                break;
+                            long numMembers = (long) dataSnapshot.child("groups").child(expenseGroup).child("numMembers").getValue();
+                            DataSnapshot ps = expense.child("policy");
+                            Iterator<DataSnapshot> iterpercentages = ps.getChildren().iterator();
+                            Double[] percentuali = new Double[(int) numMembers];
+                            int j = 0;
+                            while (iterpercentages.hasNext()) {
+                                DataSnapshot t = iterpercentages.next();
+                                Double percentage = (double) t.getValue();
+                                percentuali[j++] = percentage;
                             }
-                        }
+                            Policy expensePolicy = new Policy(percentuali, percentuali.length);
+                            ArrayList<Persona> partecipanti = new ArrayList<Persona>();
+                            System.out.println("gruppo " + expenseGroup);
+                            System.out.println("Nome gruppo " + SliceAppDB.getGruppi().get(expenseGroup).getName());
+                            partecipanti.addAll(SliceAppDB.getGruppi().get(expenseGroup).getPartecipanti().values());
 
-                        // estrazione delle divisioni
-                        ArrayList<Soldo> divisioni = new ArrayList<Soldo>();
-                        DataSnapshot divisions = expense.child("divisions");
-                        Iterator<DataSnapshot> iterUsers = divisions.getChildren().iterator();
-
-                        while (iterUsers.hasNext()) {
-                            DataSnapshot t = iterUsers.next();
-                            String phonenumber = t.getKey();
-                            double duePart = t.child("duePart").getValue(double.class);
-                            boolean hasPaid = t.child("hasPaid").getValue(boolean.class);
-                            Persona currentUser = null;
-
+                            // estrazione del payer dai partecipanti
+                            Persona pagante = null;
                             for (Persona p : partecipanti) {
-                                if (String.valueOf(p.getTelephone()).equals(phonenumber)) {
-                                    currentUser = p;
+                                if (String.valueOf(p.getTelephone()).equals(payer)) {
+                                    pagante = p;
                                     break;
                                 }
                             }
-                            Soldo soldo = new Soldo(currentUser, duePart, hasPaid, pagante);
-                            divisioni.add(soldo);
-                        }
-                        // Aggiungo la spesa al gruppo
-                        Gruppo g = SliceAppDB.getGruppi().get(expenseGroup);
-                        Spesa spesa = new Spesa(description, date, expensePolicy, pagante, price, g);
-                        SliceAppDB.getListaSpese().add(spesa);
-                        spesa.setExpenseID(expenseID); // setto expenseID
-                        spesa.getCat().setName(category); // setto categoria
 
-                        Map<String, Soldo> mappaSoldo = spesa.getDivisioni();
-                        for (Soldo soldo : divisioni)
-                            mappaSoldo.put(soldo.getPersona().getUsername(), soldo);
-                        g.getMappaSpese().put(spesa.getExpenseID(), spesa);
+                            // estrazione delle divisioni
+                            ArrayList<Soldo> divisioni = new ArrayList<Soldo>();
+                            DataSnapshot divisions = expense.child("divisions");
+                            Iterator<DataSnapshot> iterUsers = divisions.getChildren().iterator();
+
+                            while (iterUsers.hasNext()) {
+                                DataSnapshot t = iterUsers.next();
+                                String phonenumber = t.getKey();
+                                double duePart = t.child("duePart").getValue(double.class);
+                                boolean hasPaid = t.child("hasPaid").getValue(boolean.class);
+                                Persona currentUser = null;
+
+                                for (Persona p : partecipanti) {
+                                    if (String.valueOf(p.getTelephone()).equals(phonenumber)) {
+                                        currentUser = p;
+                                        break;
+                                    }
+                                }
+                                Soldo soldo = new Soldo(currentUser, duePart, hasPaid, pagante);
+                                divisioni.add(soldo);
+                            }
+                            // Aggiungo la spesa al gruppo
+                            Gruppo g = SliceAppDB.getGruppi().get(expenseGroup);
+                            Spesa spesa = new Spesa(description, date, expensePolicy, pagante, price, g);
+                            SliceAppDB.getListaSpese().add(spesa);
+                            spesa.setExpenseID(expenseID); // setto expenseID
+                            spesa.getCat().setName(category); // setto categoria
+
+                            Map<String, Soldo> mappaSoldo = spesa.getDivisioni();
+                            for (Soldo soldo : divisioni)
+                                mappaSoldo.put(soldo.getPersona().getUsername(), soldo);
+                            g.getMappaSpese().put(spesa.getExpenseID(), spesa);
+                        }
                     }
 
                     System.out.println("onDataChange ha finito il suo lavoro!");
                     Intent i = new Intent(SplashScreen.this, List_Pager_Act.class);
-                    finish();
                     startActivity(i);
+                    finish();
 
                 }
 
