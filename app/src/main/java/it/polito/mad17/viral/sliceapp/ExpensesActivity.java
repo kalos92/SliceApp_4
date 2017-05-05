@@ -30,6 +30,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 public class ExpensesActivity extends AppCompatActivity {
 
@@ -72,7 +73,11 @@ public class ExpensesActivity extends AppCompatActivity {
         ListView mlist = (ListView) findViewById(R.id.listView2);
 
         final ArrayList<Spesa> speseGruppo = new ArrayList<Spesa>();
-        for(Spesa s : SliceAppDB.getListaSpese()){
+        /*for(Spesa s : SliceAppDB.getListaSpese()){
+            if(s.getGruppo().getGroupID().equals(gruppo.getGroupID()))
+                speseGruppo.add(s);
+        }*/
+        for(Spesa s : SliceAppDB.getMappaSpese().values()){
             if(s.getGruppo().getGroupID().equals(gruppo.getGroupID()))
                 speseGruppo.add(s);
         }

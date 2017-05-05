@@ -28,7 +28,6 @@ public class Group_Details extends AppCompatActivity {
 
     ArrayList<Persona> listP = new ArrayList<Persona>();
 
-    private  boolean flag = true;
     private Policy policy = null;
 
     @Override
@@ -48,18 +47,9 @@ public class Group_Details extends AppCompatActivity {
                 count++;
             }
         }
-        Double[] perc = new Double[listP.size()+1];
         RadioGroup rg = (RadioGroup) findViewById(R.id.rg3);
         rg.setVisibility(View.GONE);
         rg.check(R.id.b5);
-       // int i;
-   /*     Double c = (double) 100/(listP.size()+1);
-        long[] l = new long[listP.size()+1];
-        for(i=0;i<listP.size();i++) {
-            perc[i] = c;
-            l[i]=listP.get(i).getTelephone();
-        }
-        policy = new Policy(perc,listP.size()+1,l);*/
     }
 
     @Override
@@ -91,7 +81,6 @@ public class Group_Details extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                    for (Persona p : listP) {
                        String telephone = String.valueOf(p.getTelephone());
-                       //  Log.d("TelefonoLista",telephone);
                        DataSnapshot member = dataSnapshot.child(telephone);
                        String nome = (String) member.child("name").getValue();
                        String cognome = (String) member.child("surname").getValue();
@@ -104,8 +93,6 @@ public class Group_Details extends AppCompatActivity {
                        String phoneOwner = new String("" + owner.getTelephone());
                        users.child(phoneOwner).child("belongsToGroups").child(groupID).setValue("true");
 
-                       Log.d("Member", nome + " " + cognome + " " + username + " " + dob + " " + new String("" + telefono));
-
                        Persona per = new Persona(nome, cognome, username, dob, telefono);
                        tmpList.add(per);
                    }
@@ -117,7 +104,6 @@ public class Group_Details extends AppCompatActivity {
                    g.setGroupID(groupID);
                    g.setUser(SliceAppDB.getUser());
 
-                   Log.d("GroupID", groupID);
                    SliceAppDB.addGruppo(g);
                    groups.addListenerForSingleValueEvent(new ValueEventListener() {
                        @Override
@@ -125,12 +111,7 @@ public class Group_Details extends AppCompatActivity {
 
                            groupLink.child("name").setValue(groupName.getText().toString());
                            groupLink.child("icon").setValue("ok");
-                          groupLink.child("policy").setValue("");
-                           //groupLink.child("numMembers").setValue(tmpList.size());
-                        //   for(Persona p: tmpList){
-
-                          // groupLink.child("policy").child(new String(""+p.getTelephone())).setValue(policy.getMyPolicy(p.getTelephone()));
-                          // }
+                           groupLink.child("policy").setValue("");
 
                            Persona owner = SliceAppDB.getUser();
                            String phoneOwner = new String("" + owner.getTelephone());

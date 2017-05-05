@@ -43,9 +43,11 @@ public class SecondFragment extends Fragment {
         View v= inflater.inflate(R.layout.slide_balance, container, false);
         final ListView mylist = (ListView) v.findViewById(R.id.listView1);
 
-        ArrayList<Gruppo> allGroups = SliceAppDB.getListaGruppi();
-        ArrayList<Spesa> allExpenses = SliceAppDB.getListaSpese();
+        //ArrayList<Gruppo> allGroups = SliceAppDB.getListaGruppi();
+        //ArrayList<Spesa> allExpenses = SliceAppDB.getListaSpese();
 
+        ArrayList<Gruppo> allGroups = new ArrayList<Gruppo>(SliceAppDB.getGruppi().values());
+        ArrayList<Spesa> allExpenses = new ArrayList<Spesa>(SliceAppDB.getMappaSpese().values());
 
         Map<String, Double> amici = new HashMap<String, Double>();
         String uncname = new String(user.getName()+" "+user.getSurname());

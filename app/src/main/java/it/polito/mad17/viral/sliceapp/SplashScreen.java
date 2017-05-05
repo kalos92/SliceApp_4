@@ -175,6 +175,9 @@ public class SplashScreen extends AppCompatActivity {
                             spesa.setExpenseID(expenseID); // setto expenseID
                             spesa.getCat().setName(category); // setto categoria
 
+                            // aggiungo la spesa alla mappa delle spese
+                            SliceAppDB.getMappaSpese().put(spesa.getExpenseID(), spesa);
+
                             Map<String, Soldo> mappaSoldo = spesa.getDivisioni();
                             for (Soldo soldo : divisioni)
                                 mappaSoldo.put(soldo.getPersona().getUsername(), soldo);

@@ -6,6 +6,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Kalos on 05/04/2017.
@@ -20,6 +21,7 @@ public class SliceAppDB implements Serializable {
     public static HashMap<String, Gruppo> gruppi = new HashMap<String, Gruppo>();
     private static HashMap<Integer,Gruppo> mappaGruppi = new HashMap<Integer, Gruppo>();
     private static ArrayList<Spesa> listaSpese = new ArrayList<Spesa>();
+    private static Map<String, Spesa> mappaSpese = new HashMap<String, Spesa>();
 
     // Getters
     public static Persona getUser(){
@@ -35,7 +37,7 @@ public class SliceAppDB implements Serializable {
     public static ArrayList<Spesa> getListaSpese(){
         return listaSpese;
     }
-
+    public static Map<String, Spesa> getMappaSpese() { return mappaSpese; }
 
     // Setters
     public static void setUser(Persona p){

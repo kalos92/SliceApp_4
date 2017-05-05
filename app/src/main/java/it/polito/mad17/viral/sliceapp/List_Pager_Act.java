@@ -124,12 +124,12 @@ public class List_Pager_Act extends AppCompatActivity {
         expensesRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildAdded expenses" + dataSnapshot);
+                System.out.println("onChildAdded expenses " + dataSnapshot);
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildChenged expenses" + dataSnapshot);
+                System.out.println("onChildChanged expenses " + dataSnapshot);
                 // campo che ci indica la fine del caricamento del grupo
                 if(dataSnapshot.child("group").getValue() != null){
                     String expenseDescription = (String) dataSnapshot.child("description").getValue();
@@ -171,7 +171,9 @@ public class List_Pager_Act extends AppCompatActivity {
         });
         /////////////////////////////////////////////////////////////////
 
-
+        ArrayList<Spesa> spese = SliceAppDB.getListaSpese();
+        for(Spesa s : spese)
+            System.out.println("spesa " + s.getExpenseID());
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
 

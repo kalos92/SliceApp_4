@@ -158,6 +158,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 }
                 expense.child("group").setValue(groupID);
                 SliceAppDB.getListaSpese().add(s1);
+                SliceAppDB.getMappaSpese().put(s1.getExpenseID(), s1);
 
                 getActivity().startActivity(i);
                 getActivity().finish();
@@ -250,8 +251,10 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     }
                 }
 
+                expense.child("group").setValue(groupID);
                 // Aggiungo la spesa alla lista delle spese globali
                 SliceAppDB.getListaSpese().add(s1);
+                SliceAppDB.getMappaSpese().put(s1.getExpenseID(), s1);
 
                 getActivity().startActivity(i);
                 getActivity().finish();
