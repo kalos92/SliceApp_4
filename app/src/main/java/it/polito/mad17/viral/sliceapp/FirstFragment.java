@@ -41,6 +41,7 @@ public class FirstFragment extends Fragment{
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), AddNewGroup.class);
                 startActivity(i);
+                int n;
             }
         });
         ArrayList<Gruppo> gruppi = new ArrayList<Gruppo>();
