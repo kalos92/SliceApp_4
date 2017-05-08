@@ -56,7 +56,6 @@ public class Gruppo implements Serializable, Observer {
     public String getName(){
         return groupName;
     }
-    public ArrayList<Spesa> getSpeseGruppo(){ return listaSpeseGruppo; }
     public String getGroupID(){ return groupID; }
     public int getIcon(){
         return img;

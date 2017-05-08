@@ -8,16 +8,17 @@
         android:icon="@drawable/img_add"
         android:title="@string/action_add"
         app:showAsAction="ifRoom"/>
+    <!--
     <item
         android:id="@+id/action_favorite"
         android:icon="@drawable/img_ricerca"
         android:title="@string/action_search"
         app:showAsAction="ifRoom"/>
-
+   -->
     <!-- Settings, should always be in the overflow -->
     <item android:id="@+id/action_settings"
         android:title="@string/action_setting"
-        android:icon="@drawable/img_setup"
+        android:icon="@drawable/exit_from_app"
         app:showAsAction="ifRoom"/>
 
 </menu>
