@@ -1,6 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -34,6 +35,14 @@ public class FirstFragment extends Fragment{
         View v = inflater.inflate(R.layout.slide_groups, container, false);
         ListView mylist = (ListView) v.findViewById(R.id.listView1);
 
+        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.add_group);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getContext(), AddNewGroup.class);
+                startActivity(i);
+            }
+        });
         ArrayList<Gruppo> gruppi = new ArrayList<Gruppo>();
         //gruppi.addAll(SliceAppDB.getListaGruppi());
         gruppi.addAll(SliceAppDB.getGruppi().values()); // se uso la hashmap per recuperare i gruppi, sballa l'ordine di visualizzazione

@@ -283,11 +283,13 @@ public class List_Pager_Act extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if (id == R.id.action_add) {
+        // was R.id.action_add
+        /*
+        if (id == R.id.add_group) {
             Intent i = new Intent(List_Pager_Act.this, AddNewGroup.class);
             startActivity(i);
             return true;
-        }
+        }*/
         if(id == R.id.action_settings){
 
             SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
