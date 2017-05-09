@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/groupToolbar"
+            android:id="@+id/loginToolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorPrimary"
@@ -43,35 +43,60 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
+                    <LinearLayout
 
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                    <Spinner
+                        android:id="@+id/prefix_log"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="left"
+                        android:layout_marginTop="16dp"
+                        android:backgroundTint="@color/text"
+                        android:entries="@array/prefix"
+                        android:spinnerMode="dropdown"
+                        />
                     <!-- phonenumber -->
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:textColorHint="@color/crediti">
+                        tools:textColorHint="@color/text"
+                        android:theme="@style/TextLabel">
                         <AutoCompleteTextView
                             android:id="@+id/phoneNumber"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:digits="0123456789"
                             android:hint="@string/prompt_email"
+                            android:textColor="@color/text"
                             android:inputType="phone"
                             android:maxLines="1"
+                            android:textSize="20sp"
+                            android:layout_gravity="center"
+                            android:backgroundTint="@color/text"
                             android:singleLine="true"
-                            android:textColorHint="@color/text" />
+                            android:textColorHint="@color/text"
+                            android:layout_marginLeft="5dp"/>
 
                     </android.support.design.widget.TextInputLayout>
-
+</LinearLayout>
                     <!-- password -->
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        tools:textColorHint="@color/crediti">
+                        tools:textColorHint="@color/crediti"
+                        android:theme="@style/TextLabel">
                         <EditText
+                            android:textSize="20sp"
+                            android:backgroundTint="@color/text"
                             android:id="@+id/password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_password"
+                            android:textColor="@color/text"
+                         android:textColorHint="@color/text"
                             android:imeActionId="@+id/login"
                             android:imeActionLabel="@string/action_sign_in_short"
                             android:imeOptions="actionUnspecified"

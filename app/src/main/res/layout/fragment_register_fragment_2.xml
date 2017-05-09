@@ -1,0 +1,183 @@
+<LinearLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:design="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@color/tab_bck">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/registerToolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        design:layout_collapseMode="pin"
+        design:layout_scrollFlags="scroll|enterAlways"
+        design:navigationIcon="?attr/homeAsUpIndicator"
+        design:popupTheme="@style/AppTheme"
+        design:subtitleTextColor="#FFFFFF"
+        design:title="Register your account"
+        design:titleTextColor="#FFFFFF" />
+
+    <RelativeLayout
+        android:id="@+id/rel2"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+        <!--<TextView
+            android:id="@+id/username_txt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:text="Insert your UserName (5-16 charaters)"
+            android:textColor="@color/text"
+            android:textSize="20sp"
+            android:textStyle="bold|italic" />
+-->
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:textColorHint="@color/crediti"
+            android:id="@+id/username_edt2"
+            android:theme="@style/TextLabel"
+            android:layout_marginTop="@dimen/activity_horizontal_margin">
+        <EditText
+            android:id="@+id/username_edt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/username_txt"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"
+            android:layout_marginTop="17dp"
+            android:backgroundTint="@color/text"
+            android:hint="Insert your UserName (5-16 characters)"
+            android:inputType="text"
+            android:textColor="@color/text" />
+        </android.support.design.widget.TextInputLayout>
+
+        <!-- <TextView
+             android:id="@+id/name_txt"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignParentLeft="true"
+             android:layout_alignParentStart="true"
+             android:layout_below="@+id/username_edt2"
+             android:layout_marginLeft="@dimen/activity_vertical_margin"
+             android:layout_marginRight="@dimen/activity_vertical_margin"
+             android:layout_marginTop="30dp"
+             android:text="Insert your name"
+             android:textColor="@color/text"
+             android:textSize="20sp"
+             android:textStyle="bold|italic" />-->
+
+         <android.support.design.widget.TextInputLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             tools:textColorHint="@color/crediti"
+             android:id="@+id/name_edt2"
+             android:layout_below="@+id/username_edt2"
+             android:theme="@style/TextLabel"
+             android:layout_marginTop="@dimen/activity_horizontal_margin">
+         <EditText
+             android:id="@+id/name_edt"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_below="@+id/name_txt"
+             android:hint="Insert your Name"
+             android:layout_marginLeft="@dimen/activity_vertical_margin"
+             android:layout_marginRight="@dimen/activity_vertical_margin"
+             android:layout_marginTop="17dp"
+             android:backgroundTint="@color/text"
+             android:inputType="text"
+             android:textColor="@color/text" />
+         </android.support.design.widget.TextInputLayout>
+
+         <!--<TextView
+             android:id="@+id/surname_txt"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignParentLeft="true"
+             android:layout_alignParentStart="true"
+             android:layout_below="@+id/name_edt2"
+             android:layout_marginLeft="@dimen/activity_vertical_margin"
+             android:layout_marginRight="@dimen/activity_vertical_margin"
+             android:layout_marginTop="30dp"
+             android:text="Insert your surname"
+             android:textColor="@color/text"
+             android:textSize="20sp"
+             android:textStyle="bold|italic" />-->
+
+         <android.support.design.widget.TextInputLayout
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             tools:textColorHint="@color/crediti"
+             android:id="@+id/surname_edt2"
+             android:layout_below="@+id/name_edt2"
+             android:theme="@style/TextLabel"
+             android:layout_marginTop="@dimen/activity_horizontal_margin">
+         <EditText
+             android:id="@+id/surname_edt"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignLeft="@+id/descr2"
+             android:layout_alignStart="@+id/descr2"
+             android:layout_below="@+id/surname_txt"
+             android:hint="Insert your Surname"
+             android:layout_marginLeft="@dimen/activity_vertical_margin"
+             android:layout_marginRight="@dimen/activity_vertical_margin"
+             android:layout_marginTop="17dp"
+             android:backgroundTint="@color/text"
+             android:inputType="text"
+             android:textColor="@color/text" />
+         </android.support.design.widget.TextInputLayout>
+         <TextView
+             android:id="@+id/dob_txt"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignParentLeft="true"
+             android:layout_alignParentStart="true"
+             android:layout_below="@+id/surname_edt2"
+             android:layout_marginLeft="@dimen/activity_vertical_margin"
+             android:layout_marginRight="@dimen/activity_vertical_margin"
+             android:layout_marginTop="30dp"
+             android:text="Select your Birthdate"
+             android:textColor="@color/text"
+             android:textSize="20sp"
+             android:textStyle="bold|italic" />
+
+         <TextView
+
+             android:id="@+id/dob_edt"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:layout_alignLeft="@+id/descr2"
+             android:layout_alignStart="@+id/descr2"
+             android:layout_below="@+id/dob_txt"
+             android:layout_centerVertical="true"
+             android:layout_marginLeft="100dp"
+             android:layout_marginRight="@dimen/activity_vertical_margin"
+             android:layout_marginTop="30dp"
+             android:text="No date selected"
+             android:textColor="@color/text"
+             android:textSize="20dp" />
+
+         <ImageButton
+             android:layout_width="65dp"
+             android:layout_height="65dp"
+             android:layout_below="@id/dob_txt"
+             android:layout_marginLeft="@dimen/activity_vertical_margin"
+             android:layout_marginTop="10dp"
+             android:background="@drawable/roundedbutton"
+             android:src="@drawable/img_cal"
+
+             android:onClick="showDatePickerDialog"
+             android:id="@+id/cal_reg"/>
+     </RelativeLayout>
+
+
+ </LinearLayout>

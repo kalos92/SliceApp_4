@@ -2,8 +2,10 @@ package it.polito.mad17.viral.sliceapp;
 import android.app.ProgressDialog;
 import android.content.Intent;;
 import android.content.SharedPreferences;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -13,6 +15,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -29,14 +32,23 @@ public class LoginActivity extends AppCompatActivity{
     private EditText mPasswordView;
     private String phone, password;
     private ProgressDialog progressDialog;
+    private Spinner prefix;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.loginToolbar);
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(0);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         // Set up the login form.
         mPhoneView = (AutoCompleteTextView) findViewById(R.id.phoneNumber);
         mPasswordView = (EditText) findViewById(R.id.password);
+         prefix = (Spinner) findViewById(R.id.prefix_log);
+
+
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -77,6 +89,8 @@ public class LoginActivity extends AppCompatActivity{
         phone = mPhoneView.getText().toString();
         password = mPasswordView.getText().toString();
 
+        String phone_good = prefix.getSelectedItem().toString().substring(1)+phone;
+        phone = phone_good;
         // Check for a valid phone number.
         if (phone.isEmpty()) {
             mPhoneView.requestFocus();
@@ -147,7 +161,7 @@ public class LoginActivity extends AppCompatActivity{
                 } else {
                     progressDialog.dismiss();
                     mPhoneView.requestFocus();
-                    mPhoneView.setError("The phone number field is wrong!");
+                    mPhoneView.setError("This number is not registered, please register to SliceApp, is very easy!");
                     return;
                 }
             }
