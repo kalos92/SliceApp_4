@@ -1,0 +1,175 @@
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tab_bck"
+
+    >
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/registerToolbar2"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        android:elevation="6dp"
+        design:layout_collapseMode="pin"
+        design:layout_scrollFlags="scroll|enterAlways"
+        design:navigationIcon="?attr/homeAsUpIndicator"
+        design:popupTheme="@style/AppTheme"
+        design:subtitleTextColor="#FFFFFF"
+        design:title="Register your account"
+        design:titleTextColor="#FFFFFF"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:design="http://schemas.android.com/apk/res-auto"/>
+
+    <ScrollView
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:fillViewport="true">
+    <LinearLayout android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:background="@color/tab_bck">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/rel2">
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Insert your Username"
+                android:textColor="@color/text"
+                android:textSize="20sp"
+                android:id="@+id/username_txt"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="60dp"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:textStyle="bold|italic"/>
+
+            <EditText
+                android:inputType="text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/username_edt"
+                android:textColor="@color/text"
+                android:backgroundTint="@color/text"
+                android:layout_marginTop="17dp"
+                android:layout_below="@+id/username_txt"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Insert your name"
+                android:textColor="@color/text"
+                android:textSize="20sp"
+                android:id="@+id/name_txt"
+                android:textStyle="bold|italic"
+                android:layout_below="@+id/username_edt"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"/>
+
+            <EditText
+                android:inputType="text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/name_edt"
+                android:textColor="@color/text"
+                android:backgroundTint="@color/text"
+                android:layout_marginTop="17dp"
+                android:layout_below="@+id/name_txt"
+
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Insert your surname"
+                android:textColor="@color/text"
+                android:textSize="20sp"
+                android:id="@+id/surname_txt"
+                android:textStyle="bold|italic"
+                android:layout_below="@+id/name_edt"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"/>
+
+            <EditText
+                android:inputType="text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/surname_edt"
+                android:textColor="@color/text"
+                android:backgroundTint="@color/text"
+                android:layout_marginTop="17dp"
+                android:layout_below="@+id/surname_txt"
+                android:layout_alignLeft="@+id/descr2"
+                android:layout_alignStart="@+id/descr2"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select your Birthdate"
+                android:textColor="@color/text"
+                android:textSize="20sp"
+                android:id="@+id/dob_txt"
+                android:layout_below="@+id/surname_edt"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="30dp"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:textStyle="bold|italic"/>
+
+            <TextView
+
+                android:id="@+id/dob_edt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/descr2"
+                android:layout_alignStart="@+id/descr2"
+                android:layout_below="@+id/dob_txt"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="100dp"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_marginTop="30dp"
+                android:text="No date selected"
+                android:textColor="@color/text"
+                android:textSize="20dp" />
+
+            <ImageButton
+                android:layout_width="65dp"
+                android:layout_height="65dp"
+                android:layout_below="@id/dob_txt"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="10dp"
+                android:background="@color/slider_tab"
+                android:src="@drawable/img_cal"
+                android:onClick="showDatePickerDialog"
+                android:id="@+id/cal_reg"/>
+        </RelativeLayout>
+
+
+
+
+    </LinearLayout>
+
+
+</ScrollView>
+    </android.support.design.widget.CoordinatorLayout>

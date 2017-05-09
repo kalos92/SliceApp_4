@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 import org.w3c.dom.Text;
 
+import java.util.Random;
+
 /**
  * Created by Kalos on 13/04/2017.
  */
@@ -23,9 +25,14 @@ import org.w3c.dom.Text;
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
 
     TheListener listener;
+    String[] EasterEgg= new String[]{"You came from the future? I hope cars can finally fly", "You came from the future? I hope Half Life 3 is out","You came from the future? I hope Kingdom Hearts 3 is out",
+            "Hey Marty McFly! Where's Doc?", "You came from the future? So have you see the end of One Piece?", "Wibbly wobbly timey wimey... eh?", "So have robots conquered Earth?" ,
+            "So there is a Time Machine somewhere, interesting","So, do Americans boil water to cook pasta in the future?", "You came from the future? How is New New New New New New...New York?", "Nobody can play with time",
+            "Please future Trunks bring the medicine to Goku as soon as possible", "You came from the future? Who won WWIII?", "You came from the future? Sorry, I'm not Sarah Connor","So...was John Titor right?",
+            "In the future, who has conquered the world Google or Apple?", "You came from the future? Please give me lottery numbers!", "Are you Hiro Nakamura?", "You came from the future? Are still producing Fast and Furious films?","Welcome to the world of tomorrow"};
 
     public interface TheListener{
-        public void returnDate(GregorianCalendar date);
+       void returnDate(GregorianCalendar date);
     }
 
     private Calendar c2;
@@ -43,8 +50,17 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-
+        final Calendar c = Calendar.getInstance();
         c2= new GregorianCalendar(year,month,day);
+
+            if(c2.after(c)) {
+                Random randomGenerator = new Random();
+                int randomInt = randomGenerator.nextInt(EasterEgg.length);
+                Toast.makeText(getContext(), EasterEgg[randomInt], Toast.LENGTH_LONG).show();
+                if (listener != null){
+                listener.returnDate((GregorianCalendar) c);
+                    return;
+                }}
 
 
 
