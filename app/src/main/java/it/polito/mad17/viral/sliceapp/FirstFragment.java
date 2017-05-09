@@ -16,7 +16,8 @@ import java.util.ArrayList;
 /**
  * Created by Kalos on 27/03/2017.
  */
-
+//1a prova video
+    //2a prova
 public class FirstFragment extends Fragment{
 
     public static FirstFragment newInstance() {
@@ -50,6 +51,7 @@ public class FirstFragment extends Fragment{
         GroupAdapter adapter = new GroupAdapter(v.getContext(), R.layout.listview_group_row, gruppi);
         mylist.setAdapter(adapter);
 
+
         mylist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -60,5 +62,7 @@ public class FirstFragment extends Fragment{
             }
         });
         return v;
+
+
     }
 }

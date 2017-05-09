@@ -3,6 +3,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;;
 import android.content.SharedPreferences;
 import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -33,6 +34,8 @@ public class LoginActivity extends AppCompatActivity{
     private String phone, password;
     private ProgressDialog progressDialog;
     private Spinner prefix;
+    private TextInputLayout actw;
+    private TextInputLayout actw2;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,7 +51,8 @@ public class LoginActivity extends AppCompatActivity{
         mPasswordView = (EditText) findViewById(R.id.password);
          prefix = (Spinner) findViewById(R.id.prefix_log);
 
-
+        actw = (TextInputLayout) findViewById(R.id.input1);
+        actw2 = (TextInputLayout) findViewById(R.id.input2);
 
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -82,37 +86,39 @@ public class LoginActivity extends AppCompatActivity{
 
     private void attemptLogin() {
         // Reset errors.
-        mPhoneView.setError(null);
-        mPasswordView.setError(null);
+        actw.setError(null);
+        actw2.setError(null);
 
         // Store values at the time of the login attempt.
         phone = mPhoneView.getText().toString();
         password = mPasswordView.getText().toString();
 
+
+
         String phone_good = prefix.getSelectedItem().toString().substring(1)+phone;
         phone = phone_good;
         // Check for a valid phone number.
         if (phone.isEmpty()) {
-            mPhoneView.requestFocus();
-            mPhoneView.setError(getString(R.string.error_field_required));
+            actw.requestFocus();
+            actw.setError(getString(R.string.error_field_required));
             return;
         }
         if (isPhoneValid(phone) == false) {
-            mPhoneView.requestFocus();
-            mPhoneView.setError(getString(R.string.error_invalid_phone));
+            actw.requestFocus();
+            actw.setError(getString(R.string.error_invalid_phone));
             return;
         }
 
         // Check for a valid password, if the user entered one.
         if (TextUtils.isEmpty(password)) {
-            mPasswordView.requestFocus();
-            mPasswordView.setError(getString(R.string.error_empty_password));
+            actw2.requestFocus();
+            actw2.setError(getString(R.string.error_empty_password));
             return;
         }
         //Check for a password having the right length 8 >=  pwd <= 16
         if (isPasswordValid(password) == false) {
-            mPasswordView.requestFocus();
-            mPasswordView.setError(getString(R.string.error_short_password));
+           actw2.requestFocus();
+            actw2.setError(getString(R.string.error_short_password));
             return;
         }
 
@@ -128,7 +134,7 @@ public class LoginActivity extends AppCompatActivity{
                     if (!pwdDB.equals(password)) {
                         progressDialog.dismiss();
                         mPasswordView.requestFocus();
-                        mPasswordView.setError("The password is wrong!");
+                        actw2.setError("The password is wrong!");
                         return;
                     }
                     // Inserted data ae correct
@@ -161,7 +167,7 @@ public class LoginActivity extends AppCompatActivity{
                 } else {
                     progressDialog.dismiss();
                     mPhoneView.requestFocus();
-                    mPhoneView.setError("This number is not registered, please register to SliceApp, is very easy!");
+                    actw.setError("This number is not registered, please register to SliceApp, is very easy!");
                     return;
                 }
             }
