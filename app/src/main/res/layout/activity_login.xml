@@ -63,7 +63,10 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         tools:textColorHint="@color/text"
-                        android:theme="@style/TextLabel">
+                        android:id="@+id/input1"
+                        design:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+                        design:errorTextAppearance="@style/error_appearance"
+                        android:textColorHint="#000000">
                         <AutoCompleteTextView
                             android:id="@+id/phoneNumber"
                             android:layout_width="match_parent"
@@ -87,8 +90,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         tools:textColorHint="@color/crediti"
-                        android:theme="@style/TextLabel">
-                        <EditText
+                        android:id="@+id/input2"
+                        design:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+                        design:errorTextAppearance="@style/error_appearance"
+                        android:textColorHint="#000000">
+                        <AutoCompleteTextView
                             android:textSize="20sp"
                             android:backgroundTint="@color/text"
                             android:id="@+id/password"
@@ -96,7 +102,7 @@
                             android:layout_height="wrap_content"
                             android:hint="@string/prompt_password"
                             android:textColor="@color/text"
-                         android:textColorHint="@color/text"
+                            android:textColorHint="@color/text"
                             android:imeActionId="@+id/login"
                             android:imeActionLabel="@string/action_sign_in_short"
                             android:imeOptions="actionUnspecified"

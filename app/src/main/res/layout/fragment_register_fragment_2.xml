@@ -14,7 +14,6 @@
         design:layout_collapseMode="pin"
         design:layout_scrollFlags="scroll|enterAlways"
         design:navigationIcon="?attr/homeAsUpIndicator"
-        design:popupTheme="@style/AppTheme"
         design:subtitleTextColor="#FFFFFF"
         design:title="Register your account"
         design:titleTextColor="#FFFFFF" />
@@ -44,7 +43,9 @@
             android:layout_height="wrap_content"
             tools:textColorHint="@color/crediti"
             android:id="@+id/username_edt2"
-            android:theme="@style/TextLabel"
+            design:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+            design:errorTextAppearance="@style/error_appearance"
+            android:textColorHint="#000000"
             android:layout_marginTop="@dimen/activity_horizontal_margin">
         <EditText
             android:id="@+id/username_edt"
@@ -81,7 +82,9 @@
              tools:textColorHint="@color/crediti"
              android:id="@+id/name_edt2"
              android:layout_below="@+id/username_edt2"
-             android:theme="@style/TextLabel"
+             design:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+             design:errorTextAppearance="@style/error_appearance"
+             android:textColorHint="#000000"
              android:layout_marginTop="@dimen/activity_horizontal_margin">
          <EditText
              android:id="@+id/name_edt"
@@ -118,7 +121,9 @@
              tools:textColorHint="@color/crediti"
              android:id="@+id/surname_edt2"
              android:layout_below="@+id/name_edt2"
-             android:theme="@style/TextLabel"
+             design:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+             design:errorTextAppearance="@style/error_appearance"
+             android:textColorHint="#000000"
              android:layout_marginTop="@dimen/activity_horizontal_margin">
          <EditText
              android:id="@+id/surname_edt"

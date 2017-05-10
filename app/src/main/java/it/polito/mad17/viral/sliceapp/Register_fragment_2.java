@@ -45,10 +45,6 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
     private ProgressDialog progressDialog;
 
 
-
-
-
-
     public Register_fragment_2() {
         // Required empty public constructor
     }
@@ -223,12 +219,12 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
     }
 
     @Override
-    public void returnDate(GregorianCalendar date) {
+    public void returnDate(GregorianCalendar date){
         data = new String (date.get(Calendar.DATE)+"/"+(date.get(Calendar.MONTH)+1)+"/"+date.get(Calendar.YEAR));
         TextView tv = (TextView) v.findViewById(R.id.dob_edt);
         tv.setText(data);
-
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);

@@ -86,12 +86,12 @@ public class List_Pager_Act extends AppCompatActivity {
                     DataSnapshot members = dataSnapshot.child("members");
                     // per il momento, la notifica arriva anche a chi ha creato il gruppo
                     if(members.hasChild(currentPhone)){
-                        SliceAppDB.getListaGruppi().clear();
-                        SliceAppDB.getListaSpese().clear();
-                        SliceAppDB.getGruppi().clear();
-                        SliceAppDB.getMappaGruppi().clear();
-                        startActivity(new Intent(getApplicationContext(), SplashScreen.class));
-                        finish();
+                        //SliceAppDB.getListaGruppi().clear();
+                        //SliceAppDB.getListaSpese().clear();
+                        //SliceAppDB.getGruppi().clear();
+                        //SliceAppDB.getMappaGruppi().clear();
+                        //startActivity(new Intent(getApplicationContext(), SplashScreen.class));
+                        //finish();
 
                         // Notification for the addition of a new group,
                         Intent intent = new Intent();
@@ -142,8 +142,8 @@ public class List_Pager_Act extends AppCompatActivity {
                         SliceAppDB.getListaSpese().clear();
                         SliceAppDB.getGruppi().clear();
                         SliceAppDB.getMappaGruppi().clear();
-                        startActivity(new Intent(getApplicationContext(), SplashScreen.class));
-                        finish();
+                        //startActivity(new Intent(getApplicationContext(), SplashScreen.class));
+                       // finish();
 
                         // Notification for the addition of a new group,
                         Intent intent = new Intent();

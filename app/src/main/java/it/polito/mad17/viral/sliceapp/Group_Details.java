@@ -104,7 +104,7 @@ public class Group_Details extends AppCompatActivity {
                    g.setGroupID(groupID);
                    g.setUser(SliceAppDB.getUser());
 
-                   SliceAppDB.addGruppo(g);
+                 //  SliceAppDB.addGruppo(g);
                    groups.addListenerForSingleValueEvent(new ValueEventListener() {
                        @Override
                        public void onDataChange(DataSnapshot dataSnapshot) {
