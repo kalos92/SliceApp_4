@@ -8,12 +8,24 @@ import java.io.Serializable;
 
 public class Soldo implements Serializable {
 
+
+
+    public void setPersona(Persona persona) {
+        this.persona = persona;
+    }
+
+    public void setImporto(Double importo) {
+        this.importo = importo;
+    }
+
+
     private Persona persona;
     private Double  importo;
     private boolean haPagato=false;
     private String valuta;
     private Persona pagante;
 
+public Soldo(){}
 
     public Soldo(Persona persona2, double f, boolean haPagato, Persona pagante) {
         this.importo=f;

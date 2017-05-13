@@ -218,7 +218,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
 
         final List<String> names = new ArrayList<>();
-        for(Persona p : gruppo.getPartecipanti().values()){
+        for(Persona p : gruppo.obtainPartecipanti().values()){
             names.add(p.getTelephone());
 
         }

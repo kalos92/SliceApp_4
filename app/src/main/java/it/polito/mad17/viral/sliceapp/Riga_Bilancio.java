@@ -1,17 +1,20 @@
 package it.polito.mad17.viral.sliceapp;
 
+import java.io.Serializable;
+
 /**
  * Created by abdel on 28/04/2017.
  */
 
-public class Riga_Bilancio {
+public class Riga_Bilancio implements Serializable {
+
 
 
 
     private String ncname;
-
-
     private Double importo;
+
+    public Riga_Bilancio(){};
 
     public Riga_Bilancio(String ncname,Double importo){
         this.ncname= ncname;

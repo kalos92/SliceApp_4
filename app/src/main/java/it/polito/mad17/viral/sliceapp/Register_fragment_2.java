@@ -25,6 +25,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -153,36 +154,42 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                     final String phonenum_good = phonenum_complex.substring(1);
                     progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
                     final DatabaseReference users = database.getReference("users");
-                    final Persona p = new Persona(name,surname,username, data,  phonenum_good );
-                    users.addListenerForSingleValueEvent(new ValueEventListener() {
+                    final DatabaseReference users2 = database.getReference("users_prova");
+                    final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix );
+
+                    Gson gson = new Gson();
+
+                    Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
+                    p1.setIsInDB(1);
+                    users2.child(p1.getTelephone()).setValue(p1);
+                    database.getReference().push().child(p1.getTelephone());
+
+                    SliceAppDB.setUser(p1);
+                    progressDialog.dismiss();
+                    Toast.makeText(getContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
+
+                    SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
+                    SharedPreferences.Editor prefEditor = sharedPref.edit();
+                    prefEditor.putInt("isLogged", 1);
+                    prefEditor.putString("telefono", phonenum_good);
+                    prefEditor.commit();
+
+
+                    Intent i = new Intent(getActivity(), List_Pager_Act.class);
+                    startActivity(i);
+                    getActivity().finish();
+
+
+                    /*users.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
 
                                 // register user
-                                p.setPassword(password);
+
                                 users.child(phonenum_good).setValue(p);
                                 users.child(phonenum_good).child("belongsToGroups").setValue("");
                                 users.child(phonenum_good).child("isInDB").setValue(1);
-                                progressDialog.dismiss();
-                                Toast.makeText(getContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
 
-                                SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
-                                SharedPreferences.Editor prefEditor = sharedPref.edit();
-                                prefEditor.putInt("isLogged", 1);
-
-                                SliceAppDB.setUser(p);
-
-                                prefEditor.putString("nome", name);
-                                prefEditor.putString("cognome", surname);
-                                prefEditor.putString("username", username);
-                                prefEditor.putString("dob", data);
-                                prefEditor.putString("telefono", phonenum_good);
-                                prefEditor.commit();
-
-
-                                Intent i = new Intent(getActivity(), List_Pager_Act.class);
-                                startActivity(i);
-                                getActivity().finish();
                             }
 
 
@@ -191,7 +198,7 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                         public void onCancelled(DatabaseError databaseError) {
                             Toast.makeText(getContext(),"Error during the registration", Toast.LENGTH_SHORT).show();
                         }
-                    });
+                    });*/
 
                 }
 

@@ -166,11 +166,11 @@ public class Register_fragment_1 extends Fragment {
                     }
 
                     progressDialog = ProgressDialog.show(getActivity(), "", "Just a moment");
-                    final DatabaseReference users = database.getReference("users");
+                    final DatabaseReference users = database.getReference("users_prova");
                     users.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            String phonenum_complex = (String) s_prefix.getSelectedItem()+tv_number.getText().toString();
+                            String phonenum_complex = s_prefix.getSelectedItem()+tv_number.getText().toString();
                             String phonenum_good = phonenum_complex.substring(1);
 
 

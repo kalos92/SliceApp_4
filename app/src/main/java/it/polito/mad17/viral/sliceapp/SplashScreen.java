@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -17,12 +18,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 
 
 public class SplashScreen extends AppCompatActivity {
+    Persona user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,18 +45,38 @@ public class SplashScreen extends AppCompatActivity {
         }
         // altrimenti, lo mando List_pager_activity perché si è già loggato in precedenza
         else {
-            String nome = sharedPref.getString("nome", null);
-            String cognome = sharedPref.getString("cognome", null);
-            String username = sharedPref.getString("username", null);
-            String dob = sharedPref.getString("dob", null);
             String telefono = sharedPref.getString("telefono", null);
-            Persona p = new Persona(nome, cognome, username, dob, telefono);
-            SliceAppDB.setUser(p);
 
-            //Caricamento da Firebase
-            final String userphone = new String("" + telefono);
             final FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
             final DatabaseReference rootRef = database.getReference();
+            final DatabaseReference user_ref = rootRef.child("users_prova");
+
+            user_ref.child(telefono).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    user = dataSnapshot.getValue(Persona.class);
+                    SliceAppDB.setUser(user);
+                    Intent i = new Intent(SplashScreen.this, List_Pager_Act.class);
+                    startActivity(i);
+                    finish();
+
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+            });
+
+
+
+
+
+
+
+
+          /*  //Caricamento da Firebase
+            final String userphone = new String("" + telefono);
             rootRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -71,7 +96,7 @@ public class SplashScreen extends AppCompatActivity {
                             Double percentage = (Double) policies.next().getValue();
                             percentages[i++] = percentage;
                         }
-                        Policy policy = new Policy(percentages, (int) numMembers);
+
 
                         // iterare sulle persone, crearle e aggiungerle ai gruppi
                         Iterator<DataSnapshot> members = groups.child(groupID).child("members").getChildren().iterator();
@@ -85,12 +110,12 @@ public class SplashScreen extends AppCompatActivity {
                             String username = (String) member.child("username").getValue();
                             String dob = (String) member.child("birthdate").getValue();
                             String telefono = (String) member.child("telephone").getValue();
-                            Persona p = new Persona(nome, cognome, username, dob, telefono);
+                            Persona p = new Persona(nome, cognome, username, dob, telefono,"abc",1,"+39");
                             partecipanti.add(p);
                         }
                         // creo il gruppo e setto il groupID
-                        Gruppo g = new Gruppo(groupName, (int) numMembers, partecipanti, policy);
-                        g.setGroupID(groupID);
+                        Gruppo g = new Gruppo(groupID,groupName, (int) numMembers, partecipanti, null);
+
 
                         // setto lo user del gruppo perché viene inviato nell'intent
                         for (Persona p : partecipanti) {
@@ -132,10 +157,8 @@ public class SplashScreen extends AppCompatActivity {
                                 Double percentage = (double) t.getValue();
                                 percentuali[j++] = percentage;
                             }
-                            Policy expensePolicy = new Policy(percentuali, percentuali.length);
+                            //Policy expensePolicy = new Policy(percentuali, percentuali.length);
                             ArrayList<Persona> partecipanti = new ArrayList<Persona>();
-                            System.out.println("gruppo " + expenseGroup);
-                            System.out.println("Nome gruppo " + SliceAppDB.getGruppi().get(expenseGroup).getName());
                             partecipanti.addAll(SliceAppDB.getGruppi().get(expenseGroup).getPartecipanti().values());
 
                             // estrazione del payer dai partecipanti
@@ -170,7 +193,7 @@ public class SplashScreen extends AppCompatActivity {
                             }
                             // Aggiungo la spesa al gruppo
                             Gruppo g = SliceAppDB.getGruppi().get(expenseGroup);
-                            Spesa spesa = new Spesa(description, date, expensePolicy, pagante, price, g);
+                            Spesa spesa = new Spesa(description, date, null, pagante, price, g);
                             SliceAppDB.getListaSpese().add(spesa);
                             spesa.setExpenseID(expenseID); // setto expenseID
                             spesa.getCat().setName(category); // setto categoria
@@ -181,14 +204,12 @@ public class SplashScreen extends AppCompatActivity {
                             Map<String, Soldo> mappaSoldo = spesa.getDivisioni();
                             for (Soldo soldo : divisioni)
                                 mappaSoldo.put(soldo.getPersona().getUsername(), soldo);
-                            g.getMappaSpese().put(spesa.getExpenseID(), spesa);
+                            g.getSpese().put(spesa.getExpenseID(), spesa);
                         }
                     }
 
                     System.out.println("onDataChange ha finito il suo lavoro!");
-                    Intent i = new Intent(SplashScreen.this, List_Pager_Act.class);
-                    startActivity(i);
-                    finish();
+
 
                 }
 
@@ -196,7 +217,9 @@ public class SplashScreen extends AppCompatActivity {
                 public void onCancelled(DatabaseError databaseError) {
 
                 }
-            });
+            });*/
+
+
         }
     }
 }

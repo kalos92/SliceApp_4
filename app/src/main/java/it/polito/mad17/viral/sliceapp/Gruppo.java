@@ -2,96 +2,107 @@ package it.polito.mad17.viral.sliceapp;
 
 
 
-import android.graphics.Bitmap;
-import android.widget.Toast;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.gson.annotations.Expose;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
-import java.util.Observable;
-import java.util.Observer;
+import java.util.Iterator;
+
 
 /**
  * Created by Kalos on 25/03/2017.
  */
 
-public class Gruppo implements Serializable, Observer {
+public class Gruppo implements Serializable,Cloneable {
 
+    @Expose
     private String groupName;
+    @Expose
     private int n_partecipanti;
+
+    @Expose
     private HashMap<String, Persona> partecipanti = new HashMap<String,Persona>();
-    public  Persona getUser() {
-        return user;
-    }
+    @Expose
+    private HashMap<String,String> partecipanti_numero_cnome = new HashMap<String,String>();
+
+    @Expose
     private Persona user;
-    private Spesa spesa;
+
+    @Expose
     private HashMap<String, Spesa> spese = new HashMap <String, Spesa>();
+    @Expose
     private ArrayList<Spesa> listaSpeseGruppo = new ArrayList<Spesa>();
-    private Gestore gestore;
+    @Expose
     private String groupID;
+    @Expose
     private Policy policy;
+    @Expose
     private int img;
+
+
+    @Expose
+    private boolean hasDone=false;
 
     public Gruppo(){
         // needed for FirebaseListAdapter
     }
 
-    public Gruppo(String groupName, int n, ArrayList<Persona> partecipanti, Policy policy ){
+    public Gruppo(String groupID, String groupName, int n, final ArrayList<Persona> partecipanti_array, Policy policy ){
+        this.groupID=groupID;
         this.groupName=groupName;
         this.n_partecipanti=n;
+
         int i=0;
-        for(Persona p: partecipanti){
-            this.partecipanti.put(p.getTelephone(),p);
-            p.setPosizione_inGroup(this, i);
-            p.AddToGroup(this,i);
-            i++;
-        }
         this.policy=policy;
         img= R.drawable.default_img;
-        setIcon(img);
+        setImg(img);
+
+        for(final Persona p: partecipanti_array) {
+
+            partecipanti_numero_cnome.put(p.getTelephone(), p.getName() + " " + p.getSurname());
+            p.AddToGroup(this, i);
+            partecipanti.put(p.getTelephone(),p);
+            i++;
+        }
+
+
     }
 
-    public String getName(){
-        return groupName;
-    }
-    public String getGroupID(){ return groupID; }
-    public int getIcon(){
-        return img;
-    }
-    public HashMap<String, Persona> getPartecipanti() {
-        return partecipanti;
-    }
-    public int getN_partecipanti(){
-        return n_partecipanti;
-    }
-    public Policy getPolicy() {
-        return policy;
-    }
-    public HashMap<String,Spesa> getMappaSpese() {
-        return spese;
+
+    public Gruppo(String groupID, String groupName, int n,  HashMap<String,Persona> partecipanti_array, Policy policy,Persona persona ){
+        this.groupID=groupID;
+        this.groupName=groupName;
+        this.n_partecipanti=n;
+
+        int i=0;
+        this.policy=policy;
+        img= R.drawable.default_img;
+        setImg(img);
+
+        this.partecipanti.putAll(partecipanti_array);
+        this.user=persona;
+
     }
 
-    public void setUser(Persona user){
-        this.user=user;
-    }
-    public void setGroupID(String groupID){ this.groupID = groupID; }
-    public void setIcon(int icon){ img = icon; }
-    public void setPolicy(Policy policy) {this.policy = policy;
-    }
     public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
 
-        public Spesa AddSpesa_and_try_repay(Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
+        public Spesa AddSpesa_and_try_repay(String spesaId,Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
 
+            Spesa spesa;
             if(user.getHasDebts()){
-            gestore=new Gestore();
+            Gestore gestore=new Gestore();
             spesa= new Spesa(nome_spesa,data,policy,pagante,importo,this);
-
+            spesa.setExpenseID(spesaId);
             spesa.setParti(gestore.Calculate_Credits_To_Buyer_With_Repaing(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),spese,user,this));
             //metto il debito a tutti
 
-            spese.put(spesa.getExpenseID(),spesa);
+            spese.put(spesaId,spesa);
             listaSpeseGruppo.add(spesa);
             return spesa;}
             else
@@ -100,13 +111,16 @@ public class Gruppo implements Serializable, Observer {
         }
 
 
-    public Spesa AddSpesa(Persona pagante,Policy policy, String nome_spesa, String data, Double importo){
-        gestore=new Gestore();
+    public Spesa AddSpesa(String spesaId,Persona pagante,Policy policy, String nome_spesa, String data, Double importo){
+
+        Spesa spesa;
+        Gestore gestore=new Gestore();
         spesa = new Spesa(nome_spesa,data,policy,pagante,importo,this);
+        spesa.setExpenseID(spesaId);
         spesa.setParti(gestore.Calculate_Credits(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),user,this));
         //metto il debito a tutti
 
-        spese.put(spesa.getExpenseID(),spesa);
+        spese.put(spesaId,spesa);
         listaSpeseGruppo.add(spesa);
         return spesa;
 
@@ -140,29 +154,110 @@ public class Gruppo implements Serializable, Observer {
         partecipanti.put(p.getTelephone(), p);
     }
 
-
-
-
-
-
-    public ArrayList<Spesa> getSpese(){
+    public ArrayList<Spesa> Obtain_spese_array(){
         ArrayList<Spesa> spese_arr = new ArrayList<Spesa>(spese.values());
         return spese_arr;
     }
 
 
 
-    public Persona getPartecipante(String telephone){
-     return partecipanti.get(telephone);
+
+    public String getGroupName() {
+        return groupName;
+    }
+
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public int getN_partecipanti() {
+        return n_partecipanti;
+    }
+
+    public void setN_partecipanti(int n_partecipanti) {
+        this.n_partecipanti = n_partecipanti;
+    }
+
+
+    public HashMap<String, Persona> obtainPartecipanti() {
+        return partecipanti;
+    }
+
+
+    public void setPartecipanti(HashMap<String, Persona> partecipanti) {
+        this.partecipanti = partecipanti;
+    }
+
+    public void setPartecipanti_3(HashMap<String, Persona> partecipanti){
+        this.partecipanti.putAll(partecipanti);
+    }
+
+    public void setUser(Persona user) {
+        this.user = user;
     }
 
 
 
 
 
-    @Override
-    public void update(Observable o, Object arg) {
-        if(o.hasChanged())
-            o.notifyObservers();
+    public HashMap<String, Spesa> getSpese() {
+        return spese;
+    }
+
+    public void setSpese(HashMap<String, Spesa> spese) {
+        this.spese = spese;
+    }
+
+    public ArrayList<Spesa> getListaSpeseGruppo() {
+        return listaSpeseGruppo;
+    }
+
+    public void setListaSpeseGruppo(ArrayList<Spesa> listaSpeseGruppo) {
+        this.listaSpeseGruppo = listaSpeseGruppo;
+    }
+
+
+    public String getGroupID() {
+        return groupID;
+    }
+
+    public void setGroupID(String groupID) {
+        this.groupID = groupID;
+    }
+
+    public Policy getPolicy() {
+        return policy;
+    }
+
+    public void setPolicy(Policy policy) {
+        this.policy = policy;
+    }
+
+    public int getImg() {
+        return img;
+    }
+
+    public void setImg(int img) {
+        this.img = img;
+    }
+
+    public Persona getPartecipante(String telephone){
+        return partecipanti.get(telephone);
+    }
+
+    public  Persona obtainUser() {
+        return user;
+    }
+
+    public HashMap<String, String> getPartecipanti_numero_cnome() {
+        return partecipanti_numero_cnome;
+    }
+
+    public void setPartecipanti_numero_cnome(HashMap<String, String> partecipanti_numero_cnome) {
+        this.partecipanti_numero_cnome = partecipanti_numero_cnome;
     }
 }
+
+
+
+

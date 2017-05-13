@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Kalos on 24/03/2017.
@@ -16,11 +17,12 @@ import java.util.HashMap;
 public class Persona implements Serializable {
 
 
+
     private HashMap<String,Integer> posizione_gruppi = new HashMap<String,Integer>();
     private HashMap<String,Integer> dove_ho_debito = new HashMap<String,Integer>(); // hashMap in cui ho
     // gruppo a : 0/1 se è 0 allora non ho nessun debito
     //                se è 1 allora ho almeno 1 debito
-    private ArrayList<Gruppo> gruppi_partecipo = new ArrayList<Gruppo>();
+    private HashMap<String,String> gruppi_partecipo = new HashMap<String,String>();
     private String name;
     private String surname;
     private String username;
@@ -28,16 +30,31 @@ public class Persona implements Serializable {
     private String telephone;
     private boolean hasDebts = false;
     private String password;
-    private int isInDB = 0;
+    private int isInDB;
+    private Map<String, Riga_Bilancio> amici = new HashMap<String,Riga_Bilancio>();
+
+    public Persona(){}
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
+    }
+
+    private String prefix;
 
     // Constructor
-    public Persona(String name, String surname, String username, String birthdate, String telephone){
+    public Persona(String name, String surname, String username, String birthdate, String telephone, String password, int i, String prefix){
         this.name = name;
         this.surname = surname;
         this.username = username;
         this.birthdate = birthdate;
         this.telephone = telephone;
-
+        this.password = password;
+        this.isInDB=i;
+        this.prefix = prefix;
     }
 
     // Getters
@@ -62,12 +79,7 @@ public class Persona implements Serializable {
         return isInDB;
     }
 
-    public ArrayList<Gruppo> getGruppi() {
-        return gruppi_partecipo;
-    }
-    public HashMap<String, Integer> getDove_Ho_Debito() {
-        return dove_ho_debito;
-    }
+
 
     // Setters
     public void setHasDebts(boolean haDebiti){
@@ -76,20 +88,20 @@ public class Persona implements Serializable {
     public void setIsInDB(int isInDB) {
         this.isInDB = isInDB;
     }
-    public void setGruppi(ArrayList<Gruppo> gruppi_partecipo) { this.gruppi_partecipo = gruppi_partecipo; }
+    public void setGruppi(HashMap<String,String> gruppi_partecipo) { this.gruppi_partecipo = gruppi_partecipo; }
     public void setPassword(String password) { this.password = password; }
     public void setBirthdate(String birthdate){ this.birthdate = birthdate; }
     // Other methods
     public int getPosizione(Gruppo g) {
-        return posizione_gruppi.get(g.getName());
+        return posizione_gruppi.get(g.getGroupID());
     }
 
     public Integer CheckIfHasDebts(Gruppo g){
         Integer result= new Integer(0);
-        ArrayList<Spesa> spese = g.getSpese();
+        ArrayList<Spesa> spese = g.Obtain_spese_array();
         for (Spesa s: spese){
             if(!s.getPagante().getUsername().equals(username)){ //controllo solo le spese che NON ho fatto io
-                if(!s.getDivisioni().get(this.getUsername()).getHaPagato()) {
+                if(!s.getDivisioni().get(this.getTelephone()).getHaPagato()) {
                     result=1;
                     break;
                 }
@@ -98,22 +110,88 @@ public class Persona implements Serializable {
         return result;
     }
 
-    public void setPosizione_inGroup(Gruppo g, int  i){
-        posizione_gruppi.put(g.getName(),new Integer(i));
-    }
 
-    public void AddToGroup(Gruppo gruppo,int pos ){
-        gruppi_partecipo.add(gruppo);
-        posizione_gruppi.put(gruppo.getName(), new Integer(pos));
-        dove_ho_debito.put(gruppo.getName(),new Integer(0));
+
+    public void AddToGroup(Gruppo gruppo,int pos){
+        gruppi_partecipo.put(gruppo.getGroupID(),gruppo.getGroupName()+";"+gruppo.getGroupID());
+        posizione_gruppi.put(gruppo.getGroupID(), new Integer(pos));
+        dove_ho_debito.put(gruppo.getGroupID(),new Integer(0));
     }
 
     public void setDove_Ho_debito(Gruppo g , Integer i) {
-        this.dove_ho_debito.put(g.getName(),i);
+        this.dove_ho_debito.put(g.getGroupID(),i);
     }
 
     public Drawable getProPic(Context context){
         Drawable d = context.getResources().getDrawable( R.drawable.clubbing);
         return d;
     }
+
+
+
+
+    public HashMap<String, Integer> getPosizione_gruppi() {
+        return posizione_gruppi;
+    }
+
+    public void setPosizione_gruppi(HashMap<String, Integer> posizione_gruppi) {
+        this.posizione_gruppi = posizione_gruppi;
+    }
+
+    public HashMap<String, Integer> getDove_ho_debito() {
+        return dove_ho_debito;
+    }
+
+    public void setDove_ho_debito(HashMap<String, Integer> dove_ho_debito) {
+        this.dove_ho_debito = dove_ho_debito;
+    }
+
+    public HashMap<String, String> getGruppi_partecipo() {
+        return gruppi_partecipo;
+    }
+
+    public void setGruppi_partecipo(HashMap<String,String> gruppi_partecipo) {
+        this.gruppi_partecipo = gruppi_partecipo;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public void addTobalance(Persona amico, Double importo){
+
+        if(amici.containsKey(amico.getTelephone())) { //se c'è devo accedere e metterlo nel DB
+            Riga_Bilancio balance = amici.get(amico.getTelephone());
+            Double d = balance.getImporto();
+            d+=importo;
+            balance.setImporto(d);
+            amici.put(amico.getTelephone(), balance);
+        }
+        else{ //se non c'è lo aggiungo alla mappa
+            Riga_Bilancio balance = new Riga_Bilancio(amico.getName()+" "+amico.getSurname(), importo);
+            amici.put(amico.getTelephone(), balance);
+        }
+    }
+
+    public Map<String, Riga_Bilancio> getAmici() {
+        return amici;
+    }
+
+    public void setAmici(Map<String, Riga_Bilancio> amici) {
+        this.amici = amici;
+    }
+
+
 }

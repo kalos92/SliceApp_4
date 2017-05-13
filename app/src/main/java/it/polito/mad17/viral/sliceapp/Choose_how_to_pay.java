@@ -26,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -114,17 +115,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     int day = c.get(Calendar.DAY_OF_MONTH);
                     data_s=day+"/"+month+"/"+year;
                 }
-                Spesa s1 = gruppo.AddSpesa(buyer, policy, nome, data_s, Double.parseDouble(price));
-                s1.setValuta(values);
-                s1.setBitmap_spesa(b);
-                s1.setUri(uri);
-                s1.setCat(cat);
-
-                double importo = Double.parseDouble(price);
-                // Uso la policy del gruppo visto che la policy deve ancora essere implementata
-                HashMap<String, Soldo> divisioni = s1.getDivisioni();
-                Collection<Soldo> parti = divisioni.values();
-
                 FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
                 DatabaseReference expensesRef = database.getReference().child("expenses");
                 String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
@@ -133,32 +123,76 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
                 // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
                 String expenseID = expense.getKey(); // aggiungo key della spesa
-                gruppo.getMappaSpese().remove(s1.getNome()+s1.getData());
-                s1.setExpenseID(expenseID); // leggo key della spesa e lo setto nella spesa
-                gruppo.getMappaSpese().put(expenseID, s1);
+                Spesa s1 = gruppo.AddSpesa(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
+                s1.setValuta(values);
+                s1.setBitmap_spesa(b);
+                s1.setUri(uri);
+                s1.setCat_string(cat);
+
+                //double importo = Double.parseDouble(price);
+                // Uso la policy del gruppo visto che la policy deve ancora essere implementata
+               // HashMap<String, Soldo> divisioni = s1.getDivisioni();
+               // Collection<Soldo> parti = divisioni.values();
+
+
 
                 // setto i dati della spesa
-                expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
-                expense.child("currency").setValue(""); // Manca l'adapter del spinner
-                expense.child("date").setValue(data_s);
-                expense.child("description").setValue(nome);
-                expense.child("payer").setValue(String.valueOf(buyer.getTelephone())); // l'utente dell'app che sta aggiungendo la spesa
-                expense.child("recepitPDF").setValue(""); // Devo capire come salvare i bit
-                expense.child("receiptPhoto").setValue("");
-                expense.child("policy").setValue(""); // Manca l'alert dialog per scegliere le percentuali
-                expense.child("price").setValue(importo);
+             //   expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
+             //   expense.child("currency").setValue(""); // Manca l'adapter del spinner
+             //   expense.child("date").setValue(data_s);
+             //   expense.child("description").setValue(nome);
+              //  expense.child("payer").setValue(String.valueOf(buyer.getTelephone())); // l'utente dell'app che sta aggiungendo la spesa
+              //  expense.child("recepitPDF").setValue(""); // Devo capire come salvare i bit
+               // expense.child("receiptPhoto").setValue("");
+              //  expense.child("policy").setValue(""); // Manca l'alert dialog per scegliere le percentuali
+              //  expense.child("price").setValue(importo);
                 // carico le divisioni nella spesa
-                for(Soldo soldo : parti){
-                    String phone = String.valueOf(soldo.getPersona().getTelephone());
-                    DatabaseReference t = expense.child("divisions").child(phone);
-                    Double duePart =soldo.getImporto().doubleValue();
-                    t.child("duePart").setValue(duePart);
-                    boolean pagato = soldo.getHaPagato();
-                    t.child("hasPaid").setValue(pagato);
+              //  for(Soldo soldo : parti){
+              //      String phone = String.valueOf(soldo.getPersona().getTelephone());
+              //      DatabaseReference t = expense.child("divisions").child(phone);
+               //     Double duePart =soldo.getImporto().doubleValue();
+                //    t.child("duePart").setValue(duePart);
+                 //   boolean pagato = soldo.getHaPagato();
+                 //   t.child("hasPaid").setValue(pagato);
+                //}
+                //expense.child("group").setValue(groupID);
+                //SliceAppDB.getListaSpese().add(s1);
+                //SliceAppDB.getMappaSpese().put(s1.getExpenseID(), s1);
+
+                ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
+
+                Collection<Soldo> parti = s1.getDivisioni().values();
+            for(Persona p: partecipanti){
+                if(s1.getPagante().getTelephone().equals(p.getTelephone())){ //Se il pagante sono io
+
+                    for(Soldo s: parti){
+                        if(!s.getPersona().getTelephone().equals(p.getTelephone())){// per tutti i soldi che non sono io
+                        p.addTobalance(s.getPersona(),s.getImporto());
+                    }}
                 }
-                expense.child("group").setValue(groupID);
-                SliceAppDB.getListaSpese().add(s1);
-                SliceAppDB.getMappaSpese().put(s1.getExpenseID(), s1);
+                else { //non lo sono
+
+                    for (Soldo s : parti) {
+                        if (s.getPersona().getTelephone().equals(p.getTelephone())) {// solo il mio soldo
+                            p.addTobalance(s.getPagante(), (s.getImporto()) * -1d); //prendo la mia parte in negativo per quella persona e andrò a sommarla al pagante
+                        }
+
+                    }
+                }
+            }
+
+                final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID());
+                Gson gson = new Gson();
+                Gruppo g1 = gson.fromJson(gson.toJson(gruppo),Gruppo.class);
+                groups_prova.setValue(g1);
+                final DatabaseReference users_prova = database.getReference().child("users_prova");
+                for(Persona p: partecipanti){
+                    Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
+                    users_prova.child(p1.getTelephone()).setValue(p1);
+
+                }
+
+
 
                 getActivity().startActivity(i);
                 getActivity().finish();
@@ -185,7 +219,13 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     int day = c.get(Calendar.DAY_OF_MONTH);
                     data_s=day+"/"+month+1+"/"+year;
                 }
-                Spesa s1 = gruppo.AddSpesa_and_try_repay(buyer, policy, nome, data_s, Double.parseDouble(price));
+                FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+                DatabaseReference expensesRef = database.getReference().child("expenses");
+                String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
+                DatabaseReference expense = expensesRef.push();
+                String expenseID = expense.getKey(); // aggiungo key della spesa
+
+                Spesa s1 = gruppo.AddSpesa_and_try_repay(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
                 if(s1==null){
                     Toast.makeText(getContext(),"You do not have any debts", Toast.LENGTH_LONG).show();
                     return;
@@ -193,24 +233,17 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 s1.setValuta(values);
                 s1.setBitmap_spesa(b);
                 s1.setUri(uri);
-                s1.setCat(cat);
+                s1.setCat_string(cat);
 
                 double importo = Double.parseDouble(price);
 
                 HashMap<String, Soldo> divisioni = s1.getDivisioni();
                 Collection<Soldo> parti = divisioni.values();
 
-                FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference expensesRef = database.getReference().child("expenses");
-                String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
-                DatabaseReference expense = expensesRef.push();
+
 
                 // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
                 // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
-                String expenseID = expense.getKey(); // aggiungo key della spesa
-                gruppo.getMappaSpese().remove(s1.getNome()+s1.getData());
-                s1.setExpenseID(expenseID); // leggo key della spesa e lo setto nella spesa
-                gruppo.getMappaSpese().put(expenseID, s1);
 
                 // setto i dati della spesa
                 expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
@@ -236,7 +269,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 // aggiorno le divisioni delle spese del gruppo in questione perhé eventualmente sono
                 // state modificate dal metodo AddSpesa_and_try_repay
 
-                ArrayList<Spesa> spese = gruppo.getSpese();
+                ArrayList<Spesa> spese = gruppo.Obtain_spese_array();
                 for(Spesa s : spese){
                     DatabaseReference exp = expensesRef.child(s.getExpenseID());
                     DatabaseReference div = exp.child("divisions");

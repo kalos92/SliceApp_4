@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -28,11 +29,11 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
     private int layoutResourceId;
     private List<Persona> memberNames;
     private boolean[] checkMarks;
-    private Double[] percentages;
-    private Context context;
 
+    private Context context;
     private String value;
     private Gruppo gruppo;
+    HashMap<String,Double> percentages_map = new HashMap<String,Double>();
 
 
 
@@ -41,11 +42,14 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
         super(context,layoutResourceId,memberNames);
         this.memberNames = memberNames;
         this.checkMarks = new boolean[memberNames.size()];
-        this.percentages = new Double[memberNames.size()];
-        for(int i=0;i<memberNames.size();i++) {
+        int i=0;
+        for(Persona p: memberNames){
             checkMarks[i] = true;
-            percentages[i] = 0.0d;
+            percentages_map.put(p.getTelephone(),0d);
+            i++;
         }
+
+
         this.context = context;
         this.layoutResourceId=layoutResourceId;
         this.gruppo=gruppo;
@@ -56,7 +60,7 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
     @Override
     public View getView(final int position, View view, ViewGroup parent){
         View row = view;
-
+        Persona p = memberNames.get(position);
         PayerHolder holder =null;
         CheckBox cb =null;
         EditText et=null;
@@ -86,7 +90,7 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
         holder.cb.setTag(position);
 
         final PayerHolder h = holder;
-
+        final Persona p2 = p;
         holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -98,10 +102,12 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
                     h.percentage.setEnabled(false);
                     checkMarks[position] = false;
                     h.percentage.setText("");
-                    percentages[position]=new Double(0);
+                    percentages_map.put(p2.getTelephone(),0d);
+
                 }
             }
         });
+
 
         holder.percentage.addTextChangedListener(new TextWatcher() {
 
@@ -122,9 +128,9 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
                 public void afterTextChanged(Editable s){
                     String st = h.percentage.getText().toString();
                     if(!st.equals(""))
-                        percentages[position] = Double.parseDouble(st);
+                        percentages_map.put(p2.getTelephone(),Double.parseDouble(st));
                     else
-                        percentages[position] = 0.0d;
+                        percentages_map.put(p2.getTelephone(),0d);
 
         }
             });
@@ -140,7 +146,7 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
                     if(!Caption.isChecked()) {
                         h.percentage.setEnabled(false);
                         h.percentage.setText("");
-                        percentages[position]=new Double(0);
+                        percentages_map.put(p2.getTelephone(),0d);
                     }else
                         h.percentage.setEnabled(true);
                 }
@@ -156,35 +162,18 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
                     final int position = (Integer)v.getTag();
                     EditText Caption = (EditText) v;
                     if(!Caption.getText().toString().equals(""))
-                    percentages[position] =  Double.parseDouble(Caption.getText().toString());
+                        percentages_map.put(p2.getTelephone(),Double.parseDouble(Caption.getText().toString()));
                     else
-                        percentages[position] = new Double(0);
+                        percentages_map.put(p2.getTelephone(),0d);
                 }
             }
         });
         return row;
     }
 
-    public boolean[] getChecks(){ return checkMarks; }
-
-    public Double[] getPercentages() {
 
 
-        Double[] percentages_ordinato = new Double[gruppo.getN_partecipanti()];
-        int k=0;
-        Integer i= 0;
-        for(Persona p: memberNames){
-            i=p.getPosizione(gruppo);
-
-            percentages_ordinato[i.intValue()]=percentages[k];
-
-            k++;
-
-        }
-
-
-
-        return percentages_ordinato;}
+    public HashMap<String,Double> getPercentages() {return percentages_map;}
 
     static class PayerHolder{
         public CheckBox cb;

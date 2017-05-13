@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,8 +22,14 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class Group_Details extends AppCompatActivity {
 
@@ -48,7 +55,6 @@ public class Group_Details extends AppCompatActivity {
             }
         }
         RadioGroup rg = (RadioGroup) findViewById(R.id.rg3);
-        rg.setVisibility(View.GONE);
         rg.check(R.id.b5);
     }
 
@@ -71,65 +77,55 @@ public class Group_Details extends AppCompatActivity {
         if(id == R.id.action_continue){
            // Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
             final FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-            final DatabaseReference users = database.getReference().child("users");
-            final DatabaseReference groups= database.getReference().child("groups");
-            final DatabaseReference groupLink = groups.push();
-            final String groupID = groupLink.getKey();
-            final int numMembers = listP.size()+1;
-            users.addListenerForSingleValueEvent(new ValueEventListener() {
+            //final DatabaseReference users = database.getReference().child("users");
+            //final DatabaseReference groups= database.getReference().child("groups");
+            final DatabaseReference groups_prova = database.getReference().child("groups_prova");
+            final DatabaseReference users_prova = database.getReference().child("users_prova");
+           // final DatabaseReference groupLink = groups.push();
+            final String groupID = groups_prova.push().getKey();
+            final ArrayList<String> numeri = new ArrayList<>();
+
+            for(int i=0; i<listP.size();i++){
+               numeri.add(listP.get(i).getTelephone());
+           }
+
+
+            users_prova.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                   for (Persona p : listP) {
-                       String telephone = String.valueOf(p.getTelephone());
-                       DataSnapshot member = dataSnapshot.child(telephone);
-                       String nome = (String) member.child("name").getValue();
-                       String cognome = (String) member.child("surname").getValue();
-                       String username = (String) member.child("username").getValue();
-                       String dob = (String) member.child("birthday").getValue();
-                       String telefono = (String)member.child("telephone").getValue();
 
-                       users.child(telephone).child("belongsToGroups").child(groupID).setValue("true");
-                       Persona owner = SliceAppDB.getUser();
-                       String phoneOwner = new String("" + owner.getTelephone());
-                       users.child(phoneOwner).child("belongsToGroups").child(groupID).setValue("true");
+                       Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
+                       while(it.hasNext()) {
+                            DataSnapshot ds = it.next();
+                            if(numeri.contains(ds.getKey())){
+                                Persona per = ds.getValue(Persona.class);
+                                tmpList.add(per);}
+                       }
 
-                       Persona per = new Persona(nome, cognome, username, dob, telefono);
-                       tmpList.add(per);
-                   }
                    //CREO GRUPPO
                    tmpList.add(SliceAppDB.getUser());
 
 
-                   Gruppo g = new Gruppo(groupName.getText().toString(), tmpList.size(), tmpList, policy);
+                   Gruppo g = new Gruppo(groupID,groupName.getText().toString(), tmpList.size(), tmpList, policy);
                    g.setGroupID(groupID);
                    g.setUser(SliceAppDB.getUser());
 
-                 //  SliceAppDB.addGruppo(g);
-                   groups.addListenerForSingleValueEvent(new ValueEventListener() {
-                       @Override
-                       public void onDataChange(DataSnapshot dataSnapshot) {
 
-                           groupLink.child("name").setValue(groupName.getText().toString());
-                           groupLink.child("icon").setValue("ok");
-                           groupLink.child("policy").setValue("");
+                    Gson gson = new Gson();
+                    Gruppo g1 = gson.fromJson(gson.toJson(g),Gruppo.class);
 
-                           Persona owner = SliceAppDB.getUser();
-                           String phoneOwner = new String("" + owner.getTelephone());
-                           groupLink.child("members").child(new String("" + phoneOwner)).setValue("true");
-                            groupLink.child("policy").setValue("");
-                           for (Persona p : tmpList) {
-                               groupLink.child("members").child(new String("" + p.getTelephone())).setValue("true");
-                           }
-                           groupLink.child("numMembers").setValue(numMembers);
-                           Intent i = new Intent(Group_Details.this, List_Pager_Act.class);
-                           startActivity(i);
-                       }
 
-                       @Override
-                       public void onCancelled(DatabaseError databaseError) {
+                    groups_prova.child(g1.getGroupID()).setValue(g1);
 
-                       }
-                   });
+                    for(Persona p: tmpList){
+                        Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
+                         users_prova.child(p1.getTelephone()).setValue(p1);
+
+                    }
+                    Intent i = new Intent(Group_Details.this, List_Pager_Act.class);
+                    startActivity(i);
+
+
                 }
 
                 @Override
@@ -142,5 +138,8 @@ public class Group_Details extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+
+
 
 }

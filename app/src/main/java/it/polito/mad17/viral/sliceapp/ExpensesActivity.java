@@ -18,27 +18,36 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseListAdapter;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 public class ExpensesActivity extends AppCompatActivity {
 
     Gruppo gruppo;
     Persona user;
     FragmentManager fm;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+    private DatabaseReference rootRef = database.getReference();
+    private DatabaseReference groups_ref = rootRef.child("groups_prova");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,30 +55,27 @@ public class ExpensesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_expenses);
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
+
         Bundle extra =getIntent().getExtras();
         if(extra!= null) {
-           gruppo = (Gruppo) extra.get("Gruppo");
-           user = (Persona) extra.get("User");
+
+            gruppo = (Gruppo) extra.get("Gruppo");
+            user = (Persona) extra.get("User");
         }
 
         fm= getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        // if (null == fm.findFragmentById(R.id.fragment) ){
-            ft.replace(R.id.fragment, Fragment_of_money.newInstance(gruppo));
-        //}
-
-        //Fragment fragment = Fragment_of_money.newInstance(gruppo);
+        ft.replace(R.id.fragment, Fragment_of_money.newInstance(gruppo));
         ft.addToBackStack(null);
-        //ft.replace(R.id.my_money, fragment);
         ft.commit();
 
         Toolbar t = (Toolbar)findViewById(R.id.expenseToolbar);
-        t.setTitle(" " + gruppo.getName());
-        t.setSubtitle(" " + gruppo.getUser().getUsername());
-        BitmapManager  bm = new BitmapManager(this,gruppo.getIcon(),50,70);
+        t.setTitle(" " + gruppo.getGroupName());
+        t.setSubtitle(" " + gruppo.obtainUser().getUsername());
+        BitmapManager  bm = new BitmapManager(this,gruppo.getImg(),50,70);
 
-        Bitmap b=  bm.scaleDown(gruppo.getIcon(),100,true);
+        Bitmap b=  bm.scaleDown(gruppo.getImg(),100,true);
         Drawable d = new BitmapDrawable(getResources(), b);
         t.setLogo(d);
         final ListView mlist = (ListView) findViewById(R.id.listView2);
@@ -80,10 +86,44 @@ public class ExpensesActivity extends AppCompatActivity {
                 speseGruppo.add(s);
         }*/
         for(Spesa s : SliceAppDB.getMappaSpese().values()){
-            if(s.getGruppo().getGroupID().equals(gruppo.getGroupID()))
+            if(s.getGruppo().equals(gruppo.getGroupID()))
                 speseGruppo.add(s);
         }
-        final ExpensesAdapter adapter = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, speseGruppo, user);
+
+        Query ref = groups_ref.child(gruppo.getGroupID()).child("listaSpeseGruppo");
+
+        FirebaseListAdapter<Spesa> adapter= new FirebaseListAdapter<Spesa>(this, Spesa.class, R.layout.listview_expense_row, ref) {
+            @Override
+            protected void populateView(View v, Spesa model, int position) {
+
+                ImageView imgIcon = (ImageView) v.findViewById(R.id.expIcon);
+                TextView title = (TextView)v.findViewById(R.id.expName);
+                TextView price = (TextView)v.findViewById(R.id.expPrice);
+                TextView buyer = (TextView)v.findViewById(R.id.buyer);
+                TextView currency = (TextView)v.findViewById(R.id.expCurrency);
+
+
+
+                if(!model.getDivisioni().get(user.getTelephone()).getHaPagato())
+                    v.setBackgroundColor(getBaseContext().getResources().getColor(R.color.row_non_pagate_bck));
+                else
+                    v.setBackgroundColor(getBaseContext().getResources().getColor(R.color.tab_bck));
+
+
+
+
+
+                title.setText(model.getNome());
+                imgIcon.setImageResource(model.getCat().getImg());
+                currency.setText("€");
+                price.setText(Double.toString(model.getImporto()));
+                buyer.setText(model.getPagante().getName()+" "+model.getPagante().getSurname());
+
+            }
+        };
+
+
+        final ExpensesAdapter adapter_2 = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, speseGruppo, user);
         mlist.setAdapter(adapter);
 
         // What to do when user press the toolbar back button
@@ -125,7 +165,7 @@ public class ExpensesActivity extends AppCompatActivity {
                                 SliceAppDB.getMappaSpese().remove(expenseID);
                                 for (Spesa s : SliceAppDB.getListaSpese()) {
                                     if (s.getExpenseID().equals(sp.getExpenseID())) {
-                                        s.getGruppo().getMappaSpese().remove(sp.getExpenseID());
+                                        SliceAppDB.getGruppi().get(s.getGruppo()).getSpese().remove(sp.getExpenseID());
                                         SliceAppDB.getListaSpese().remove(s);
                                         break;
                                     }

@@ -47,6 +47,7 @@ public class List_Pager_Act extends AppCompatActivity {
     private TabLayout tabLayout;
     private int[]  tabIcons = {R.drawable.img_contestation, R.drawable.img_gruppi , R.drawable.img_bilancio};
     private ViewPager vpPager;
+    private Processor proc;
 
     private DataSnapshot users;
 
@@ -57,11 +58,11 @@ public class List_Pager_Act extends AppCompatActivity {
 
         //////////////////////////////////////////////////
         // listen for database groups changes
-        DatabaseReference rootRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
-        final DatabaseReference groupsRef = rootRef.child("groups");
-        final DatabaseReference usersRef = rootRef.child("users");
+        //DatabaseReference rootRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
+        //final DatabaseReference groupsRef = rootRef.child("groups");
+        //final DatabaseReference usersRef = rootRef.child("users");
 
-        usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
+       /* usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) { users = dataSnapshot; }
             @Override
@@ -86,12 +87,12 @@ public class List_Pager_Act extends AppCompatActivity {
                     DataSnapshot members = dataSnapshot.child("members");
                     // per il momento, la notifica arriva anche a chi ha creato il gruppo
                     if(members.hasChild(currentPhone)){
-                        //SliceAppDB.getListaGruppi().clear();
-                        //SliceAppDB.getListaSpese().clear();
-                        //SliceAppDB.getGruppi().clear();
-                        //SliceAppDB.getMappaGruppi().clear();
-                        //startActivity(new Intent(getApplicationContext(), SplashScreen.class));
-                        //finish();
+                        SliceAppDB.getListaGruppi().clear();
+                        SliceAppDB.getListaSpese().clear();
+                        SliceAppDB.getGruppi().clear();
+                        SliceAppDB.getMappaGruppi().clear();
+                        startActivity(new Intent(getApplicationContext(), SplashScreen.class));
+                        finish();
 
                         // Notification for the addition of a new group,
                         Intent intent = new Intent();
@@ -142,8 +143,8 @@ public class List_Pager_Act extends AppCompatActivity {
                         SliceAppDB.getListaSpese().clear();
                         SliceAppDB.getGruppi().clear();
                         SliceAppDB.getMappaGruppi().clear();
-                        //startActivity(new Intent(getApplicationContext(), SplashScreen.class));
-                       // finish();
+                        startActivity(new Intent(getApplicationContext(), SplashScreen.class));
+                        finish();
 
                         // Notification for the addition of a new group,
                         Intent intent = new Intent();
@@ -173,7 +174,7 @@ public class List_Pager_Act extends AppCompatActivity {
 
         ArrayList<Spesa> spese = SliceAppDB.getListaSpese();
         for(Spesa s : spese)
-            System.out.println("spesa " + s.getExpenseID());
+            System.out.println("spesa " + s.getExpenseID());*/
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
 
@@ -196,23 +197,12 @@ public class List_Pager_Act extends AppCompatActivity {
         tab.select();
         // inietto i dati
 
-        //MenuItem addGroups = toolbar.getMenu().findItem(R.id.action_add);
-        //Log.d("Toolbar2","Ciao come stia");
-        //addGroups.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-        //    @Override
-        //    public boolean onMenuItemClick(MenuItem item) {
-                  //Intent intent = new Intent(List_Pager_Act.this,AddNewGroup.class);
-                 //startActivity(intent);
-        //         Log.d("Toolbar2","Ciao come stia");
-        //         return true;
-        //     }
-        //  });
     }
 
     private void setupViewPager(ViewPager viewPager) {
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new FirstFragment(), "GROUPS");
-        adapter.addFragment(SecondFragment.newInstance(SliceAppDB.getUser()), "BALANCE");
+        adapter.addFragment(SecondFragment.newInstance(SliceAppDB.getUser(),proc), "BALANCE");
         adapter.addFragment(new ThirdFragment(), "QUARRELS");
         viewPager.setAdapter(adapter);
     }
@@ -283,13 +273,6 @@ public class List_Pager_Act extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        // was R.id.action_add
-        /*
-        if (id == R.id.add_group) {
-            Intent i = new Intent(List_Pager_Act.this, AddNewGroup.class);
-            startActivity(i);
-            return true;
-        }*/
         if(id == R.id.action_settings){
 
             SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
