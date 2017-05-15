@@ -72,7 +72,7 @@ public class ExpensesAdapter extends ArrayAdapter<Spesa>  {
             holder.currency= currency;
 
 
-            if(!data.get(position).getDivisioni().get(user.getUsername()).getHaPagato())
+            if(!data.get(position).getDivisioni().get(user.getTelephone()).getHaPagato())
                row.setBackgroundColor(context.getResources().getColor(R.color.row_non_pagate_bck));
 
 

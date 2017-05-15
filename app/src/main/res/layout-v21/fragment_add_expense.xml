@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:design="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
     android:background="@color/tab_bck"
     android:fitsSystemWindows="false"
     design:layout_collapseParallaxMultiplier="1.0">
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/bottom_nav_bar"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_gravity="bottom"
+
+        android:background="@color/tab_bck"
+        android:clipToPadding="false"
+        android:elevation="6dp"
+        android:outlineProvider="background"
+        design:itemIconTint="@color/text"
+
+        design:itemTextColor="@color/text"
+        design:menu="@menu/bottom_nav_bar_add"
+
+        >
+        <View android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/myrect"/>
+
+    </android.support.design.widget.BottomNavigationView>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -34,12 +56,10 @@
                     android:layout_height="80dp"
                     android:layout_marginStart="@dimen/normal_v_margin"
                     android:background="@color/tab_bck"
-                    android:paddingBottom="2dp"
                     android:elevation="4dp"
+                    android:paddingBottom="2dp"
 
-               />
-
-
+                    />
 
 
                 <EditText
@@ -50,7 +70,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="85dp"
                     android:layout_toEndOf="@+id/s_category"
-                    android:hint="Name"
+                    android:hint="Expenditure Name"
                     android:inputType="text"
                     android:textColor="@color/text"
                     android:textColorHint="@color/text"
@@ -69,7 +89,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/normal_v_margin"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.91"
                     android:hint="00,00"
                     android:inputType="numberDecimal"
                     android:textColor="@color/text"
@@ -77,19 +97,19 @@
 
                 <Spinner
                     android:id="@+id/currencies_spinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="37dp"
+                    android:layout_width="197dp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="end"
                     android:layout_marginEnd="@dimen/normal_v_margin"
-                    android:layout_weight="0.5"
+                    android:layout_weight="0.02"
                     android:entries="@array/country_arrays"
                     android:spinnerMode="dialog" />
             </LinearLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.1"
+
                 android:orientation="horizontal">
 
 
@@ -98,117 +118,134 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:layout_marginRight="@dimen/normal_v_margin"
-                    android:layout_weight="0.5"
+                    android:layout_marginRight="80dp"
+
                     android:spinnerMode="dialog" />
 
                 <ImageButton
                     android:id="@+id/calendar"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="0.20"
-                    android:background="@color/tab_bck"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+
+                    android:background="@drawable/roundedbutton"
                     android:contentDescription="Calendar"
-                    android:elevation="2dp"
-                    android:gravity="end"
                     android:onClick="showDatePickerDialog"
-                    android:src="@drawable/img_cal"/>
+                    android:src="@drawable/img_cal"
+                    android:layout_marginRight="17dp"
+                    android:layout_marginEnd="17dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="12dp" />
 
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="1"
-                android:layout_marginTop="20dp">
-
-                <ImageButton
-                    android:id="@+id/attach_photo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="@dimen/normal_v_margin"
-                    android:layout_weight="0.5"
-                    android:background="@color/tab_bck"
-                    android:src="@drawable/img_img" />
-
-                <Button
-                    android:layout_width="50dp"
-                    android:layout_height="48dp"
-                    android:layout_weight="0.5"
-                    android:text="Add a Photo"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-
-                    android:textAllCaps="false"
-                    android:textAlignment="center"
-                    android:textColor="@color/text"
-                    android:textSize="24sp"
-                    android:padding="4dp"
-                    android:paddingEnd="5dp"
-                    android:paddingStart="5dp"
-                    android:paddingTop="5dp"
-                    android:paddingBottom="5dp"
-                    android:backgroundTint="@color/tab_bck"
-                    android:elevation="30dp"
-                    android:translationZ="40dp"
-                   />
-
-
-            </LinearLayout>
-
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:outlineProvider="bounds"
-                android:weightSum="1"
-                android:layout_marginTop="20dp">
-
-                <ImageButton
-                    android:id="@+id/attach_pdf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="@dimen/normal_v_margin"
-                    android:layout_weight="0.5"
-                    android:background="@color/tab_bck"
-                    android:clipToPadding="false"
-
-                    android:src="@drawable/img_pdf" />
-
-                <Button
-                    android:layout_width="50dp"
-                    android:layout_height="48dp"
-                    android:layout_marginEnd="@dimen/activity_horizontal_margin"
-                    android:layout_weight="0.5"
-                    android:backgroundTint="@color/tab_bck"
-
-
-                    android:backgroundTintMode="src_in"
-                    android:elevation="30dp"
-                    android:text="Add a PDF"
-
-                    android:textAlignment="center"
-                    android:textAllCaps="false"
-                    android:textColor="@color/text"
-                    android:textSize="24sp"
-                    android:translationZ="40dp"
-                    tools:backgroundTintMode="src_in" />
-            </LinearLayout>
+            </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-              >
+                android:layout_marginTop="20dp"
+                android:weightSum="1">
+
+                <ImageButton
+                    android:id="@+id/attach_photo"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+
+                    android:layout_gravity="left"
+                    android:background="@drawable/roundedbutton"
+                    android:src="@drawable/img_img"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_marginLeft="38dp"
+                    android:layout_marginStart="38dp" />
+
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
+
+                    android:layout_height="48dp"
+
+                    android:backgroundTint="@color/tab_bck"
+                    android:elevation="30dp"
+                    android:padding="4dp"
+                    android:paddingBottom="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingTop="5dp"
+                    android:text="Add a Photo"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text"
+                    android:textSize="24sp"
+                    android:translationZ="40dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toRightOf="@+id/attach_photo"
+                    android:layout_toEndOf="@+id/attach_photo"
+                    android:layout_marginLeft="34dp"
+                    android:layout_marginStart="34dp" />
+
+
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal"
+                android:outlineProvider="bounds">
+
+                <ImageButton
+                    android:id="@+id/attach_pdf"
+                    android:layout_width="60dp"
+                    android:layout_height="60dp"
+                    android:layout_alignParentLeft="true"
+
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+
+                    android:layout_gravity="left"
+                    android:layout_marginLeft="38dp"
+                    android:layout_marginStart="38dp"
+                    android:background="@drawable/roundedbutton"
+                    android:clipToPadding="false"
+                    android:src="@drawable/img_pdf" />
+
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="48dp"
+                    android:backgroundTint="@color/tab_bck"
+
+                    android:padding="4dp"
+                    android:paddingBottom="5dp"
+                    android:paddingEnd="5dp"
+                    android:paddingStart="5dp"
+                    android:paddingTop="5dp"
+                    android:text="Add a PDF"
+                    android:textAlignment="center"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text"
+                    android:textSize="24sp"
+                    android:translationZ="40dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_toRightOf="@+id/attach_pdf"
+                    android:layout_toEndOf="@+id/attach_pdf"
+                    android:layout_marginLeft="34dp"
+                    android:layout_marginStart="34dp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <ImageView
-                    android:layout_marginTop="10dp"
                     android:id="@+id/preview"
                     android:layout_width="75dp"
                     android:layout_height="75dp"
                     android:layout_centerHorizontal="true"
-                     />
+                    android:layout_marginTop="10dp" />
 
                 <TextView
                     android:id="@+id/pdfName"
@@ -225,28 +262,6 @@
         </LinearLayout>
 
     </ScrollView>
-
-    <android.support.design.widget.BottomNavigationView
-        android:id="@+id/bottom_nav_bar"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_gravity="bottom"
-
-        android:background="@color/tab_bck"
-        android:clipToPadding="false"
-        android:elevation="6dp"
-        android:outlineProvider="background"
-        design:itemIconTint="@color/text"
-
-        design:itemTextColor="@color/text"
-        design:menu="@menu/bottom_nav_bar_add"
-
-        >
-        <View android:layout_width="match_parent"
-            android:layout_height="5dp"
-            android:background="@drawable/myrect"/>
-
-    </android.support.design.widget.BottomNavigationView>
 
 
 </android.support.design.widget.CoordinatorLayout>

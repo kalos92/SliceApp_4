@@ -2,7 +2,7 @@ package it.polito.mad17.viral.sliceapp;
 
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.icu.util.GregorianCalendar;
+import java.util.GregorianCalendar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 
-public class RegisterActivity extends AppCompatActivity implements Register_fragment_1.Reg_1_save/*, Register_fragment_2.Reg_2_save*/, DatePickerFragment.TheListener {
+public class RegisterActivity extends AppCompatActivity implements Register_fragment_1.Reg_1_save, DatePickerFragment.TheListener {
 
     private android.support.v4.app.FragmentManager fm;
     private Register_fragment_1 mContent;

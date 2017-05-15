@@ -4,21 +4,16 @@ package it.polito.mad17.viral.sliceapp;
 import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.icu.util.Calendar;
-import android.icu.util.GregorianCalendar;
+import java.util.GregorianCalendar;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.provider.OpenableColumns;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -33,8 +28,6 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -218,7 +211,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
 
         final List<String> names = new ArrayList<>();
-        for(Persona p : gruppo.getPartecipanti().values()){
+        for(Persona p : gruppo.obtainPartecipanti().values()){
             names.add(p.getTelephone());
 
         }

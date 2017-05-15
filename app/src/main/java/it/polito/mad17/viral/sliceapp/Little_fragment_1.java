@@ -60,7 +60,7 @@ public class Little_fragment_1 extends Fragment {
 
         final ListView list = (ListView) v.findViewById(R.id.littleFragment1);
 
-        persone.addAll(g.getPartecipanti().values());
+        persone.addAll(g.obtainPartecipanti().values());
 
         final GetPercentages getPercentages= (GetPercentages) getActivity();
 
@@ -81,7 +81,7 @@ public class Little_fragment_1 extends Fragment {
                 v.requestFocus();
 
 
-                p = new Policy(adapter.getPercentages(), g.getN_partecipanti());
+                p = new Policy(adapter.getPercentages());
 
                 if(getPercentages!=null)
                     getPercentages.getPercentages(p);

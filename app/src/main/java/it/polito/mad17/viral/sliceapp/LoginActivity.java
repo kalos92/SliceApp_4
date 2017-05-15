@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
@@ -26,13 +27,15 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.concurrent.CountDownLatch;
 import java.lang.String;
 
+import dmax.dialog.SpotsDialog;
+
 
 public class LoginActivity extends AppCompatActivity{
 
     private AutoCompleteTextView mPhoneView;
     private EditText mPasswordView;
     private String phone, password;
-    private ProgressDialog progressDialog;
+
     private Spinner prefix;
     private TextInputLayout actw;
     private TextInputLayout actw2;
@@ -47,9 +50,15 @@ public class LoginActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         // Set up the login form.
+        prefix = (Spinner) findViewById(R.id.prefix_log);
         mPhoneView = (AutoCompleteTextView) findViewById(R.id.phoneNumber);
         mPasswordView = (EditText) findViewById(R.id.password);
-         prefix = (Spinner) findViewById(R.id.prefix_log);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this,
+                R.array.prefix, R.layout.spinner_item);
+
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        prefix.setAdapter(adapter);
+
 
         actw = (TextInputLayout) findViewById(R.id.input1);
         actw2 = (TextInputLayout) findViewById(R.id.input2);
@@ -122,9 +131,9 @@ public class LoginActivity extends AppCompatActivity{
             return;
         }
 
-        progressDialog = new ProgressDialog(this);
-        progressDialog = ProgressDialog.show(this, "","Please wait while loading your data...", true);
-        DatabaseReference usersRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference("users");
+        final SpotsDialog progressDialog = new SpotsDialog(this, R.style.Custom_login);
+        progressDialog.show();
+        DatabaseReference usersRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference("users_prova");
         usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
@@ -137,30 +146,22 @@ public class LoginActivity extends AppCompatActivity{
                         actw2.setError("The password is wrong!");
                         return;
                     }
-                    // Inserted data ae correct
+                    // Inserted data are correct
                     //Open the login activity and set this so that next it value is 1 then this conditin will be false.
                     SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
                     SharedPreferences.Editor prefEditor = sharedPref.edit();
                     prefEditor.putInt("isLogged", 1);
 
                     DataSnapshot ds = dataSnapshot.child(phone);
-                    String nome = (String) ds.child("name").getValue();
-                    String cognome = (String) ds.child("surname").getValue();
-                    String username = (String) ds.child("username").getValue();
-                    String dob = (String) ds.child("birthdate").getValue();
-                    String telefono = (String) ds.child("telephone").getValue();
-                    Persona p = new Persona(nome, cognome, username, dob, telefono);
+                    Persona p = dataSnapshot.child(phone).getValue(Persona.class);
                     SliceAppDB.setUser(p);
 
-                    prefEditor.putString("nome", nome);
-                    prefEditor.putString("cognome", cognome);
-                    prefEditor.putString("username", username);
-                    prefEditor.putString("dob", dob);
-                    prefEditor.putString("telefono", telefono);
+
+                    prefEditor.putString("telefono", phone);
                     prefEditor.commit();
                     progressDialog.dismiss();
 
-                    Intent intent  = getIntent();
+
                     Intent i = new Intent(LoginActivity.this, SplashScreen.class);
                     startActivity(i);
                     finish();

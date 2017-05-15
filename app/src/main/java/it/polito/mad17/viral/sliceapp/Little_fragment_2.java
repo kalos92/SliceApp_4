@@ -59,7 +59,7 @@ public class Little_fragment_2 extends Fragment {
 
         final ListView list = (ListView) v.findViewById(R.id.littleFragment2);
 
-        persone.addAll(g.getPartecipanti().values());
+        persone.addAll(g.obtainPartecipanti().values());
 
         alltheSame = (AlltheSame) getActivity();
 
@@ -79,7 +79,7 @@ public class Little_fragment_2 extends Fragment {
 
 
                 if(adapter.getAllTheSame()!=null) {
-                    p = new Policy(adapter.getAllTheSame(), g.getN_partecipanti());
+                    p = new Policy(adapter.getAllTheSame());
                 }
 
                 if(alltheSame!=null)

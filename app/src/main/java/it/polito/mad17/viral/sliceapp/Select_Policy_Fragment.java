@@ -1,7 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.graphics.Bitmap;
-import android.icu.util.GregorianCalendar;
+import java.util.GregorianCalendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;

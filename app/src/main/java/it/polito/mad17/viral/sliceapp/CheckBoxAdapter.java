@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -24,7 +25,7 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
     private int layoutResourceId;
     private List<Persona> memberNames;
     private boolean[] checkMarks;
-    private Double[] percentages;
+    private HashMap<String,Double> percentages = new HashMap<String,Double>();
     private Context context;
     private Gruppo gruppo;
 
@@ -35,10 +36,11 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
         super(context,layoutResourceId,memberNames);
         this.memberNames = memberNames;
         this.checkMarks = new boolean[memberNames.size()];
-        this.percentages = new Double[memberNames.size()];
-        for(int i=0;i<memberNames.size();i++) {
+        int i=0;
+        for(Persona p : memberNames) {
             checkMarks[i] = true;
-            percentages[i] = -1d;
+            percentages.put(p.getTelephone(),-1d);
+            i++;
         }
         this.context = context;
         this.layoutResourceId=layoutResourceId;
@@ -73,16 +75,17 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
 
         holder.cb.setTag(position);
 
+        final Persona p=memberNames.get(position);
 
         holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                        percentages[position]= new Double(-1);
+                    percentages.put(p.getTelephone(),-1d);
                 } else {
 
                     checkMarks[position] = false;
-                    percentages[position]=new Double(0);
+                    percentages.put(p.getTelephone(),0d);
                 }
             }
         });
@@ -99,10 +102,10 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
                     final int position = (Integer)v.getTag();
                     CheckBox Caption = (CheckBox) v;
                     if(!Caption.isChecked()) {
-                        percentages[position]=new Double (0);
+                        percentages.put(p.getTelephone(),0d);
                     }
                     if(Caption.isChecked())
-                        percentages[position]= new Double(-1);
+                        percentages.put(p.getTelephone(),-1d);
                 }
             }
         });
@@ -114,17 +117,21 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
 
 
 
-    public Double[] getAllTheSame() {
+    public HashMap<String, Double> getAllTheSame() {
 
 
-        Double[] percentages_ordinato = new Double[gruppo.getN_partecipanti()];
+        //-1 paga, 0 no
+        /*Double[] percentages_ordinato = new Double[gruppo.getN_partecipanti()];
         int k=0, n_zeros=0;
         Integer i= 0;
+
+
         for(Persona p: memberNames){
             i=p.getPosizione(gruppo);
 
             percentages_ordinato[i.intValue()]=percentages[k];
-        if(percentages_ordinato[i.intValue()].equals(0d))
+
+            if(percentages_ordinato[i.intValue()].equals(0d))
             n_zeros++;
 
             k++;
@@ -144,7 +151,36 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
 
 
 
-        return percentages_ordinato;}
+        return percentages_ordinato;*/
+
+        int n_zeros=0;
+        for(Double d : percentages.values()){
+
+            if(d.equals(0d)){
+                n_zeros++;
+            }
+
+        }
+
+        if(n_zeros == percentages.values().size())
+        {
+            Toast.makeText(context,"At least one person has to pay", Toast.LENGTH_SHORT).show();
+            return null;
+        }
+
+        Double c = (double) 100/(percentages.values().size()-n_zeros);
+
+        for(String s: percentages.keySet()){
+            if(percentages.get(s).equals(-1d)){
+                percentages.put(s,c);
+            }
+        }
+
+
+
+
+    return percentages;
+    }
 
     static class PayerHolder2{
         public CheckBox cb;

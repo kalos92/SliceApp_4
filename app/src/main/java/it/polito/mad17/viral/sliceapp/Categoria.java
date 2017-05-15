@@ -8,9 +8,19 @@ import java.io.Serializable;
 
 public class Categoria implements Serializable {
 
+    public String getName() {
+        return name;
+    }
+
+    public void setImg(int img) {
+        this.img = img;
+    }
+
     //private ATTACHMENT symbol;
     private String name="default";
     private int img= R.drawable.default_spese;
+
+
 
     public int getImg(){
         return img;
@@ -20,9 +30,10 @@ public class Categoria implements Serializable {
         this.name=name;
     }
 
+    public Categoria(){}
+
     public Categoria(String cat){
         this.name = cat;
-
 
         if(name.equals("General expenditure"))
             img =R.drawable.dollar;

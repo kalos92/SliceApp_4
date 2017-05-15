@@ -48,13 +48,12 @@ public class AddNewGroup extends AppCompatActivity {
 
     private static final int PERMISSION_REQUEST_CONTACT = 1;
     private static final String TAG = AddNewGroup.class.getSimpleName();
- //   private ArrayList<Persona> contacts = new ArrayList<Persona>();
     private Map<String,Persona> contactsMap = new HashMap<String,Persona>();
     private FirebaseDatabase database ;
     private  ContactsAdapter adapter;
     private  Map<String,Persona> tmpMap = new TreeMap<>();
     private Toolbar toolbar;
-    private EditText groupName;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,7 +85,7 @@ public class AddNewGroup extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Contacts access needed");
                     builder.setPositiveButton(android.R.string.ok, null);
-                    builder.setMessage("please confirm Contacts access");//TODO put real question
+                    builder.setMessage("please confirm Contacts access");
                     builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                         @TargetApi(Build.VERSION_CODES.M)
                         @Override
@@ -154,17 +153,17 @@ public class AddNewGroup extends AppCompatActivity {
                     String phoneNumber = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                     if(phoneNumber.contains("+")){
                         phoneNumber.replace("+","");
-                        Log.d("PIU",phoneNumber);
+
                     }else{
                         StringBuilder s = new StringBuilder();
                         s.append("39");
                         s.append(phoneNumber);
                         phoneNumber = s.toString();
-                        Log.d("SENZA",phoneNumber);
+
                     }
                     phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
 
-                    Persona p = new Persona(name,null,null,null,phoneNumber);
+                    Persona p = new Persona(name,null,null,null,phoneNumber,null,0,"+39");
                     contactsMap.put(phoneNumber,p);
                     Log.d("Phone", phoneNumber);
                     //  Log.d("Name", name);
@@ -173,7 +172,7 @@ public class AddNewGroup extends AppCompatActivity {
 
                 //Firebase connection:
                 database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference users = database.getReference().child("users");
+                DatabaseReference users = database.getReference().child("users_prova");
 
 
                 users.addValueEventListener(new ValueEventListener() {
@@ -230,7 +229,7 @@ Collections.sort(listP, new Comparator<Persona>() {
 });
 
 
-            listP.add(new Persona("null_$","null_$","null_$","null_$","null_$"));
+            listP.add(new Persona("null_$","null_$","null_$","null_$","null_$","null_$",0,"null_$"));
 
             for(Persona p: tmpMap.values()){
                 if(p.getIsInDB()==0)
@@ -254,7 +253,7 @@ Collections.sort(listP, new Comparator<Persona>() {
             });
 
 
-           // listP.addAll(tmpMap.values());
+
             adapter = new ContactsAdapter(this.getBaseContext(),R.layout.contactsrow,R.layout.contactsrowbutton,listP);
 
             list.setAdapter(adapter);
@@ -273,18 +272,21 @@ Collections.sort(listP, new Comparator<Persona>() {
         int id = item.getItemId();
         ArrayList<Persona> listPersone = new ArrayList<Persona>();
 
-        if(id == R.id.action_continue){
+        if(id == R.id.action_continue && adapter!=null){
             listPersone.addAll(adapter.getGroupMembers().values());
             if(listPersone.size()!=0){
             Intent i = new Intent(AddNewGroup.this,Group_Details.class);
             i.putExtra("ListaPersone",listPersone);
-              //  i.putExtra("NomeGruppo",)
             startActivity(i);}
             else{
                 Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
                 return false;}
 
         }
+        else{
+            Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
+            return false;}
+
         return super.onOptionsItemSelected(item);
     }
 

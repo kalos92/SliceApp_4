@@ -1,9 +1,12 @@
 package it.polito.mad17.viral.sliceapp;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Kalos on 25/03/2017.
@@ -11,42 +14,25 @@ import java.util.Iterator;
 
 public class Policy implements Serializable {
 
-    private HashMap<String, Double> percentuali_persona = new HashMap<String, Double>();
+    private HashMap<String, Double> percentuali = new HashMap<String, Double>();
 
-    Double[] percentuali;
-    int n_persone;
-    long[] telefono;
-
-    public Policy(Double[] percentuali, int n_persone) {
-        this.percentuali= new Double[n_persone];
+    public Policy(HashMap<String,Double> percentuali) {
         this.percentuali=percentuali;
-        this.n_persone=n_persone;
     }
 
     public Policy(){
         // needed for FirebaseListAdapter
     }
-    public Policy(Double[] percentuali, int n_persone,long[] telefono) {
-        this.percentuali= new Double[n_persone];
-        this.percentuali=percentuali;
-        this.n_persone=n_persone;
-        telefono = new long[n_persone];
-        this.telefono=telefono;
-    }
 
-    public Double[] getPercentage() {
+    public HashMap<String, Double> getPercentuali() {
         return percentuali;
     }
 
-    public void setPercentages(Double f, int pos){
-        percentuali[pos]=f;
-
+    public void setPercentuali(HashMap<String, Double> percentuali) {
+        this.percentuali = percentuali;
     }
 
-    public Double getMyPolicy(long tel){
-        for(int i=0;i<telefono.length;i++)
-            if(tel==telefono[i])
-                return percentuali[i];
-        return (double)0;
+    public double percentuale_user(String n_tel){
+       return percentuali.get(n_tel);
     }
 }

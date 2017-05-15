@@ -1,14 +1,9 @@
 package it.polito.mad17.viral.sliceapp;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.icu.util.GregorianCalendar;
-import android.net.Uri;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,9 +12,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -136,6 +131,12 @@ public class Register_fragment_1 extends Fragment {
         selection = s_prefix.getSelectedItemPosition();
         prefix = (String) s_prefix.getSelectedItem();
 
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(getContext(),
+                R.array.prefix, R.layout.spinner_item);
+
+        adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
+        s_prefix.setAdapter(adapter);
+
         final EditText tv_number = (EditText) v.findViewById(R.id.number);
         number = tv_number.getText().toString();
 
@@ -166,11 +167,11 @@ public class Register_fragment_1 extends Fragment {
                     }
 
                     progressDialog = ProgressDialog.show(getActivity(), "", "Just a moment");
-                    final DatabaseReference users = database.getReference("users");
+                    final DatabaseReference users = database.getReference("users_prova");
                     users.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            String phonenum_complex = (String) s_prefix.getSelectedItem()+tv_number.getText().toString();
+                            String phonenum_complex = s_prefix.getSelectedItem()+tv_number.getText().toString();
                             String phonenum_good = phonenum_complex.substring(1);
 
 
