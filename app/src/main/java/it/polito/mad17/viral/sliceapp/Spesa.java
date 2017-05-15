@@ -30,6 +30,16 @@ public class Spesa implements Serializable {
     private HashMap<String, Soldo> divisioni = new HashMap<String,Soldo>();
     private String expenseID;
 
+    public HashMap<String,HashMap<String,Soldo>> getDebiti_restituiti() {
+        return debiti_restituiti;
+    }
+
+    public void setDebiti_restituiti(HashMap<String,HashMap<String,Soldo>> debiti_restituiti) {
+        this.debiti_restituiti = debiti_restituiti;
+    }
+
+    private HashMap<String,HashMap<String,Soldo>> debiti_restituiti = new HashMap<String,HashMap<String,Soldo>>();
+
 
 
     private long c;
@@ -181,4 +191,6 @@ public class Spesa implements Serializable {
     public void setC(long c) {
         this.c = c;
     }
+
+
 }

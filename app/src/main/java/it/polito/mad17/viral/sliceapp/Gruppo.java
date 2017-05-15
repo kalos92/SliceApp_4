@@ -93,11 +93,12 @@ public class Gruppo implements Serializable,Cloneable {
         public Spesa AddSpesa_and_try_repay(String spesaId,Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
 
             Spesa spesa;
-            if(user.getHasDebts()){
+            if(user.obtain_a_debt(getGroupID())==1){
             Gestore gestore=new Gestore();
             spesa= new Spesa(nome_spesa,data,policy,pagante,importo,this);
             spesa.setExpenseID(spesaId);
             spesa.setParti(gestore.Calculate_Credits_To_Buyer_With_Repaing(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),spese,user,this));
+                spesa.setDebiti_restituiti(gestore.getVecchi_dati_backup());
             //metto il debito a tutti
 
             spese.put(spesaId,spesa);

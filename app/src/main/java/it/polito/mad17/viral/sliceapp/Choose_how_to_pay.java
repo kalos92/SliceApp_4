@@ -176,9 +176,8 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
         save_r.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String data_s;
                 Intent i = new Intent(getActivity(), ExpensesActivity.class);
-
+                String data_s;
                 i.putExtra("Gruppo", gruppo);
                 i.putExtra("User", user);
 
@@ -190,18 +189,21 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     final Calendar c = Calendar.getInstance();
                     int year = c.get(Calendar.YEAR);
                     int month = c.get(Calendar.MONTH);
+                    month++;
                     int day = c.get(Calendar.DAY_OF_MONTH);
-                    data_s=day+"/"+month+1+"/"+year;
+                    data_s=day+"/"+month+"/"+year;
                 }
                 FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
                 DatabaseReference expensesRef = database.getReference().child("expenses");
                 String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
                 DatabaseReference expense = expensesRef.push();
-                String expenseID = expense.getKey(); // aggiungo key della spesa
 
+                // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
+                // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
+                String expenseID = expense.getKey(); // aggiungo key della spesa
                 Spesa s1 = gruppo.AddSpesa_and_try_repay(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
-                if(s1==null){
-                    Toast.makeText(getContext(),"You do not have any debts", Toast.LENGTH_LONG).show();
+                if(s1==null) {
+                Toast.makeText(getContext(),"There is a good news, you do not have any debts! Be Happy", Toast.LENGTH_LONG).show();
                     return;
                 }
                 s1.setValuta(values);
@@ -209,57 +211,51 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 s1.setUri(uri);
                 s1.setCat_string(cat);
 
-                double importo = Double.parseDouble(price);
-
-                HashMap<String, Soldo> divisioni = s1.getDivisioni();
-                Collection<Soldo> parti = divisioni.values();
+                gruppo.refreshC();
 
 
 
-                // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
-                // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
 
-                // setto i dati della spesa
-                expense.child("category").setValue(cat); //String valuta = spi.getSelectedItem().toString()
-                expense.child("currency").setValue(""); // Manca l'adapter del spinner
-                expense.child("date").setValue(data_s);
-                expense.child("description").setValue(nome);
-                expense.child("payer").setValue(String.valueOf(buyer.getTelephone())); // l'utente dell'app che sta aggiungendo la spesa
-                expense.child("recepitPDF").setValue(""); // Devo capire come salvare i bit
-                expense.child("receiptPhoto").setValue("");
-                expense.child("policy").setValue(""); // Manca l'alert dialog per scegliere le percentuali
-                expense.child("price").setValue(importo);
-                expense.child("group").setValue(groupID);
-                // carico le divisioni nella spesa
-                for(Soldo soldo : parti){
-                    String phone = String.valueOf(soldo.getPersona().getTelephone());
-                    DatabaseReference t = expense.child("divisions").child(phone);
-                    Double duePart =soldo.getImporto().doubleValue();
-                    t.child("duePart").setValue(duePart);
-                    boolean pagato = soldo.getHaPagato();
-                    t.child("hasPaid").setValue(pagato);
-                }
+                ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
-                // aggiorno le divisioni delle spese del gruppo in questione perhé eventualmente sono
-                // state modificate dal metodo AddSpesa_and_try_repay
+                Collection<Soldo> parti = s1.getDivisioni().values();
+                for(Persona p: partecipanti){
+                    if(!p.getTelephone().equals(user.getTelephone()))
+                        p.plusOneUnread(gruppo.getGroupID());
 
-                ArrayList<Spesa> spese = gruppo.Obtain_spese_array();
-                for(Spesa s : spese){
-                    DatabaseReference exp = expensesRef.child(s.getExpenseID());
-                    DatabaseReference div = exp.child("divisions");
-                    Collection<Soldo> divisions = s.getDivisioni().values();
-                    for(Soldo soldo : divisions){
-                        String phoneNumber = String.valueOf(soldo.getPersona().getTelephone());
-                        Double duePart = soldo.getImporto();
-                        Boolean hasPaid = soldo.getHaPagato();
-                        DatabaseReference member = div.child(phoneNumber);
-                        member.child("duePart").setValue(duePart);
-                        member.child("hasPaid").setValue(hasPaid);
+                    user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
+                    p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
+                    p.refreshTimeOfGroup(gruppo.getGroupID());
+                    if(s1.getPagante().getTelephone().equals(p.getTelephone())){ //Se il pagante sono io
+
+                        for(Soldo s: parti){
+                            if(!s.getPersona().getTelephone().equals(p.getTelephone())){// per tutti i soldi che non sono io
+                                p.addTobalance(s.getPersona(),s.getImporto());
+                            }}
+                    }
+                    else { //non lo sono
+
+                        for (Soldo s : parti) {
+                            if (s.getPersona().getTelephone().equals(p.getTelephone())) {// solo il mio soldo
+                                p.addTobalance(s.getPagante(), (s.getImporto()) * -1d); //prendo la mia parte in negativo per quella persona e andrò a sommarla al pagante
+                            }
+
+                        }
                     }
                 }
 
-                expense.child("group").setValue(groupID);
-                // Aggiungo la spesa alla lista delle spese globali
+                final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID());
+                Gson gson = new Gson();
+                Gruppo g1 = gson.fromJson(gson.toJson(gruppo),Gruppo.class);
+                groups_prova.setValue(g1);
+                final DatabaseReference users_prova = database.getReference().child("users_prova");
+
+                for(Persona p: partecipanti){
+                    Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
+                    users_prova.child(p1.getTelephone()).setValue(p1);
+
+                }
+
 
 
                 getActivity().startActivity(i);

@@ -223,4 +223,7 @@ public class Persona implements Serializable {
 
 
     }
+    public Integer obtain_a_debt(String gruppoId){
+        return dove_ho_debito.get(gruppoId);
+    }
 }
