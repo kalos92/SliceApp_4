@@ -22,7 +22,7 @@ public class Persona implements Serializable {
     private HashMap<String,Integer> dove_ho_debito = new HashMap<String,Integer>(); // hashMap in cui ho
     // gruppo a : 0/1 se è 0 allora non ho nessun debito
     //                se è 1 allora ho almeno 1 debito
-    private HashMap<String,String> gruppi_partecipo = new HashMap<String,String>();
+    private HashMap<String,Dettagli_Gruppo> gruppi_partecipo = new HashMap<String,Dettagli_Gruppo>();
     private String name;
     private String surname;
     private String username;
@@ -88,7 +88,7 @@ public class Persona implements Serializable {
     public void setIsInDB(int isInDB) {
         this.isInDB = isInDB;
     }
-    public void setGruppi(HashMap<String,String> gruppi_partecipo) { this.gruppi_partecipo = gruppi_partecipo; }
+    public void setGruppi(HashMap<String,Dettagli_Gruppo> gruppi_partecipo) { this.gruppi_partecipo = gruppi_partecipo; }
     public void setPassword(String password) { this.password = password; }
     public void setBirthdate(String birthdate){ this.birthdate = birthdate; }
     // Other methods
@@ -112,8 +112,8 @@ public class Persona implements Serializable {
 
 
 
-    public void AddToGroup(Gruppo gruppo,int pos){
-        gruppi_partecipo.put(gruppo.getGroupID(),gruppo.getGroupName()+";"+gruppo.getGroupID());
+    public void AddToGroup(Gruppo gruppo,int pos,int img){
+        gruppi_partecipo.put(gruppo.getGroupID(),new Dettagli_Gruppo(gruppo.getGroupName(),gruppo.getGroupID(),0));
         posizione_gruppi.put(gruppo.getGroupID(), new Integer(pos));
         dove_ho_debito.put(gruppo.getGroupID(),new Integer(0));
     }
@@ -146,11 +146,11 @@ public class Persona implements Serializable {
         this.dove_ho_debito = dove_ho_debito;
     }
 
-    public HashMap<String, String> getGruppi_partecipo() {
+    public HashMap<String, Dettagli_Gruppo> getGruppi_partecipo() {
         return gruppi_partecipo;
     }
 
-    public void setGruppi_partecipo(HashMap<String,String> gruppi_partecipo) {
+    public void setGruppi_partecipo(HashMap<String,Dettagli_Gruppo> gruppi_partecipo) {
         this.gruppi_partecipo = gruppi_partecipo;
     }
 
@@ -194,4 +194,33 @@ public class Persona implements Serializable {
     }
 
 
+    public void refreshTimeOfGroup(String groupID) {
+        Dettagli_Gruppo dg = gruppi_partecipo.get(groupID);
+        dg.refreshTime();
+        gruppi_partecipo.put(groupID,dg);
+    }
+
+    public void plusOneUnread(String groupID) {
+        Dettagli_Gruppo dg = gruppi_partecipo.get(groupID);
+        dg.plus_unread();
+        gruppi_partecipo.put(groupID,dg);
+    }
+
+    public void resetUnread(String groupID) {
+        Dettagli_Gruppo dg = gruppi_partecipo.get(groupID);
+        dg.reset_unread();
+        gruppi_partecipo.put(groupID,dg);
+    }
+
+    public Dettagli_Gruppo obtainDettaglio(String groupID) {
+        return gruppi_partecipo.get(groupID);
+    }
+
+    public void updateLast(String groupID,String nome_p,String nome_s){
+        Dettagli_Gruppo dg = gruppi_partecipo.get(groupID);
+        dg.updateLast(nome_p,nome_s);
+        gruppi_partecipo.put(groupID,dg);
+
+
+    }
 }

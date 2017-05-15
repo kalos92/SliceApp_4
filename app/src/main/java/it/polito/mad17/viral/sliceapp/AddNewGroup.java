@@ -85,7 +85,7 @@ public class AddNewGroup extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle("Contacts access needed");
                     builder.setPositiveButton(android.R.string.ok, null);
-                    builder.setMessage("please confirm Contacts access");//TODO put real question
+                    builder.setMessage("please confirm Contacts access");
                     builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
                         @TargetApi(Build.VERSION_CODES.M)
                         @Override
@@ -272,7 +272,7 @@ Collections.sort(listP, new Comparator<Persona>() {
         int id = item.getItemId();
         ArrayList<Persona> listPersone = new ArrayList<Persona>();
 
-        if(id == R.id.action_continue){
+        if(id == R.id.action_continue && adapter!=null){
             listPersone.addAll(adapter.getGroupMembers().values());
             if(listPersone.size()!=0){
             Intent i = new Intent(AddNewGroup.this,Group_Details.class);
@@ -283,6 +283,10 @@ Collections.sort(listP, new Comparator<Persona>() {
                 return false;}
 
         }
+        else{
+            Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
+            return false;}
+
         return super.onOptionsItemSelected(item);
     }
 

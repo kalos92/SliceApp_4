@@ -1,45 +1,49 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_width="match_parent"
+    android:layout_height="90dp"
     android:padding="10dp"
     android:weightSum="1"
-    android:background="?android:attr/activatedBackgroundIndicator">
+    android:background="@color/tab_bck">
 
 
     <TextView
+        android:text="giorgiovanni"
         android:id="@+id/person_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_weight="5.26"
-        android:layout_marginRight="@dimen/activity_vertical_margin"
-        android:layout_centerVertical="true"
+android:textAlignment="center"
         android:textColor="@color/text"
-        android:textSize="15sp" />
+        android:textSize="20sp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TextView
         android:id="@+id/money"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="5dp"
-        android:layout_marginTop="5dp"
-        android:layout_weight="5.26"
+        android:text="12233445"
         android:gravity="center"
         android:textColor="@color/text"
         android:textSize="22dp"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
     <TextView
         android:id="@+id/expCurrency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/money"
         android:textColor="@color/text"
         android:text="€"
-        />
+        android:layout_alignTop="@+id/money"
+        android:layout_toRightOf="@+id/money"
+        android:layout_marginLeft="11dp"
+        android:layout_marginStart="11dp"
+        android:layout_alignParentBottom="true" />
 
 
 </RelativeLayout>

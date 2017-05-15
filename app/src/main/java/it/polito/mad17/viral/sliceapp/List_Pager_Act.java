@@ -21,6 +21,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -47,7 +48,7 @@ public class List_Pager_Act extends AppCompatActivity {
     private TabLayout tabLayout;
     private int[]  tabIcons = {R.drawable.img_contestation, R.drawable.img_gruppi , R.drawable.img_bilancio};
     private ViewPager vpPager;
-    private Processor proc;
+
 
     private DataSnapshot users;
 
@@ -56,125 +57,6 @@ public class List_Pager_Act extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //////////////////////////////////////////////////
-        // listen for database groups changes
-        //DatabaseReference rootRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
-        //final DatabaseReference groupsRef = rootRef.child("groups");
-        //final DatabaseReference usersRef = rootRef.child("users");
-
-       /* usersRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) { users = dataSnapshot; }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
-
-        groupsRef.addChildEventListener(new ChildEventListener() {
-
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildAdded groups " + dataSnapshot);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildChanged groups " + dataSnapshot);
-                // campo che ci indica la fine del caricamento del grupo
-                if(dataSnapshot.child("numMembers").getValue() != null){
-                    String groupName = (String) dataSnapshot.child("name").getValue();
-                    Persona currentUser = SliceAppDB.getUser();
-                    String currentPhone = currentUser.getTelephone();
-                    DataSnapshot members = dataSnapshot.child("members");
-                    // per il momento, la notifica arriva anche a chi ha creato il gruppo
-                    if(members.hasChild(currentPhone)){
-                        SliceAppDB.getListaGruppi().clear();
-                        SliceAppDB.getListaSpese().clear();
-                        SliceAppDB.getGruppi().clear();
-                        SliceAppDB.getMappaGruppi().clear();
-                        startActivity(new Intent(getApplicationContext(), SplashScreen.class));
-                        finish();
-
-                        // Notification for the addition of a new group,
-                        Intent intent = new Intent();
-                        PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                .setContentTitle("You have been added to a new group!")
-                                .setContentText(groupName)
-                                .setSmallIcon(R.drawable.added_to_group)
-                                .setContentIntent(pIntent)
-                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-                        Notification noti = builder.build();
-                        noti.flags = Notification.FLAG_AUTO_CANCEL;
-                        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                        notificationManager.notify(0, noti);
-                    }
-                }
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) { }
-            @Override
-            public void onCancelled(DatabaseError databaseError) { }
-        });
-
-        // listen for database expenses changes
-        //DatabaseReference rootRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
-        DatabaseReference expensesRef = rootRef.child("expenses");
-        expensesRef.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildAdded expenses " + dataSnapshot);
-            }
-
-            @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildChanged expenses " + dataSnapshot);
-                // campo che ci indica la fine del caricamento del grupo
-                if(dataSnapshot.child("group").getValue() != null){
-                    String expenseDescription = (String) dataSnapshot.child("description").getValue();
-                    Persona currentUser = SliceAppDB.getUser();
-                    String currentPhone = currentUser.getTelephone();
-                    DataSnapshot members = dataSnapshot.child("divisions");
-                    // per il momento, la notifica arriva anche a chi ha creato il gruppo
-                    if(members.hasChild(currentPhone)){
-                        SliceAppDB.getListaGruppi().clear();
-                        SliceAppDB.getListaSpese().clear();
-                        SliceAppDB.getGruppi().clear();
-                        SliceAppDB.getMappaGruppi().clear();
-                        startActivity(new Intent(getApplicationContext(), SplashScreen.class));
-                        finish();
-
-                        // Notification for the addition of a new group,
-                        Intent intent = new Intent();
-                        PendingIntent pIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
-                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                .setContentTitle("A new expense has been added to the group!")
-                                .setContentText(expenseDescription)
-                                .setSmallIcon(R.drawable.added_expense)
-                                .setContentIntent(pIntent)
-                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION));
-                        Notification noti = builder.build();
-                        noti.flags = Notification.FLAG_AUTO_CANCEL;
-                        NotificationManager notificationManager = (NotificationManager) getApplicationContext().getSystemService(Context.NOTIFICATION_SERVICE);
-                        notificationManager.notify(0, noti);
-                    }
-                }
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-            @Override
-            public void onCancelled(DatabaseError databaseError) {}
-        });
-        /////////////////////////////////////////////////////////////////
-
-        ArrayList<Spesa> spese = SliceAppDB.getListaSpese();
-        for(Spesa s : spese)
-            System.out.println("spesa " + s.getExpenseID());*/
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
 
@@ -202,7 +84,7 @@ public class List_Pager_Act extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         MyPagerAdapter adapter = new MyPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(new FirstFragment(), "GROUPS");
-        adapter.addFragment(SecondFragment.newInstance(SliceAppDB.getUser(),proc), "BALANCE");
+        adapter.addFragment(SecondFragment.newInstance(SliceAppDB.getUser()), "BALANCE");
         adapter.addFragment(new ThirdFragment(), "QUARRELS");
         viewPager.setAdapter(adapter);
     }
@@ -241,17 +123,20 @@ public class List_Pager_Act extends AppCompatActivity {
 
         TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
         tabOne.setText(" QUARRELS");
+        tabOne.setTextSize(13);
         tabOne.setCompoundDrawablesRelativeWithIntrinsicBounds( scaleImage(tabIcons[0],Images_costant.MENU_ICON_WIDTH,Images_costant.MENU_ICON_HEIGHT),null, null, null);
         tabLayout.getTabAt(2).setCustomView(tabOne);
 
 
         TextView tabTwo = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
         tabTwo.setText(" GROUPS");
+        tabOne.setTextSize(13);
         tabTwo.setCompoundDrawablesRelativeWithIntrinsicBounds( scaleImage(tabIcons[1],Images_costant.MENU_ICON_WIDTH,Images_costant.MENU_ICON_HEIGHT) ,null,null, null);
         tabLayout.getTabAt(0).setCustomView(tabTwo);
 
         TextView tabThree = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
         tabThree.setText(" BALANCE");
+        tabOne.setTextSize(13);
         tabThree.setCompoundDrawablesRelativeWithIntrinsicBounds( scaleImage(tabIcons[2],Images_costant.MENU_ICON_WIDTH,Images_costant.MENU_ICON_HEIGHT),null, null, null);
         tabLayout.getTabAt(1).setCustomView(tabThree);
     }
@@ -280,10 +165,7 @@ public class List_Pager_Act extends AppCompatActivity {
             prefEditor.putInt("isLogged", 0);
             prefEditor.commit();
             // pulire lista gruppi e lista spese, altrimenti la visualizzazione è doppia
-            SliceAppDB.getListaGruppi().clear();
-            SliceAppDB.getListaSpese().clear();
-            SliceAppDB.getMappaGruppi().clear();
-            SliceAppDB.getGruppi().clear();
+
             Intent i = new Intent(List_Pager_Act.this,  LoginActivity.class);
             startActivity(i);
             finish();

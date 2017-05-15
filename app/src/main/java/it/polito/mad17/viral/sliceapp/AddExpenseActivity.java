@@ -4,7 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.support.v4.app.Fragment;
 import android.graphics.Bitmap;
-import android.icu.util.GregorianCalendar;
+import java.util.GregorianCalendar;
 import android.net.Uri;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -97,12 +97,6 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
 
     }
 
-    @Override
-    public void returnDate(GregorianCalendar date) {
-       AddExpenseFragment addd=  (AddExpenseFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
-        addd.returnDate(date);
-    }
-
 
     @Override
     public void onBackPressed() {
@@ -168,5 +162,11 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
     @Override
     public void returnSelection_2(String values, String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy) {
         chtp.returnSelection_2(values,cat,data,buyer,b,uri,price,nome,gruppo,user,null,policy);
+    }
+
+    @Override
+    public void returnDate(GregorianCalendar date) {
+        AddExpenseFragment addd=  (AddExpenseFragment) getSupportFragmentManager().findFragmentById(R.id.fragment);
+        addd.returnDate(date);
     }
 }

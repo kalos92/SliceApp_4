@@ -2,17 +2,12 @@ package it.polito.mad17.viral.sliceapp;
 
 
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import java.util.Calendar;
 import com.google.gson.annotations.Expose;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
+
 
 
 /**
@@ -45,6 +40,9 @@ public class Gruppo implements Serializable,Cloneable {
     @Expose
     private int img;
 
+    @Expose
+    private long c;
+
 
     @Expose
     private boolean hasDone=false;
@@ -66,12 +64,12 @@ public class Gruppo implements Serializable,Cloneable {
         for(final Persona p: partecipanti_array) {
 
             partecipanti_numero_cnome.put(p.getTelephone(), p.getName() + " " + p.getSurname());
-            p.AddToGroup(this, i);
+            p.AddToGroup(this, i,img);
             partecipanti.put(p.getTelephone(),p);
             i++;
         }
 
-
+        c = Calendar.getInstance().getTimeInMillis();
     }
 
 
@@ -255,6 +253,18 @@ public class Gruppo implements Serializable,Cloneable {
 
     public void setPartecipanti_numero_cnome(HashMap<String, String> partecipanti_numero_cnome) {
         this.partecipanti_numero_cnome = partecipanti_numero_cnome;
+    }
+
+    public void refreshC(){
+        c=Calendar.getInstance().getTimeInMillis();
+    }
+
+    public long getC() {
+        return c;
+    }
+
+    public void setC(long c) {
+        this.c = c;
     }
 }
 

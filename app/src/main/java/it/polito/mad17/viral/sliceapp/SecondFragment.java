@@ -1,7 +1,11 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +14,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseListAdapter;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -42,11 +47,10 @@ public class SecondFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static SecondFragment newInstance(Persona user, Processor proc) {
+    public static SecondFragment newInstance(Persona user) {
         SecondFragment fragment = new SecondFragment();
         Bundle args = new Bundle();
         args.putSerializable("User", user);
-        args.putSerializable("Proc", proc);
         fragment.setArguments(args);
         return fragment;
     }
@@ -65,63 +69,80 @@ public class SecondFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View v = inflater.inflate(R.layout.slide_balance, container, false);
-        final ListView mylist = (ListView) v.findViewById(R.id.listView1);
+        final RecyclerView mylist = (RecyclerView) v.findViewById(R.id.listView1);
 
 
         Query ref = rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("amici");
 
-        FirebaseListAdapter<Riga_Bilancio> adapter= new FirebaseListAdapter<Riga_Bilancio>(getActivity(), Riga_Bilancio.class, R.layout.listview_balance_row, ref) {
-
+        FirebaseRecyclerAdapter<Riga_Bilancio,BalanceHolder> adapter= new  FirebaseRecyclerAdapter<Riga_Bilancio,BalanceHolder>(Riga_Bilancio.class, R.layout.listview_balance_row, BalanceHolder.class,ref) {
             @Override
-            protected void populateView(View v, Riga_Bilancio model, int position) {
+            protected void populateViewHolder(BalanceHolder viewHolder, Riga_Bilancio model, int position) {
 
-                TextView name = (TextView) v.findViewById(R.id.person_name);
-                TextView money = (TextView) v.findViewById(R.id.money);
+
 
                 if(model.getImporto()<0) {
                     String str = String.format("%.2f",model.getImporto()*-1);
-                    money.setText("-" + str);
-                    name.setText("You owe to "+ model.getNcname()+":");
-                    money.setTextColor(getContext().getResources().getColor(R.color.row_non_pagate_bck));
-                    name.setTextColor(getContext().getResources().getColor(R.color.row_non_pagate_bck));
+                    viewHolder.money.setText("-" + str);
+                    viewHolder.name_p.setText("You owe to "+ model.getNcname()+":");
+                    viewHolder. money.setTextColor(getContext().getResources().getColor(R.color.debiti));
+                    viewHolder.name_p.setTextColor(getContext().getResources().getColor(R.color.debiti));
                 }
                 else if (model.getImporto()>0){
                     String str = String.format("%.2f",model.getImporto());
-                    money.setText("+"+ str);
-                    name.setText(model.getNcname()+ " owe to you:");
+                    viewHolder.money.setText("+"+ str);
+                    viewHolder.name_p.setText(model.getNcname()+ " owe to you:");
 
-                    money.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
-                    name.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+                    viewHolder.money.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+                    viewHolder.name_p.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
                 }
                 else if (model.getImporto()==0){
 
-                    money.setText("");
-                    name.setText(model.getNcname()+ " has no problem with you");
+                    viewHolder.money.setText("");
+                    viewHolder.name_p.setText(model.getNcname()+ " has no problem with you");
 
-                    money.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
-                    name.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+                    viewHolder.money.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+                    viewHolder.name_p.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
                 }
-
-
-
-
-
-
-
-
-
-
             }
+
+
+
+
+
         };
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        mylist.setLayoutManager(llm);
+        DividerItemDecoration verticalDecoration = new DividerItemDecoration(mylist.getContext(), DividerItemDecoration.VERTICAL);
+        Drawable verticalDivider = getContext().getDrawable(R.drawable.horizontal_divider);
+        verticalDecoration.setDrawable(verticalDivider);
+        mylist.addItemDecoration(verticalDecoration);
         mylist.setAdapter(adapter);
 
-        //BalanceAdapter adapter = new BalanceAdapter(v.getContext(),R.layout.listview_balance_row,null,user);
+
 
 
 
         return v;
     }
 
+
+    public static class BalanceHolder extends RecyclerView.ViewHolder{
+        TextView name_p;
+        TextView money;
+        TextView currency;
+
+        public BalanceHolder(View itemView) {
+            super(itemView);
+
+            name_p = (TextView) itemView.findViewById(R.id.person_name);
+            money = (TextView) itemView.findViewById(R.id.money);
+            currency = (TextView) itemView.findViewById(R.id.expCurrency);
+
+
+
+        }
+    }
 
 
 }

@@ -48,6 +48,7 @@ public class ExpensesActivity extends AppCompatActivity {
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private DatabaseReference rootRef = database.getReference();
     private DatabaseReference groups_ref = rootRef.child("groups_prova");
+    private DatabaseReference users_prova= rootRef.child("users_prova");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,7 +63,8 @@ public class ExpensesActivity extends AppCompatActivity {
             gruppo = (Gruppo) extra.get("Gruppo");
             user = (Persona) extra.get("User");
         }
-
+        user.resetUnread(gruppo.getGroupID());
+        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
         fm= getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -80,15 +82,7 @@ public class ExpensesActivity extends AppCompatActivity {
         t.setLogo(d);
         final ListView mlist = (ListView) findViewById(R.id.listView2);
 
-        final ArrayList<Spesa> speseGruppo = new ArrayList<Spesa>();
-        /*for(Spesa s : SliceAppDB.getListaSpese()){
-            if(s.getGruppo().getGroupID().equals(gruppo.getGroupID()))
-                speseGruppo.add(s);
-        }*/
-        for(Spesa s : SliceAppDB.getMappaSpese().values()){
-            if(s.getGruppo().equals(gruppo.getGroupID()))
-                speseGruppo.add(s);
-        }
+
 
         Query ref = groups_ref.child(gruppo.getGroupID()).child("listaSpeseGruppo");
 
@@ -123,7 +117,7 @@ public class ExpensesActivity extends AppCompatActivity {
         };
 
 
-        final ExpensesAdapter adapter_2 = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, speseGruppo, user);
+       // final ExpensesAdapter adapter_2 = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, speseGruppo, user);
         mlist.setAdapter(adapter);
 
         // What to do when user press the toolbar back button
@@ -136,7 +130,7 @@ public class ExpensesActivity extends AppCompatActivity {
         });
 
         // What to do when the user long press an item from the expenses list
-        mlist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+       /* mlist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 
@@ -210,13 +204,16 @@ public class ExpensesActivity extends AppCompatActivity {
                 alert.show();
                 return true;
             }
-        });
+        });*/
 
         BottomNavigationView bottomBar = (BottomNavigationView)findViewById(R.id.bottom_nav_bar);
         bottomBar.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
                     @Override
                     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+                        user.resetUnread(gruppo.getGroupID());
+                        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
                         Intent appInfo= new Intent(ExpensesActivity.this, AddExpenseActivity.class);
                         appInfo.putExtra("Gruppo",gruppo);
                         appInfo.putExtra("User",user);
@@ -228,7 +225,10 @@ public class ExpensesActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
+    public void onBackPressed()
+    {
+        user.resetUnread(gruppo.getGroupID());
+        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
         finish();
     }
 }

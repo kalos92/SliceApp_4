@@ -19,9 +19,9 @@
             android:layout_margin="10dp"
             android:layout_weight="0.25"
             android:layout_gravity="center"
-            android:text="Your Debts:"
+            android:text="Your\nDebts:"
             android:textColor="@color/debiti"
-            android:textSize="15sp"
+            android:textSize="13sp"
             android:textStyle="bold"/>
 
         <TextView
@@ -42,10 +42,11 @@
             android:layout_marginRight="@dimen/activity_vertical_margin"
             android:layout_weight="0.25"
             android:layout_gravity="center"
-            android:text="Your Credits:"
-            android:textColor="@color/crediti"
-            android:textSize="15sp"
-            android:textStyle="bold"/>
+            android:text="Your\nCredits:"
+            android:textColor="@color/colorPrimary"
+            android:textSize="13sp"
+            android:textStyle="bold"
+            android:layout_marginLeft="@dimen/activity_vertical_margin"/>
 
         <TextView android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -53,7 +54,7 @@
         android:layout_weight="0.25"
         android:layout_gravity="center"
         android:layout_alignBottom="@+id/credits"
-            android:textColor="@color/crediti"
+            android:textColor="@color/colorPrimary"
             android:textSize="15sp"
             android:textStyle="bold"/>
 

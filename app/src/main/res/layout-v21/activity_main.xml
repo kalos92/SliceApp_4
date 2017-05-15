@@ -33,9 +33,9 @@
             app:tabIndicatorHeight="4dp"
             app:tabIndicatorColor="@color/slider_tab"
             android:background="@color/colorPrimary"
-            app:tabMode="fixed"
+            app:tabMode="scrollable"
             app:tabGravity="fill"
-            android:elevation="6dp"
+
 
 
             />

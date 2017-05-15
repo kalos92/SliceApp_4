@@ -4,18 +4,11 @@ import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.icu.util.Calendar;
-import android.icu.util.GregorianCalendar;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.view.View;
 import android.widget.DatePicker;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
-
+import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Random;
 
 /**
@@ -56,13 +49,11 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             if(c2.after(c)) {
                 Random randomGenerator = new Random();
                 int randomInt = randomGenerator.nextInt(EasterEgg.length);
-                Toast.makeText(getContext(), EasterEgg[randomInt], Toast.LENGTH_LONG).show();
+                Toast.makeText(getActivity().getBaseContext(), EasterEgg[randomInt], Toast.LENGTH_LONG).show();
                 if (listener != null){
                 listener.returnDate((GregorianCalendar) c);
                     return;
                 }}
-
-
 
         if (listener != null)
             listener.returnDate((GregorianCalendar) c2);

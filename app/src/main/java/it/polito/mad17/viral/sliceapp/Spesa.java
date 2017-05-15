@@ -1,12 +1,14 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.graphics.Bitmap;
+
 import android.net.Uri;
 
 import java.io.Serializable;
-import java.util.ArrayList;
+
+import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Observable;
+
 
 /**
  * Created by Kalos on 25/03/2017.
@@ -29,6 +31,10 @@ public class Spesa implements Serializable {
     private String expenseID;
 
 
+
+    private long c;
+
+
     public Spesa(){}
 
     public Spesa(String nome_spesa, String data, Policy policy, Persona pagante, Double importo, Gruppo gruppo){
@@ -39,6 +45,7 @@ public class Spesa implements Serializable {
         this.policy=policy;
         this.data=data;
         this.nome_spesa=nome_spesa;
+        c= Calendar.getInstance().getTimeInMillis();
     }
 
     public String getData() {
@@ -161,5 +168,17 @@ public class Spesa implements Serializable {
 
     public void setDivisioni(HashMap<String, Soldo> divisioni) {
         this.divisioni = divisioni;
+    }
+
+    public void refreshC(){
+        c=Calendar.getInstance().getTimeInMillis();
+    }
+
+    public long getC() {
+        return c;
+    }
+
+    public void setC(long c) {
+        this.c = c;
     }
 }
