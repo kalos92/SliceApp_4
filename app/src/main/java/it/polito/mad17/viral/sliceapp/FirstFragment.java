@@ -43,6 +43,7 @@ public class FirstFragment extends Fragment{
     private HashMap<String, Persona> partecipanti = new HashMap<String,Persona>();
     private Gruppo g;
     private String key;
+    private FloatingActionButton fab;
 
 
     public static FirstFragment newInstance() {
@@ -61,7 +62,7 @@ public class FirstFragment extends Fragment{
         View v = inflater.inflate(R.layout.slide_groups, container, false);
         RecyclerView mylist = (RecyclerView) v.findViewById(R.id.listView1);
 
-        FloatingActionButton fab = (FloatingActionButton) v.findViewById(R.id.add_group);
+        fab = (FloatingActionButton) v.findViewById(R.id.add_group);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +89,18 @@ public class FirstFragment extends Fragment{
         verticalDecoration.setDrawable(verticalDivider);
         mylist.addItemDecoration(verticalDecoration);
         mylist.setAdapter(adapter);
+        mylist.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 0)
+                    fab.hide();
+                else if (dy < 0)
+                    fab.show();
+
+            }
+        });
 
 
 

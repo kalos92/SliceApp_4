@@ -74,6 +74,7 @@ public class SplashScreen extends AppCompatActivity {
                 public void onDataChange(DataSnapshot dataSnapshot) {
 
                     user = dataSnapshot.getValue(Persona.class);
+                    SliceAppDB.setUser_1(user);
                     SliceAppDB.setUser(user);
                     Intent i = new Intent(SplashScreen.this, List_Pager_Act.class);
                     startActivity(i);

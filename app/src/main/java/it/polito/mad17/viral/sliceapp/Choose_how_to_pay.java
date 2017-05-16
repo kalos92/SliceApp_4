@@ -33,7 +33,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     private String price;
     private String nome;
     private Gruppo gruppo;
-    private Persona user;
+    private Persona user =SliceAppDB.getUser();;
     private Policy policy;
 
     public static Choose_how_to_pay newInstance(Gruppo g) {
@@ -164,7 +164,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                 }
 
-
+                SliceAppDB.setUser(user);
 
                 getActivity().startActivity(i);
                 getActivity().finish();
@@ -256,7 +256,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                 }
 
-
+                SliceAppDB.setUser(user);
 
                 getActivity().startActivity(i);
                 getActivity().finish();
@@ -277,7 +277,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
         this.uri=uri;
         this.nome=nome;//
         this.gruppo=gruppo;//
-        this.user=user;//
+        this.user=SliceAppDB.getUser();//
         this.policy=policy;//
         this.price=price;
     }

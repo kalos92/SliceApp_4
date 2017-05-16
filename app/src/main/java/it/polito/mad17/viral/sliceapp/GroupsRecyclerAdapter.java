@@ -74,7 +74,9 @@ public class GroupsRecyclerAdapter extends FirebaseRecyclerAdapter<Dettagli_Grup
             viewHolder.last.setVisibility(View.GONE);
 
          String key = model.getChiave();
+
         final String key2 = key;
+
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,74 +85,76 @@ public class GroupsRecyclerAdapter extends FirebaseRecyclerAdapter<Dettagli_Grup
                 // caricare i partecipanti nel gruppo;
                 final DatabaseReference users_prova = rootRef.child("users_prova");
 
-               final SpotsDialog progressDialog = new SpotsDialog(v.getContext(), R.style.Custom);
-                progressDialog.show();
-              //  final ProgressDialog waiting = ProgressDialog.show(v.getContext(),"Downloading","I'm getting your information",true);
 
-                        groups_ref.child(chiave).child("partecipanti_numero_cnome").addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator<DataSnapshot> it =dataSnapshot.getChildren().iterator();
-                        while(it.hasNext()){
-                            numbers.add(it.next().getKey()); // qui ho tutti i numeri delle persone
+                    final SpotsDialog progressDialog = new SpotsDialog(v.getContext(), R.style.Custom);
+                    progressDialog.show();
+                    //  final ProgressDialog waiting = ProgressDialog.show(v.getContext(),"Downloading","I'm getting your information",true);
 
-                        }
+                    groups_ref.child(chiave).child("partecipanti_numero_cnome").addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
+                            while (it.hasNext()) {
+                                numbers.add(it.next().getKey()); // qui ho tutti i numeri delle persone
 
-                        groups_ref.child(chiave).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                g = dataSnapshot.getValue(Gruppo.class);
+                            }
+
+                            groups_ref.child(chiave).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    g = dataSnapshot.getValue(Gruppo.class);
 
 
-                                users_prova.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(DataSnapshot dataSnapshot) {
-                                        Iterator<DataSnapshot> it =dataSnapshot.getChildren().iterator();
+                                    users_prova.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            Iterator<DataSnapshot> it = dataSnapshot.getChildren().iterator();
 
-                                        while(it.hasNext()){
-                                            DataSnapshot ds = it.next();
-                                            if(numbers.contains(ds.getKey())) {
-                                                Persona p = ds.getValue(Persona.class);
-                                                partecipanti.put(p.getTelephone(),p);
+                                            while (it.hasNext()) {
+                                                DataSnapshot ds = it.next();
+                                                if (numbers.contains(ds.getKey())) {
+                                                    Persona p = ds.getValue(Persona.class);
+                                                    partecipanti.put(p.getTelephone(), p);
 
+
+                                                }
 
                                             }
+                                            g.setPartecipanti_3(partecipanti);
+                                            g.setUser(SliceAppDB.getUser());
+
+
+                                            Intent i = new Intent(v2.getContext(), ExpensesActivity.class);
+
+
+                                            i.putExtra("Gruppo", g);
+                                            i.putExtra("User", SliceAppDB.getUser());
+
+                                            v2.getContext().startActivity(i);
+                                            progressDialog.dismiss();
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
 
                                         }
-                                        g.setPartecipanti_3(partecipanti);
-                                        g.setUser(SliceAppDB.getUser());
+                                    });
+                                }
 
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
 
-                                        Intent i = new Intent(v2.getContext(),ExpensesActivity.class);
+                                }
+                            });
+                        }
 
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
 
-                                        i.putExtra("Gruppo",g);
-                                        i.putExtra("User", SliceAppDB.getUser());
-                                        v2.getContext().startActivity(i);
-                                        progressDialog.dismiss();
-                                    }
+                        }
+                    });
+                }
 
-                                    @Override
-                                    public void onCancelled(DatabaseError databaseError) {
-
-                                    }
-                                });
-                            }
-
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
-
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-
-            }
         });
 
 

@@ -45,7 +45,7 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
         Bundle extra = getIntent().getExtras();
         if(extra!= null) {
            gruppo = (Gruppo) extra.get("Gruppo");
-           user = (Persona) extra.get("User");
+           user = SliceAppDB.getUser();
         }
 
 

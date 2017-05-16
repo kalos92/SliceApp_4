@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
@@ -40,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static android.os.Build.VERSION.RELEASE;
 import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class List_Pager_Act extends AppCompatActivity {
@@ -57,8 +59,12 @@ public class List_Pager_Act extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
-        ((Activity)this).setTaskDescription(taskDescription);
+        //if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M){
+
+        //}
+
+            ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp", null, getResources().getColor(R.color.colorPrimary));
+            ((Activity) this).setTaskDescription(taskDescription);
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.slider_tab));

@@ -43,7 +43,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
 
     public interface ReturnSelection{
-        public void returnSelection(String values, String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Select_Policy_Fragment spf);
+         void returnSelection(String values, String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Select_Policy_Fragment spf);
     }
 
    // Spinner spi = (Spinner) v.findViewById(R.id.currencies_spinner);
@@ -94,7 +94,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         if (getArguments() != null) {
-            user = (Persona) getArguments().getSerializable("User");
+            user = SliceAppDB.getUser();
             gruppo = (Gruppo) getArguments().getSerializable("Gruppo");
         }
 
