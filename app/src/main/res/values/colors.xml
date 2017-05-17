@@ -13,4 +13,7 @@
     <color name="text">#000000</color>
     <color name="row_non_pagate">#96281B</color>
     <color name="row_non_pagate_bck">#F1A9A0</color>
+    <color name="colorFAB1">#2196F3</color>
+    <color name="colorFAB2">#E040FB</color>
+
 </resources>

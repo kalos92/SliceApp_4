@@ -23,9 +23,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
         android:layout_margin="16dp"
-        android:src="@drawable/add_group"
-        app:layout_anchor="@id/listView1"
+        android:src="@drawable/img_add"
         android:background="@color/colorPrimary"
+        app:elevation="6dp"
+        app:backgroundTint="#F44336"
+        app:pressedTranslationZ="12dp"
         app:layout_anchorGravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>

@@ -146,7 +146,6 @@ public class AddNewGroup extends AppCompatActivity {
 
         public void getContact(){
 
-
                 Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
                 while(phones.moveToNext()) {
                     String name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
@@ -227,7 +226,6 @@ Collections.sort(listP, new Comparator<Persona>() {
         return false;
     }
 });
-
 
             listP.add(new Persona("null_$","null_$","null_$","null_$","null_$","null_$",0,"null_$"));
 

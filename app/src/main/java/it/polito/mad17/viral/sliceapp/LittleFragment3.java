@@ -1,7 +1,5 @@
 package it.polito.mad17.viral.sliceapp;
 
-
-
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -9,37 +7,38 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Created by Kalos on 16/05/2017.
+ */
 
+public class LittleFragment3  extends Fragment {
 
-public class Little_fragment_1 extends Fragment {
     private View v;
-    private Float[] percentuali;
-    private Float percentuale;
+
     private Gruppo g;
-    private List<Persona> persone = new ArrayList<>();
+    private ArrayList<Persona> persone = new ArrayList<>();
     private Policy p;
 
-    GetPercentages getPercentages;
+    GetPercentages_2 getPercentages2;
 
-    public interface GetPercentages{
+    public interface GetPercentages_2{
         public void getPercentages(Policy policy);
     }
 
-    public Little_fragment_1() {
+    public LittleFragment3() {
         // Required empty public constructor
     }
 
 
-    public static Little_fragment_1 newInstance(Gruppo g) {
-        Little_fragment_1 fragment = new Little_fragment_1();
+    public static LittleFragment3 newInstance(ArrayList<Persona> persone) {
+        LittleFragment3 fragment = new LittleFragment3();
         Bundle args = new Bundle();
-        args.putSerializable("Gruppo", g);
+        args.putSerializable("Gruppo", persone);
         fragment.setArguments(args);
         return fragment;
     }
@@ -48,7 +47,7 @@ public class Little_fragment_1 extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if(getArguments()!= null){
-            this.g=(Gruppo) getArguments().getSerializable("Gruppo");
+            this.persone= (ArrayList<Persona>) getArguments().getSerializable("Gruppo");
         }
 
     }
@@ -56,15 +55,13 @@ public class Little_fragment_1 extends Fragment {
     @Override
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v= inflater.inflate(R.layout.fragment_little_fragment_1, container, false);
+        v= inflater.inflate(R.layout.fragment_all_the_same, container, false);
 
-        final ListView list = (ListView) v.findViewById(R.id.littleFragment1);
+        final ListView list = (ListView) v.findViewById(R.id.all_the_same1);
 
-        persone.addAll(g.obtainPartecipanti().values());
+        final GetPercentages_2 getPercentages= (GetPercentages_2) getActivity();
 
-        final GetPercentages getPercentages= (GetPercentages) getActivity();
-
-        final CheckBoxTextViewAdapter adapter = new CheckBoxTextViewAdapter(v.getContext(), R.layout.layout_member_payment_row, persone,g);
+        final NoBoxTextViewAdapter adapter = new NoBoxTextViewAdapter(v.getContext(), R.layout.all_the_same_row, persone);
         list.setAdapter(adapter);
 
 
@@ -72,7 +69,7 @@ public class Little_fragment_1 extends Fragment {
 
 
 
-        Button b = (Button) v.findViewById(R.id.save);
+        Button b = (Button) v.findViewById(R.id.save3);
         b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,9 +77,8 @@ public class Little_fragment_1 extends Fragment {
                 v.setFocusableInTouchMode(true);
                 v.requestFocus();
 
-
                 if(adapter.getPercentages()!=null)
-                    p = new Policy(adapter.getPercentages());
+                p = new Policy(adapter.getPercentages());
                 else
                     p=null;
 
@@ -99,6 +95,5 @@ public class Little_fragment_1 extends Fragment {
 
         return v;
     }
-
 
 }

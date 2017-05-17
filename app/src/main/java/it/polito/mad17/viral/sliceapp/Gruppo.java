@@ -20,32 +20,29 @@ public class Gruppo implements Serializable,Cloneable {
     private String groupName;
     @Expose
     private int n_partecipanti;
-
     @Expose
     private HashMap<String, Persona> partecipanti = new HashMap<String,Persona>();
     @Expose
     private HashMap<String,String> partecipanti_numero_cnome = new HashMap<String,String>();
-
     @Expose
     private Persona user;
-
     @Expose
     private HashMap<String, Spesa> spese = new HashMap <String, Spesa>();
-    @Expose
-    private ArrayList<Spesa> listaSpeseGruppo = new ArrayList<Spesa>();
     @Expose
     private String groupID;
     @Expose
     private Policy policy;
     @Expose
     private int img;
-
     @Expose
     private long c;
 
 
+
     @Expose
-    private boolean hasDone=false;
+    private String GroupCreator = SliceAppDB.getUser().getTelephone();
+
+
 
     public Gruppo(){
         // needed for FirebaseListAdapter
@@ -88,7 +85,7 @@ public class Gruppo implements Serializable,Cloneable {
 
     }
 
-    public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
+        public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
 
         public Spesa AddSpesa_and_try_repay(String spesaId,Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
 
@@ -102,7 +99,7 @@ public class Gruppo implements Serializable,Cloneable {
             //metto il debito a tutti
 
             spese.put(spesaId,spesa);
-            listaSpeseGruppo.add(spesa);
+
             return spesa;}
             else
                 return null;
@@ -120,7 +117,7 @@ public class Gruppo implements Serializable,Cloneable {
         //metto il debito a tutti
 
         spese.put(spesaId,spesa);
-        listaSpeseGruppo.add(spesa);
+
         return spesa;
 
     }
@@ -195,10 +192,6 @@ public class Gruppo implements Serializable,Cloneable {
         this.user = user;
     }
 
-
-
-
-
     public HashMap<String, Spesa> getSpese() {
         return spese;
     }
@@ -206,15 +199,6 @@ public class Gruppo implements Serializable,Cloneable {
     public void setSpese(HashMap<String, Spesa> spese) {
         this.spese = spese;
     }
-
-    public ArrayList<Spesa> getListaSpeseGruppo() {
-        return listaSpeseGruppo;
-    }
-
-    public void setListaSpeseGruppo(ArrayList<Spesa> listaSpeseGruppo) {
-        this.listaSpeseGruppo = listaSpeseGruppo;
-    }
-
 
     public String getGroupID() {
         return groupID;
@@ -266,6 +250,14 @@ public class Gruppo implements Serializable,Cloneable {
 
     public void setC(long c) {
         this.c = c;
+    }
+
+    public String getGroupCreator() {
+        return GroupCreator;
+    }
+
+    public void setGroupCreator(String groupCreator) {
+        GroupCreator = groupCreator;
     }
 }
 

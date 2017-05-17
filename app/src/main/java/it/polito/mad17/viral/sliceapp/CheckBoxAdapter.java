@@ -120,39 +120,6 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
     public HashMap<String, Double> getAllTheSame() {
 
 
-        //-1 paga, 0 no
-        /*Double[] percentages_ordinato = new Double[gruppo.getN_partecipanti()];
-        int k=0, n_zeros=0;
-        Integer i= 0;
-
-
-        for(Persona p: memberNames){
-            i=p.getPosizione(gruppo);
-
-            percentages_ordinato[i.intValue()]=percentages[k];
-
-            if(percentages_ordinato[i.intValue()].equals(0d))
-            n_zeros++;
-
-            k++;
-
-        }
-        if(n_zeros == percentages_ordinato.length)
-        {
-            Toast.makeText(context,"At least one person has to pay", Toast.LENGTH_SHORT).show();
-            return null;
-        }
-
-        Double c = (double) 100/(percentages_ordinato.length-n_zeros);
-
-        for(int m=0; m<percentages_ordinato.length; m++)
-            if(percentages_ordinato[m]==-1)
-                percentages_ordinato[m]=c;
-
-
-
-        return percentages_ordinato;*/
-
         int n_zeros=0;
         for(Double d : percentages.values()){
 
@@ -183,7 +150,7 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
     }
 
     static class PayerHolder2{
-        public CheckBox cb;
+         CheckBox cb;
         TextView name;
     }
 

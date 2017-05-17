@@ -78,7 +78,7 @@
                     android:text="Do not modify group policy"
                     android:textColor="@color/text"
                     android:textSize="18sp"
-                    android:visibility="gone"/>
+                  />
             </RadioGroup>
 
 
