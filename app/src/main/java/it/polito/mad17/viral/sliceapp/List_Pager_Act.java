@@ -58,7 +58,7 @@ public class List_Pager_Act extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Start the background Firebase activity //
-        startService(new Intent(getBaseContext(), FirebaseBackgroundService.class));
+        //startService(new Intent(getBaseContext(), FirebaseBackgroundService.class));
 
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);

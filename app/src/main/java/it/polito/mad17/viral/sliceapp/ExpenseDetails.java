@@ -31,7 +31,6 @@ import java.util.List;
 public class ExpenseDetails extends AppCompatActivity {
 
     private Spesa s;
-    private Gruppo g;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,7 +51,6 @@ public class ExpenseDetails extends AppCompatActivity {
 
         // pesco spesa selezionata e suo gruppo dall'intent
         s = (Spesa)getIntent().getExtras().get("spesa");
-        g = (Gruppo)getIntent().getExtras().get("gruppo");
 
         // Riempio la toolbar
         String nomeSpesa = s.getNome_spesa();
@@ -103,13 +101,16 @@ public class ExpenseDetails extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        final String groupID = g.getGroupID();
+        final String groupID = s.getGruppo(); // non so se lo prende
         final String expenseID = s.getExpenseID();
 
         // controllo prima se colui che vuole pagare la spesa è il pagante della spesa stessa
         // il pagante, già quando carica la spesa, paga la sua parte
         if(s.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())){
-            Toast.makeText(getApplicationContext(), "You have already payed your part (you have added this expense in the past)", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),
+                           "You have already payed your part (you have added this expense in the past)",
+                           Toast.LENGTH_SHORT)
+                    .show();
             return true;
         }
 
@@ -128,7 +129,7 @@ public class ExpenseDetails extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "You have already payed your part", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // se non è stata pagata, setto il campo "haPgato" a true...
+                // se non è stata pagata, setto il campo "haPagato" a true...
                 spesaRef.child("divisioni").child(SliceAppDB.getUser().getTelephone()).child("haPagato").setValue(true);
 
                 // ... e aggiorno crediti e debiti che ho nei confronti del pagante della spesa

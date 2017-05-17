@@ -17,7 +17,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by abdel on 16/05/2017.
@@ -26,11 +30,15 @@ import java.util.Iterator;
 public class FirebaseBackgroundService extends Service {
 
     // TODO notifiche per aggiunta spesa, aggiunta gruppi, rimozione spesa, pagato spesa normale
+    // onChild Changed scatta sia quando aggiungo una spesa sia quando un utente aga la tua parte
+    // e devo trovare un modo per differenziare il secondo dal primo ( la notifica per il secondo è da implementare)
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private ChildEventListener groupsListener;
     private Long lastTimestampGroup = System.currentTimeMillis();
     private Long lastTimestampExpense = System.currentTimeMillis();
+    private Map<String, List<String>> groupsExpenses = new HashMap<String, List<String>>();
+
     //private Persona currentUser = SliceAppDB.getUser();
 
     @Nullable
@@ -49,6 +57,8 @@ public class FirebaseBackgroundService extends Service {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 System.out.println("onChildAdded " + dataSnapshot);
+
+
                 long groupTimestamp = (long) dataSnapshot.child("c").getValue();
 
                 // Mando la notifica solo se l'utente da parte del gruppo
@@ -78,7 +88,6 @@ public class FirebaseBackgroundService extends Service {
                         }
                     }
                 }
-
             }
 
             @Override
