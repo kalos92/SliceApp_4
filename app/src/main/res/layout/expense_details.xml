@@ -1,0 +1,83 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:design="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbarExpenseDetail"
+        android:minHeight="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:titleTextColor="@android:color/black"
+        android:background="?attr/colorPrimary"
+        app:navigationIcon="?attr/homeAsUpIndicator">
+
+           <LinearLayout
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:orientation="horizontal">
+
+               <LinearLayout
+                   android:layout_width="match_parent"
+                   android:layout_height="match_parent"
+                   android:orientation="vertical">
+                   <TextView
+                       android:id="@+id/ExpenseDetailsName"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_marginLeft="@dimen/activity_vertical_margin"
+                       android:layout_marginRight="60dp"
+                       android:layout_alignParentLeft="true"
+                       android:layout_centerInParent="true"
+                       android:gravity="left|center"
+                       android:textColor="@color/tw__solid_white"
+                       android:textColorHighlight="@color/text"
+                       android:textStyle="italic"
+                       />
+                   <TextView
+                       android:id="@+id/TextExpenseDetailsValue"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_marginRight="60dp"
+                       android:layout_marginLeft="@dimen/activity_vertical_margin"
+                       android:layout_alignParentLeft="true"
+                       android:layout_centerInParent="true"
+                       android:gravity="left|center"
+                       android:textColor="@color/tw__solid_white"
+                       android:textColorHighlight="@color/text"
+                       android:textStyle="italic"
+                       android:textSize="20sp"
+                       />
+               </LinearLayout>
+
+
+           </LinearLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/tab_bck">
+
+        <ListView
+            android:id="@+id/listViewExpenseDetails"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/tab_bck"
+            android:descendantFocusability="afterDescendants" />
+
+
+    </LinearLayout>
+
+
+
+
+    <!-- Layout for content is here. This can be a RelativeLayout  -->
+
+</LinearLayout>

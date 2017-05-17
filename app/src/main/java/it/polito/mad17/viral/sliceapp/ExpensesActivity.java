@@ -84,7 +84,7 @@ public class ExpensesActivity extends AppCompatActivity {
 
 
 
-        Query ref = groups_ref.child(gruppo.getGroupID()).child("listaSpeseGruppo");
+        Query ref = groups_ref.child(gruppo.getGroupID()).child("spese");
 
         FirebaseListAdapter<Spesa> adapter= new FirebaseListAdapter<Spesa>(this, Spesa.class, R.layout.listview_expense_row, ref) {
             @Override
@@ -119,6 +119,19 @@ public class ExpensesActivity extends AppCompatActivity {
 
        // final ExpensesAdapter adapter_2 = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, speseGruppo, user);
         mlist.setAdapter(adapter);
+
+        mlist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = new Intent(ExpensesActivity.this,ExpenseDetails.class);
+                Spesa s = (Spesa)parent.getAdapter().getItem(position);
+
+                i.putExtra("spesa",s);
+                i.putExtra("gruppo", gruppo);
+                startActivity(i);
+
+            }
+        });
 
         // What to do when user press the toolbar back button
         Toolbar toolbar = (Toolbar) findViewById(R.id.expenseToolbar);
@@ -195,8 +208,7 @@ public class ExpensesActivity extends AppCompatActivity {
                 });
                 builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        //dialog.cancel();
-                        Toast.makeText(ExpensesActivity.this,"You click on no",Toast.LENGTH_SHORT).show();
+                        dialog.cancel();
                     }
                 });
 

@@ -165,7 +165,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 }
 
 
-
+                SliceAppDB.setUser(user);
                 getActivity().startActivity(i);
                 getActivity().finish();
             }
@@ -257,7 +257,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 }
 
 
-
+                SliceAppDB.setUser(user);
                 getActivity().startActivity(i);
                 getActivity().finish();
             }
