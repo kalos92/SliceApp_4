@@ -2,6 +2,7 @@ package it.polito.mad17.viral.sliceapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.ColorFilter;
@@ -14,7 +15,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.Iterator;
+
+import dmax.dialog.SpotsDialog;
 
 /**
  * Created by Kalos on 16/05/2017.
@@ -74,5 +83,15 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
                viewHolder.expIcon.setBackgroundColor(Color.TRANSPARENT);
                viewHolder.expPrice.setTextColor(Color.rgb(0,0,0));
            }
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //CHE Fare con le righe delle spese
+
+            }
+
+        });
+
     }
 }
