@@ -38,6 +38,12 @@ public class Gruppo implements Serializable,Cloneable {
     private long c;
 
 
+
+    @Expose
+    private String GroupCreator = SliceAppDB.getUser().getTelephone();
+
+
+
     public Gruppo(){
         // needed for FirebaseListAdapter
     }
@@ -244,6 +250,14 @@ public class Gruppo implements Serializable,Cloneable {
 
     public void setC(long c) {
         this.c = c;
+    }
+
+    public String getGroupCreator() {
+        return GroupCreator;
+    }
+
+    public void setGroupCreator(String groupCreator) {
+        GroupCreator = groupCreator;
     }
 }
 

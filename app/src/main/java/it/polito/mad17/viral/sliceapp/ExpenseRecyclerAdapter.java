@@ -62,9 +62,6 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
                viewHolder.expIcon.setBackgroundColor(Color.TRANSPARENT);
                viewHolder.expPrice.setTextColor(Color.rgb(242,38,19));
 
-
-
-
            }
            else{
 
@@ -76,7 +73,6 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
                viewHolder.expIcon.setColorFilter(Color.rgb(0,0,0), PorterDuff.Mode.SRC_ATOP);
                viewHolder.expIcon.setBackgroundColor(Color.TRANSPARENT);
                viewHolder.expPrice.setTextColor(Color.rgb(0,0,0));
-
            }
     }
 }
