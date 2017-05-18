@@ -133,9 +133,9 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
                             final DatabaseReference expenseRef = databaseRef.child("groups_prova").child(groupID).child("spese").child(expenseID);
                             expenseRef.removeValue();
                             // devo trovare un modo per capire se una spesa è stata eliminata
-                            //Intent i = new Intent(v.getContext(), SplashScreen.class); // forse conviene mandarlo d qualche altra parte
-                            //v.getContext().startActivity(i);
-                            //((Activity)v.getContext()).finish();
+                            Intent i = new Intent(v.getContext(), SplashScreen.class); // forse conviene mandarlo d qualche altra parte
+                            v.getContext().startActivity(i);
+                            ((Activity)v.getContext()).finish();
                         }
 
                     }
