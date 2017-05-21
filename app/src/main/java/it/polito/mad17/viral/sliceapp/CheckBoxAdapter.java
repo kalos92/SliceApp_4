@@ -10,8 +10,11 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
 import java.util.List;
@@ -57,7 +60,7 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
             LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(layoutResourceId, parent, false);
             holder = new PayerHolder2();
-
+            holder.propic = (ImageView) row.findViewById(R.id.imageView2);
             TextView tv = (TextView) row.findViewById(R.id.member_name);
 
             holder.name=tv;
@@ -73,6 +76,7 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
         }
         else holder = (PayerHolder2) row.getTag();
 
+        Picasso.with(context).load(memberNames.get(position).getPropic()).placeholder(R.drawable.img_user).transform(new RoundedTransformation(500, 1)).into(holder.propic);
         holder.cb.setTag(position);
 
         final Persona p=memberNames.get(position);
@@ -152,6 +156,7 @@ public class CheckBoxAdapter  extends ArrayAdapter<Persona> {
     static class PayerHolder2{
          CheckBox cb;
         TextView name;
+        ImageView propic;
     }
 
     @Override

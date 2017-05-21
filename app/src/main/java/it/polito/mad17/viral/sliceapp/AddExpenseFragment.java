@@ -43,7 +43,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
 
     public interface ReturnSelection{
-         void returnSelection(String values, String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Select_Policy_Fragment spf);
+         void returnSelection(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Select_Policy_Fragment spf);
     }
 
    // Spinner spi = (Spinner) v.findViewById(R.id.currencies_spinner);
@@ -160,7 +160,8 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
                 first_time = savedInstanceState.getBoolean("flag");
 
         }
-
+        TextView curr = (TextView) v.findViewById(R.id.currencies_gruppo);
+        curr.setText(gruppo.getCurr().getSymbol());
 
         // change the title and the icon of the button in the bottom navigation bar
         BottomNavigationView bnb = (BottomNavigationView)v.findViewById(R.id.bottom_nav_bar);
@@ -287,15 +288,15 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
                 }
 
 
-                Spinner spi = (Spinner) v.findViewById(R.id.currencies_spinner);
-                String valuta =(String) spi.getSelectedItem();
+
+
                 String cat = (String) sp_ct.getSelectedItem();
                 //data è settato
                 //buyer cel'ho da prima
                 //photo e pdf cel'ho
 
                 if (returnSelection != null)
-                    returnSelection.returnSelection(valuta, cat, data, buyer, b, uri, stringEt2, stringEt1, gruppo, user,spf);
+                    returnSelection.returnSelection( cat, data, buyer, b, uri, stringEt2, stringEt1, gruppo, user,spf);
 
 
                 FragmentTransaction transaction = getFragmentManager().beginTransaction();

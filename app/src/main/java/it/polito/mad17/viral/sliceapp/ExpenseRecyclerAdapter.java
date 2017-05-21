@@ -24,6 +24,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.Iterator;
 
@@ -56,11 +57,12 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
 
 
 
-            viewHolder.expIcon.setImageResource(model.getCat().getImg());
-            viewHolder.expCurrency.setText("€");
+        Picasso.with(context).load(model.getCat().getImg()).into(viewHolder.expIcon);
+       // viewHolder.expIcon.setImageResource(model.getCat().getImg());
+            viewHolder.expCurrency.setText(model.getValuta());
             viewHolder.buyer.setText(model.getPagante().getName()+" " +model.getPagante().getSurname());
             viewHolder.expName.setText(model.getNome_spesa());
-            String str = String.format("%.2f",model.getImporto());
+            String str = String.format("%."+model.getDigit()+"f",model.getImporto());
             viewHolder.expPrice.setText(""+str);
 
 

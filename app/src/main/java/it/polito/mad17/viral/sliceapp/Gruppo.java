@@ -2,6 +2,9 @@ package it.polito.mad17.viral.sliceapp;
 
 
 
+import android.net.Uri;
+import android.widget.ImageView;
+
 import java.util.Calendar;
 import com.google.gson.annotations.Expose;
 import java.io.Serializable;
@@ -36,6 +39,12 @@ public class Gruppo implements Serializable,Cloneable {
     private int img;
     @Expose
     private long c;
+    @Expose
+    private String uri;
+    @Expose
+    private mCurrency curr;
+
+
 
 
 
@@ -48,13 +57,17 @@ public class Gruppo implements Serializable,Cloneable {
         // needed for FirebaseListAdapter
     }
 
-    public Gruppo(String groupID, String groupName, int n, final ArrayList<Persona> partecipanti_array, Policy policy ){
+    public Gruppo(String groupID, String groupName, int n, final ArrayList<Persona> partecipanti_array, Policy policy, mCurrency curr2, Uri uri){
         this.groupID=groupID;
         this.groupName=groupName;
         this.n_partecipanti=n;
-
+        this.curr=curr2;
         int i=0;
         this.policy=policy;
+        if(uri!=null)
+        this.uri=uri.toString();
+        else
+        uri=null;
         img= R.drawable.default_img;
         setImg(img);
 
@@ -259,6 +272,29 @@ public class Gruppo implements Serializable,Cloneable {
     public void setGroupCreator(String groupCreator) {
         GroupCreator = groupCreator;
     }
+
+    //public HashMap<String, Persona> getPartecipanti() {
+     //   return partecipanti;
+    //}
+
+    public mCurrency getCurr() {
+        return curr;
+    }
+
+    public void setCurr(mCurrency curr) {
+        this.curr = curr;
+    }
+
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+
 }
 
 

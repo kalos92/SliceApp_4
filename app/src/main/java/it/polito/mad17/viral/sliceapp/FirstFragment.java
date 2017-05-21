@@ -68,7 +68,7 @@ public class FirstFragment extends Fragment{
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), AddNewGroup.class);
                 startActivity(i);
-                int n;
+
             }
         });
 
@@ -118,14 +118,15 @@ public class FirstFragment extends Fragment{
         ImageView img;
         TextView unread;
         TextView last;
+        TextView valuta;
 
         public GroupHolder(View itemView) {
             super(itemView);
             groupName = (TextView)itemView.findViewById(R.id.groupName);
-           // img = (ImageView) itemView.findViewById(R.id.imgIcon);
+            img = (ImageView) itemView.findViewById(R.id.imgIcon);
             unread = (TextView)itemView.findViewById(R.id.unread);
             last = (TextView)itemView.findViewById(R.id.last);
-
+            valuta=(TextView)itemView.findViewById(R.id.valuta);
         }
 
         @Override

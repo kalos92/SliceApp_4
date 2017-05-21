@@ -15,6 +15,8 @@ import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 /**
@@ -61,7 +63,6 @@ class Buyer_Adapter extends BaseAdapter {
             row = inflater.inflate(R.layout.buyer_row, parent, false);
             holder = new Buyer_Adapter.Holder();
             holder.profile_pic = (ImageView) row.findViewById(R.id.propic);
-            holder.profile_pic.setImageDrawable(p.getProPic(c));
             holder.name = (TextView) row.findViewById(R.id.person);
             holder.name.setText(p.getName()+" "+ p.getSurname()+" has paid");
             row.setTag(holder);
@@ -70,7 +71,8 @@ class Buyer_Adapter extends BaseAdapter {
             holder = (Buyer_Adapter.Holder) row.getTag();
         }
 
-        holder.profile_pic.setImageDrawable(p.getProPic(c));
+        Picasso.with(c).load(p.getPropic()).placeholder(R.drawable.img_user).transform(new RoundedTransformation(500, 1)).into(holder.profile_pic);
+       // holder.profile_pic.setImageDrawable(p.getProPic(c));
         holder.name.setText(p.getName()+" "+ p.getSurname()+" has paid");
         return row;
     }

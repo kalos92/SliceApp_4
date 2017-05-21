@@ -6,11 +6,11 @@
 
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal"
-        android:weightSum="1"
-        android:background="#BDC3C7">
+            android:layout_width="match_parent"
+            android:layout_height="64dp"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:background="#BDC3C7">
 
         <TextView
             android:layout_width="fill_parent"
@@ -31,6 +31,7 @@
             android:layout_weight="0.25"
             android:layout_gravity="center"
             android:layout_alignRight="@+id/debts"
+            android:layout_marginRight="3dp"
             android:textColor="@color/debiti"
             android:textSize="15sp"
             android:textStyle="bold"/>
@@ -48,12 +49,14 @@
             android:textStyle="bold"
             android:layout_marginLeft="@dimen/activity_vertical_margin"/>
 
-        <TextView android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/credits_number"
-        android:layout_weight="0.25"
-        android:layout_gravity="center"
-        android:layout_alignBottom="@+id/credits"
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/credits_number"
+            android:layout_weight="0.25"
+            android:layout_gravity="center"
+            android:layout_marginRight="3dp"
+            android:layout_alignBottom="@+id/credits"
             android:textColor="@color/colorPrimary"
             android:textSize="15sp"
             android:textStyle="bold"/>

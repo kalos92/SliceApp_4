@@ -3,6 +3,7 @@ package it.polito.mad17.viral.sliceapp;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 
 import java.io.Serializable;
 import java.math.BigInteger;
@@ -31,22 +32,14 @@ public class Persona implements Serializable {
     private boolean hasDebts = false;
     private String password;
     private int isInDB;
+    private String propic;
     private Map<String, Riga_Bilancio> amici = new HashMap<String,Riga_Bilancio>();
-
-    public Persona(){}
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
     private String prefix;
 
+
+    public Persona(){}
     // Constructor
-    public Persona(String name, String surname, String username, String birthdate, String telephone, String password, int i, String prefix){
+    public Persona(String name, String surname, String username, String birthdate, String telephone, String password, int i, String prefix, Uri propic){
         this.name = name;
         this.surname = surname;
         this.username = username;
@@ -55,6 +48,10 @@ public class Persona implements Serializable {
         this.password = password;
         this.isInDB=i;
         this.prefix = prefix;
+        if(propic!=null)
+        this.propic=propic.toString();
+        else
+            propic=null;
     }
 
     // Getters
@@ -113,7 +110,7 @@ public class Persona implements Serializable {
 
 
     public void AddToGroup(Gruppo gruppo,int pos,int img){
-        gruppi_partecipo.put(gruppo.getGroupID(),new Dettagli_Gruppo(gruppo.getGroupName(),gruppo.getGroupID(),0));
+        gruppi_partecipo.put(gruppo.getGroupID(),new Dettagli_Gruppo(gruppo.getGroupName(),gruppo.getGroupID(),0,gruppo.getCurr().getSymbol()+" - "+gruppo.getCurr().getChoosencurr(), gruppo.getUri()));
         posizione_gruppi.put(gruppo.getGroupID(), new Integer(pos));
         dove_ho_debito.put(gruppo.getGroupID(),new Integer(0));
     }
@@ -170,18 +167,18 @@ public class Persona implements Serializable {
         this.telephone = telephone;
     }
 
-    public void addTobalance(Persona amico, Double importo){
+    public void addTobalance(Persona amico, Double importo, mCurrency curr){
 
-        if(amici.containsKey(amico.getTelephone())) { //se c'è devo accedere e metterlo nel DB
-            Riga_Bilancio balance = amici.get(amico.getTelephone());
+        if(amici.containsKey(amico.getTelephone()+";"+curr.getChoosencurr())) { //se c'è devo accedere e metterlo nel DB
+            Riga_Bilancio balance = amici.get(amico.getTelephone()+";"+curr.getChoosencurr());
             Double d = balance.getImporto();
             d+=importo;
             balance.setImporto(d);
-            amici.put(amico.getTelephone(), balance);
+            amici.put(amico.getTelephone()+";"+curr.getChoosencurr(), balance);
         }
         else{ //se non c'è lo aggiungo alla mappa
-            Riga_Bilancio balance = new Riga_Bilancio(amico.getName()+" "+amico.getSurname(), importo);
-            amici.put(amico.getTelephone(), balance);
+            Riga_Bilancio balance = new Riga_Bilancio(amico.getName()+" "+amico.getSurname(), importo,curr.getSymbol(),curr.getDigits());
+            amici.put(amico.getTelephone()+";"+curr.getChoosencurr(), balance);
         }
     }
 
@@ -225,5 +222,22 @@ public class Persona implements Serializable {
     }
     public Integer obtain_a_debt(String gruppoId){
         return dove_ho_debito.get(gruppoId);
+    }
+
+    public String getPropic() {
+        return propic;
+    }
+
+    public void setPropic(String propic) {
+        this.propic = propic;
+    }
+
+
+    public String getPrefix() {
+        return prefix;
+    }
+
+    public void setPrefix(String prefix) {
+        this.prefix = prefix;
     }
 }

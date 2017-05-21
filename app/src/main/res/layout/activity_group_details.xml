@@ -29,6 +29,7 @@
 
     </android.support.design.widget.AppBarLayout>
         <ScrollView
+            android:layout_marginTop="60dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fillViewport="true">
@@ -40,6 +41,17 @@
         android:background="@color/tab_bck"
         >
 
+    <ImageButton
+        android:id="@+id/add_groupicon"
+    android:layout_marginTop="@dimen/activity_horizontal_margin"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:src="@drawable/add_photo"
+    android:background="@drawable/solidcircle"
+    android:padding="8dp"
+    />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,8 +60,10 @@
         android:id="@+id/gname"
         android:layout_marginTop="@dimen/activity_horizontal_margin"
         android:textSize="24sp"
+        android:textAlignment="center"
         android:textColor="@color/text"
-        android:layout_marginLeft="@dimen/activity_vertical_margin"/>
+        android:layout_marginLeft="@dimen/activity_vertical_margin"
+        android:layout_marginRight="@dimen/activity_vertical_margin"/>
 
         <EditText
             android:layout_width="match_parent"
@@ -57,8 +71,28 @@
             android:layout_height="wrap_content"
             android:shadowColor="@color/text"
             android:layout_marginTop="10dp"
+            android:textColor="@color/text"
             android:gravity="bottom"
-            android:layout_marginLeft="@dimen/activity_vertical_margin"/>
+            android:layout_marginLeft="@dimen/activity_vertical_margin"
+            android:layout_marginRight="@dimen/activity_vertical_margin"/>
+        <TextView
+            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Select a currency for this group.\nYou CAN'T change it in future"
+            android:textColor="@color/text"
+            android:textSize="18sp"
+            android:textAlignment="center"/>
+        <Spinner
+            android:id="@+id/currencies_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginRight="@dimen/normal_v_margin"
+
+            android:entries="@array/country_arrays"
+            android:spinnerMode="dropdown"
+            android:layout_marginBottom="@dimen/activity_horizontal_margin"/>
 <LinearLayout
     android:layout_width="wrap_content"
     android:layout_height="match_parent"

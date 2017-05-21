@@ -1,6 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.graphics.Bitmap;
+import android.net.Uri;
 
 import java.io.Serializable;
 import java.util.Calendar;
@@ -16,27 +17,20 @@ public class Dettagli_Gruppo implements Serializable {
     private String chiave;
     private long time;
     private String last;
-
-    public int getUnread() {
-        return unread;
-    }
-
-    public void setUnread(int unread) {
-        this.unread = unread;
-    }
-
+    private String uri;
+    private String valuta;
     private int unread =0;
-
-
 
     public Dettagli_Gruppo(){}
 
-    public Dettagli_Gruppo(String nome_gruppo,String chiave,int unread){
+    public Dettagli_Gruppo(String nome_gruppo,String chiave,int unread, String valuta, String uri){
         this.nome_gruppo=nome_gruppo;
         this.chiave=chiave;
         time= Calendar.getInstance().getTimeInMillis();
         this.unread+=unread;
         last="null_$";
+        this.valuta=valuta;
+        this.uri=uri;
 
     }
 
@@ -86,6 +80,30 @@ public class Dettagli_Gruppo implements Serializable {
 
     public void setLast(String last) {
         this.last = last;
+    }
+
+    public String getValuta() {
+        return valuta;
+    }
+
+    public void setValuta(String valuta) {
+        this.valuta = valuta;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public int getUnread() {
+        return unread;
+    }
+
+    public void setUnread(int unread) {
+        this.unread = unread;
     }
 
 }

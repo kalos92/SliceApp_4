@@ -5,11 +5,18 @@ import android.app.DialogFragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+
+import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,8 +25,14 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -39,6 +52,12 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
     private String surname;
     private FirebaseDatabase database;
     private ProgressDialog progressDialog;
+    private static final int PICK_IMAGE_ID = 234;
+    private ImageButton propic;
+    private byte[] datas;
+    private Bitmap b;
+    private FirebaseStorage storageReference = FirebaseStorage.getInstance("gs://sliceapp-a55d6.appspot.com/");
+    private StorageReference images;
 
 
     public Register_fragment_2() {
@@ -86,7 +105,14 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
 
         if (savedInstanceState != null) {
 
-
+            if(savedInstanceState.getParcelableArray("propic")!=null){
+                b= (Bitmap) savedInstanceState.getParcelable("propic");
+                ImageButton propic = (ImageButton) v.findViewById(R.id.add_propic);
+                propic.setImageBitmap(b);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                datas = baos.toByteArray();
+            }
 
 
             if(savedInstanceState.getSerializable("Data")!=null) {
@@ -100,6 +126,16 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
         database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
         progressDialog = new ProgressDialog(getActivity());
 
+        propic = (ImageButton) v.findViewById(R.id.add_propic);
+        propic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent chooseImageIntent = ImagePicker.getPickImageIntent(getContext());
+                startActivityForResult(chooseImageIntent, PICK_IMAGE_ID);
+
+            }
+
+        });
         Toolbar toolbar = (Toolbar) v.findViewById(R.id.registerToolbar2);
         toolbar.inflateMenu(R.menu.register_menu);
 
@@ -145,55 +181,113 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                     return false;
                     }
 
+
+//faccio l'upload su firebase
                     String phonenum_complex = prefix+number;
                     final String phonenum_good = phonenum_complex.substring(1);
-                    progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
-                    final DatabaseReference users = database.getReference("users");
-                    final DatabaseReference users2 = database.getReference("users_prova");
-                    final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix );
 
-                    Gson gson = new Gson();
+                    if(datas!=null){
+                        images = storageReference.getReference().child(phonenum_good);
+                        UploadTask uploadTask = images.putBytes(datas);
 
-                    Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
-                    p1.setIsInDB(1);
-                    users2.child(p1.getTelephone()).setValue(p1);
-                    database.getReference().push().child(p1.getTelephone());
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
+                                Log.d("Error_mio",exception.getMessage());
+                                progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
+                                final DatabaseReference users2 = database.getReference("users_prova");
+                                final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix,null );
 
-                    SliceAppDB.setUser(p1);
-                    progressDialog.dismiss();
-                    Toast.makeText(getContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
+                                Gson gson = new Gson();
 
-                    SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
-                    SharedPreferences.Editor prefEditor = sharedPref.edit();
-                    prefEditor.putInt("isLogged", 1);
-                    prefEditor.putString("telefono", phonenum_good);
-                    prefEditor.commit();
+                                Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
+                                p1.setIsInDB(1);
+                                users2.child(p1.getTelephone()).setValue(p1);
+                                database.getReference().push().child(p1.getTelephone());
+
+                                SliceAppDB.setUser(p1);
+                                progressDialog.dismiss();
+                                Toast.makeText(getContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
+
+                                SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
+                                SharedPreferences.Editor prefEditor = sharedPref.edit();
+                                prefEditor.putInt("isLogged", 1);
+                                prefEditor.putString("telefono", phonenum_good);
+                                prefEditor.commit();
 
 
-                    Intent i = new Intent(getActivity(), List_Pager_Act.class);
-                    startActivity(i);
-                    getActivity().finish();
+                                Intent i = new Intent(getActivity(), List_Pager_Act.class);
+                                startActivity(i);
+                                getActivity().finish();
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+
+                                progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
+                                final DatabaseReference users2 = database.getReference("users_prova");
+                                final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix,downloadUrl);
+
+                                Gson gson = new Gson();
+
+                                Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
+                                p1.setIsInDB(1);
+                                users2.child(p1.getTelephone()).setValue(p1);
+                                database.getReference().push().child(p1.getTelephone());
+
+                                SliceAppDB.setUser(p1);
+                                progressDialog.dismiss();
+                                Toast.makeText(getContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
+
+                                SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
+                                SharedPreferences.Editor prefEditor = sharedPref.edit();
+                                prefEditor.putInt("isLogged", 1);
+                                prefEditor.putString("telefono", phonenum_good);
+                                prefEditor.commit();
 
 
-                    /*users.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-
-                                // register user
-
-                                users.child(phonenum_good).setValue(p);
-                                users.child(phonenum_good).child("belongsToGroups").setValue("");
-                                users.child(phonenum_good).child("isInDB").setValue(1);
+                                Intent i = new Intent(getActivity(), List_Pager_Act.class);
+                                startActivity(i);
+                                getActivity().finish();
 
                             }
+                        });}
+
+                    else{
+                        progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
+                        final DatabaseReference users = database.getReference("users");
+                        final DatabaseReference users2 = database.getReference("users_prova");
+                        final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix,null );
+
+                        Gson gson = new Gson();
+
+                        Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
+                        p1.setIsInDB(1);
+                        users2.child(p1.getTelephone()).setValue(p1);
+                        database.getReference().push().child(p1.getTelephone());
+
+                        SliceAppDB.setUser(p1);
+                        progressDialog.dismiss();
+                        Toast.makeText(getContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
+
+                        SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
+                        SharedPreferences.Editor prefEditor = sharedPref.edit();
+                        prefEditor.putInt("isLogged", 1);
+                        prefEditor.putString("telefono", phonenum_good);
+                        prefEditor.commit();
+
+
+                        Intent i = new Intent(getActivity(), List_Pager_Act.class);
+                        startActivity(i);
+                        getActivity().finish();
+                    }
 
 
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-                            Toast.makeText(getContext(),"Error during the registration", Toast.LENGTH_SHORT).show();
-                        }
-                    });*/
+
+
 
                 }
 
@@ -235,9 +329,33 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
 
         outState.putSerializable("Data", data);
         outState.putSerializable("Password", password);
-
+        outState.putParcelable("Propic",b);
 
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+        switch(requestCode) {
+
+            case PICK_IMAGE_ID:
+
+                b = ImagePicker.getImageFromResult(getActivity(), resultCode, data);
+                if(b!=null){
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                    datas = baos.toByteArray();
+                    propic.setImageBitmap(b);
+
+                }
+
+
+
+                break;
+
+            default:
+                super.onActivityResult(requestCode, resultCode, data);
+                break;
+        }
+    }
 }

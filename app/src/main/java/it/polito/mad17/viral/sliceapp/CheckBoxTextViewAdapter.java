@@ -17,6 +17,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +79,7 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
 
             cb = (CheckBox) row.findViewById(R.id.check);
             holder.cb = cb;
-
+            holder.propic = (ImageView) row.findViewById(R.id.imageView);
 
             et = (EditText)row.findViewById(R.id.member_percentage);
             holder.percentage=et;
@@ -88,7 +90,7 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
         else holder = (PayerHolder) row.getTag();
 
         holder.cb.setTag(position);
-
+        Picasso.with(context).load(p.getPropic()).placeholder(R.drawable.img_user).transform(new RoundedTransformation(500, 1)).into(holder.propic);
         final PayerHolder h = holder;
         final Persona p2 = p;
         holder.cb.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -185,9 +187,10 @@ public class CheckBoxTextViewAdapter extends ArrayAdapter<Persona> {
             return percentages_map;}}
 
     static class PayerHolder{
-        public CheckBox cb;
+         CheckBox cb;
         TextView name;
         EditText percentage;
+        ImageView propic;
 
     }
 
