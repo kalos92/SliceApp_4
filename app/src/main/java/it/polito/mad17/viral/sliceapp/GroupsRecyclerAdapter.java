@@ -58,7 +58,7 @@ public class GroupsRecyclerAdapter extends FirebaseRecyclerAdapter<Dettagli_Grup
     @Override
     protected void populateViewHolder(FirstFragment.GroupHolder viewHolder, Dettagli_Gruppo model, int position) {
         viewHolder.groupName.setText(model.getNome_gruppo());
-        Log.d("Arabian",model.getValuta());
+
         viewHolder.valuta.setText(model.getValuta());
         if (model.getUri() != null)
             Picasso.with(context).load(model.getUri()).placeholder(R.drawable.img_gruppi).transform(new RoundedTransformation(400, 10)).into(viewHolder.img);

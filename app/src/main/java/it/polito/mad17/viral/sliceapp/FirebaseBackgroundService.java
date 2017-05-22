@@ -10,13 +10,14 @@ import android.media.RingtoneManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
+import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
+import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,8 +31,6 @@ import java.util.Map;
 public class FirebaseBackgroundService extends Service {
 
     // TODO notifiche per aggiunta spesa, aggiunta gruppi, rimozione spesa, pagato spesa normale
-    // onChild Changed scatta sia quando aggiungo una spesa sia quando un utente aga la tua parte
-    // e devo trovare un modo per differenziare il secondo dal primo ( la notifica per il secondo è da implementare)
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private ChildEventListener groupsListener;
@@ -39,7 +38,6 @@ public class FirebaseBackgroundService extends Service {
     private Long lastTimestampExpense = System.currentTimeMillis();
     private Map<String, List<String>> groupsExpenses = new HashMap<String, List<String>>();
     private ArrayList <String> groupsID = new ArrayList<String>();
-    //private Persona currentUser = SliceAppDB.getUser();
 
     @Nullable
     @Override
@@ -50,8 +48,6 @@ public class FirebaseBackgroundService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-
-        groupsExpenses = new HashMap<String, List<String>>();
 
         DatabaseReference groupsRef = database.getReference().child("groups_prova");
 
@@ -86,6 +82,7 @@ public class FirebaseBackgroundService extends Service {
                                     .setContentTitle("You have been added to a new group!")
                                     .setContentText(groupName)
                                     .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
                                     .setContentIntent(contentIntent);
                             Notification noti = builder.build();
                             noti.flags = Notification.FLAG_AUTO_CANCEL;
@@ -104,6 +101,11 @@ public class FirebaseBackgroundService extends Service {
                 String groupId = dataSnapshot.getKey();
                 String gName = (String) dataSnapshot.child("groupName").getValue();
 
+                //////////////////////////// Caso: pagamento spesa ////////////////////////////////////////
+
+
+
+                ///////////////////////// Caso: rimozione spesa /////////////////////////////////////////
                 long numSpeseRemote = dataSnapshot.child("spese").getChildrenCount(); // dovrebbe essere diminuito
                 DataSnapshot speseRemote = dataSnapshot.child("spese");
 
@@ -129,6 +131,7 @@ public class FirebaseBackgroundService extends Service {
                                 .setContentTitle("An expense has been removed from ")
                                 .setContentText( expenseName + " - group " + gName) // non riusciamo a ricavare il nome della spesa
                                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                .setPriority(NotificationCompat.PRIORITY_HIGH)
                                 .setContentIntent(contentIntent);
                         Notification noti = builder.build();
                         noti.flags = Notification.FLAG_AUTO_CANCEL;
@@ -139,22 +142,79 @@ public class FirebaseBackgroundService extends Service {
                     }
                 }
 
+                /////////////////////// Caso aggiunta spesa /////////////////////////////
                 // invio la notifica solo a chi appartiene a gruppo
                 if(dataSnapshot.child("partecipanti_numero_cnome").hasChild(SliceAppDB.getUser().getTelephone())) {
                     Iterator<DataSnapshot> expenses = dataSnapshot.child("spese").getChildren().iterator();
                     //Individuo la spesa che è stata aggiunta
                     while (expenses.hasNext()) {
-                        DataSnapshot currentExpense = expenses.next();
+                        final DataSnapshot currentExpense = expenses.next();
                         long expenseTimestamp = (long) currentExpense.child("c").getValue();
+                        Spesa spesa = currentExpense.getValue(Spesa.class);
+                        final String expenseID = currentExpense.getKey();
+                        final String groupID = (String) currentExpense.child("gruppo").getValue();
+                        final String expenseName = (String) currentExpense.child("nome").getValue();
+                        final String groupName = (String) dataSnapshot.child("groupName").getValue();
+                        String usernamePagante = (String) currentExpense.child("pagante").child("username").getValue();
+                        String telephonePagante = (String) currentExpense.child("pagante").child("telephone").getValue();
+
                         if (expenseTimestamp > lastTimestampExpense) {
                             lastTimestampExpense = expenseTimestamp;
+                            // attacco un listener per ogni divisione
+                            final DatabaseReference divisioniRef = currentExpense.child("divisioni").getRef();
+                            divisioniRef.addChildEventListener(new ChildEventListener() {
+                                @Override
+                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {}
+                                @Override
+                                public void onChildChanged(final DataSnapshot dataSnapshot, String s) {
+                                    // La notifica arriva a coloro che fanno parte del gruppo
+                                    final String user = (String) dataSnapshot.child("persona").child("username").getValue();
+                                    final double importo = dataSnapshot.child("importo").getValue(Double.class);
+                                    divisioniRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot ds) {
+                                            if(ds.hasChild(SliceAppDB.getUser().getTelephone())){
+                                                if((Boolean) dataSnapshot.child("haPagato").getValue() == true) {
+                                                    Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
+                                                    PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                                            PendingIntent.FLAG_UPDATE_CURRENT);
+                                                    android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                                            .setSmallIcon(R.drawable.expense_paid)
+                                                            .setContentTitle("The user " + user + " has paid his part (" + importo + ")")
+                                                            /*.setStyle(new NotificationCompat.BigTextStyle()
+                                                                    .bigText("expense " + expenseName + " - group " + groupName))*/
+                                                            .setContentText("expense " + expenseName + " - group " + groupName)
+                                                            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                                            //.setDefaults(Notification.DEFAULT_VIBRATE)
+                                                            .setContentIntent(contentIntent);
 
-                            String expenseID = currentExpense.getKey();
-                            String groupID = (String) currentExpense.child("gruppo").getValue();
-                            String expenseName = (String) currentExpense.child("nome").getValue();
-                            String groupName = (String) dataSnapshot.child("groupName").getValue();
-                            String usernamePagante = (String) currentExpense.child("pagante").child("username").getValue();
-                            String telephonePagante = (String) currentExpense.child("pagante").child("telephone").getValue();
+                                                    Notification noti = builder.build();
+                                                    noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                                    // Add notification
+                                                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                                    manager.notify((int) System.currentTimeMillis(), noti);
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {}
+                                    });
+
+
+
+                                }
+                                @Override
+                                public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                                @Override
+                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {}
+                            });
+
+                            //Riempimento della mappa di gestione dei pagamenti dell'utente i-esimo.
+
 
                             if(groupsID.contains(groupID)){//è stata aggiunta una nuova spesa al gruppo appena creato
                                 ArrayList<String> listaSpese = new ArrayList<String>();
@@ -162,15 +222,7 @@ public class FirebaseBackgroundService extends Service {
                                 groupsExpenses.put(groupID, listaSpese);
                                 groupsID.remove(groupID);
                             }else groupsExpenses.get(groupID).add(expenseID + " " + expenseName);
-                            // aggiungo la spesa alla lista di spese del gruppo nella  hashmap
-                           // if(!groupsExpenses.containsKey(groupID)){
-                            //    ArrayList<String> listaSpese = new ArrayList<String>();
-                             //   listaSpese.add(expenseID);
-                              //  groupsExpenses.put(groupID, listaSpese);
-                            //}
-                           // else
-                            //    groupsExpenses.get(groupID).add(expenseID);
-                            // la notifica arriva a tutti tranne che al pagante
+
                             if(!telephonePagante.equals(SliceAppDB.getUser().getTelephone())){
                                 Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
                                 PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
@@ -180,6 +232,7 @@ public class FirebaseBackgroundService extends Service {
                                         .setContentTitle("An expense has been added to the group " + groupName)
                                         .setContentText(expenseName + " - Payer is " + usernamePagante)
                                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                        .setPriority(NotificationCompat.PRIORITY_HIGH)
                                         .setContentIntent(contentIntent);
                                 Notification noti = builder.build();
                                 noti.flags = Notification.FLAG_AUTO_CANCEL;
@@ -187,14 +240,9 @@ public class FirebaseBackgroundService extends Service {
                                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 manager.notify((int) System.currentTimeMillis(), noti);
                             }
-
                             break;
                         }
-
                     }
-
-
-
                 }
             }
 
@@ -218,5 +266,6 @@ public class FirebaseBackgroundService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
     }
 }
