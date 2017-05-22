@@ -21,8 +21,10 @@ public class SliceAppDB implements Serializable {
     final static FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     final static DatabaseReference rootRef = database.getReference();
     final static DatabaseReference user_ref = rootRef.child("users_prova");
-    private static HashMap<String, Gruppo> cache = new HashMap<String,Gruppo>();
-    // fields
+    final static DatabaseReference group_ref = rootRef.child("groups_prova");
+
+    final static HashMap<String, Gruppo> listeners = new HashMap<>();
+    final static HashMap<DatabaseReference, ValueEventListener> referenze = new HashMap<>();
     private static Persona user;
 
 
@@ -54,6 +56,51 @@ public class SliceAppDB implements Serializable {
             user=p;
     }
 
+
+    public static void createListenerOnGroupID(String ID, Gruppo g){
+
+        referenze.put(group_ref.child(ID), group_ref.addValueEventListener(new ListenGroupID(ID)));
+        listeners.put(ID,g);
+
+
+
+
+    }
+
+    public static Gruppo  getGroup(String chiave) {
+        Gruppo g =listeners.get(chiave);
+        if(g!=null)
+            g.setUser(user);
+        return g;
+
+    }
+
+
+    public static class ListenGroupID implements ValueEventListener{
+        String ID;
+
+
+        public ListenGroupID(String ID){
+            this.ID=ID;
+        };
+
+
+        @Override
+        public void onDataChange(DataSnapshot dataSnapshot) {
+
+           if(listeners.containsKey(ID)){
+               listeners.put(ID,dataSnapshot.child(ID).getValue(Gruppo.class));
+           }
+           else
+               listeners.put(ID,dataSnapshot.child(ID).getValue(Gruppo.class));
+
+        }
+
+        @Override
+        public void onCancelled(DatabaseError databaseError) {
+
+        }
+    }
 
 
 

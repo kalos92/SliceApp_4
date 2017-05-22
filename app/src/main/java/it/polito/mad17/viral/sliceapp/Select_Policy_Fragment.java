@@ -24,7 +24,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
     private ReturnSelection_2 returnSelection_2;
     public interface ReturnSelection_2{
-        public void returnSelection_2(String values, String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy);
+        void returnSelection_2(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy);
     }
 
     private String values;
@@ -84,9 +84,6 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
             if(savedInstanceState.getSerializable("Date")!=null)
                 data = (GregorianCalendar) savedInstanceState.getSerializable("Date");
-
-            if(savedInstanceState.getSerializable("Value")!=null)
-                values = (String) savedInstanceState.getSerializable("Value");
 
             if(savedInstanceState.getSerializable("Cat")!=null)
                 cat = (String) savedInstanceState.getSerializable("Cat");
@@ -172,7 +169,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
                 if(policy!=null) {
                     if (returnSelection_2 != null)
-                        returnSelection_2.returnSelection_2(values, cat, data, buyer, b, uri, nome, price, gruppo, user, chtp, policy);
+                        returnSelection_2.returnSelection_2(cat, data, buyer, b, uri, nome, price, gruppo, user, chtp, policy);
 
 
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -200,8 +197,8 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
 
     @Override
-    public void returnSelection(String values, String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo g, Persona user, Select_Policy_Fragment spf) {
-        this.values= values;
+    public void returnSelection( String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo g, Persona user, Select_Policy_Fragment spf) {
+
         this.cat = cat;
         this.data =data;
         this.buyer = buyer;
@@ -228,12 +225,11 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        int[] checks = new int[rg.getChildCount()];
+
 
         outState.putParcelable("Uri", uri);
         outState.putParcelable("Bitmap", b);
         outState.putSerializable("Date", data);
-        outState.putSerializable("Value",values);
         outState.putSerializable("Cat",cat);
         outState.putSerializable("Buyer",buyer);
         outState.putSerializable("Price",price);
@@ -260,8 +256,6 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
             if(savedInstanceState.getSerializable("Date")!=null)
                 data = (GregorianCalendar) savedInstanceState.getSerializable("Date");
 
-            if(savedInstanceState.getSerializable("Value")!=null)
-                values = (String) savedInstanceState.getSerializable("Value");
 
             if(savedInstanceState.getSerializable("Cat")!=null)
                 cat = (String) savedInstanceState.getSerializable("Cat");

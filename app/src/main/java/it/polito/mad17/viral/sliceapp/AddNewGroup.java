@@ -162,8 +162,9 @@ public class AddNewGroup extends AppCompatActivity {
                     }
                     phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
 
-                    Persona p = new Persona(name,null,null,null,phoneNumber,null,0,"+39");
-                    contactsMap.put(phoneNumber,p);
+                    Persona p = new Persona(name,null,null,null,phoneNumber,null,0,"+39",null);
+                    if(!p.getTelephone().equals(SliceAppDB.getUser().getTelephone()))
+                            contactsMap.put(phoneNumber,p);
                     Log.d("Phone", phoneNumber);
                     //  Log.d("Name", name);
                 }
@@ -227,7 +228,7 @@ Collections.sort(listP, new Comparator<Persona>() {
     }
 });
 
-            listP.add(new Persona("null_$","null_$","null_$","null_$","null_$","null_$",0,"null_$"));
+            listP.add(new Persona("null_$","null_$","null_$","null_$","null_$","null_$",0,"null_$",null));
 
             for(Persona p: tmpMap.values()){
                 if(p.getIsInDB()==0)

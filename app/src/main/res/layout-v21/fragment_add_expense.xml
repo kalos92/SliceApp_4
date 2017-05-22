@@ -95,15 +95,19 @@
                     android:textColor="@color/text"
                     android:textColorHint="@color/text" />
 
-                <Spinner
-                    android:id="@+id/currencies_spinner"
-                    android:layout_width="197dp"
+                <TextView
+                    android:id="@+id/currencies_gruppo"
+                    android:layout_width="150dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="end"
+                    android:text="EUR-€"
+                    android:ellipsize="end"
+                    android:padding="10dp"
+                    android:textSize="20sp"
+                    android:textColor="@color/text"
                     android:layout_marginEnd="@dimen/normal_v_margin"
-                    android:layout_weight="0.02"
-                    android:entries="@array/country_arrays"
-                    android:spinnerMode="dialog" />
+                    android:textAlignment="center"
+                    />
             </LinearLayout>
 
             <RelativeLayout

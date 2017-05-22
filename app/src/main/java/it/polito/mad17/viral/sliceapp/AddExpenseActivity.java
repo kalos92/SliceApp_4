@@ -15,18 +15,11 @@ import android.support.v4.app.FragmentActivity;
 
 
 public class AddExpenseActivity extends FragmentActivity implements DatePickerFragment.TheListener, AddExpenseFragment.ReturnSelection, Little_fragment_1.GetPercentages, Little_fragment_2.AlltheSame, Select_Policy_Fragment.ReturnSelection_2 {
-    private static final int PICK_IMAGE_ID = 234;
-    private static final int SELECT_PDF = 1212;
-    private AlertDialog.Builder adb;
-    private AlertDialog ad;
+
     private Gruppo gruppo;
     private Persona user;
-    private Policy policy;
-    private Bitmap b;
-    private Uri uri;
-    private boolean first_time=true;
+    private String ID;
     private FragmentManager fm;
-    private GregorianCalendar data;
     private AddExpenseFragment mContent;
     private Select_Policy_Fragment mContent2;
     private Choose_how_to_pay mContent3;
@@ -44,9 +37,12 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
         }
         Bundle extra = getIntent().getExtras();
         if(extra!= null) {
-           gruppo = (Gruppo) extra.get("Gruppo");
+
            user = SliceAppDB.getUser();
+            gruppo = (Gruppo) extra.get("Gruppo");
+            gruppo.setUser(user);
         }
+
 
 
         if (savedInstanceState != null){
@@ -141,9 +137,9 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
     }
 
     @Override
-    public void returnSelection(String values, String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Select_Policy_Fragment spf) {
+    public void returnSelection( String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Select_Policy_Fragment spf) {
 
-        spf.returnSelection(values,cat,data,buyer,b,uri,price,nome, gruppo, user,null);
+        spf.returnSelection(cat,data,buyer,b,uri,price,nome, gruppo, user,null);
     }
 
     @Override
@@ -160,8 +156,8 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
     }
 
     @Override
-    public void returnSelection_2(String values, String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy) {
-        chtp.returnSelection_2(values,cat,data,buyer,b,uri,price,nome,gruppo,user,null,policy);
+    public void returnSelection_2(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy) {
+        chtp.returnSelection_2(cat,data,buyer,b,uri,price,nome,gruppo,user,null,policy);
     }
 
     @Override

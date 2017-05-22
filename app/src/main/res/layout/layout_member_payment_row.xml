@@ -16,13 +16,15 @@ android:background="@color/tab_bck">
     />
 
 <ImageView
+    android:layout_marginTop="5dp"
     android:id="@+id/imageView"
     android:layout_width="40dp"
-    android:layout_height="wrap_content"
+    android:layout_height="40dp"
     android:layout_gravity="left"
     android:src="@drawable/clubbing" />
 
 <TextView
+    android:layout_marginLeft="5dp"
     android:id="@+id/member_name"
     android:layout_width="wrap_content"
     android:layout_height="50dp"
@@ -30,6 +32,7 @@ android:background="@color/tab_bck">
 
 
 <EditText
+
     android:id="@+id/member_percentage"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"

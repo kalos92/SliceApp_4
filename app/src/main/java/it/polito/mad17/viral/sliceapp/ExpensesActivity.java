@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
@@ -17,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Target;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -41,6 +43,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -48,9 +51,12 @@ import java.util.StringTokenizer;
 
 public class ExpensesActivity extends AppCompatActivity implements View.OnClickListener {
 
+    String ID;
     Gruppo gruppo;
+    Gruppo gruppo_2;
     Persona user;
     FragmentManager fm;
+    Toolbar t;
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private DatabaseReference rootRef = database.getReference();
     private DatabaseReference groups_ref = rootRef.child("groups_prova");
@@ -58,6 +64,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     private Boolean isFabOpen = false;
     private FloatingActionButton fab,fab1,fab2,fab3;
     private Animation fab_open,fab_close,rotate_forward,rotate_backward;
+
     //private TextView tv1,tv2,tv3;
 
     @Override
@@ -73,27 +80,98 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
             gruppo = (Gruppo) extra.get("Gruppo");
             user = SliceAppDB.getUser();
         }
+        ID=gruppo.getGroupID();
         user.resetUnread(gruppo.getGroupID());
         SliceAppDB.setUser_1(user);
         users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
         fm= getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment, Fragment_of_money.newInstance(gruppo));
+        ft.replace(R.id.fragment, Fragment_of_money.newInstance(gruppo.getGroupID()));
         ft.addToBackStack(null);
         ft.commit();
+        t= (Toolbar)findViewById(R.id.expenseToolbar);
 
-        Toolbar t = (Toolbar)findViewById(R.id.expenseToolbar);
-        t.setTitle(" " + gruppo.getGroupName());
-        t.setSubtitle(" " + gruppo.obtainUser().getUsername());
-        BitmapManager  bm = new BitmapManager(this,gruppo.getImg(),50,70);
+        groups_ref.child(ID).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                gruppo_2 = dataSnapshot.getValue(Gruppo.class);
+                gruppo_2.setUser(SliceAppDB.getUser());
+                t= (Toolbar)findViewById(R.id.expenseToolbar);
+                ImageView img = (ImageView) findViewById(R.id.show_GroupIcon);
 
-        Bitmap b=  bm.scaleDown(gruppo.getImg(),100,true);
-        Drawable d = new BitmapDrawable(getResources(), b);
-        t.setLogo(d);
+                TextView tv1 = (TextView) findViewById(R.id.show_namegroup);
+                TextView tv2 = (TextView) findViewById(R.id.show_welcome);
+                tv1.setText(" "+gruppo_2.getGroupName());
+                tv2.setText(" Welcome: "+user.getUsername());
+                t.setTitle(" "+gruppo_2.getGroupName());
+                t.setSubtitle(" Welcome: "+user.getUsername());
+                setSupportActionBar(t);
+
+                getSupportActionBar().setDisplayUseLogoEnabled(false);
+                getSupportActionBar().setDisplayShowCustomEnabled(true);
+                t.setNavigationOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        user.resetUnread(gruppo.getGroupID());
+                        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
+                        groups_ref.child(gruppo.getGroupID()).child("partecipanti").child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
+                        finish();
+                    }
+                });
+                if(gruppo_2.getUri()!=null) {
+                    Picasso.with(getBaseContext()).load(gruppo_2.getUri()).placeholder(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
+                }else
+                    Picasso.with(getBaseContext()).load(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
+
+
+
+                //BitmapManager  bm = new BitmapManager(getBaseContext(),gruppo_2.getImg(),50,70);
+
+                //Bitmap b=  bm.scaleDown(gruppo_2.getImg(),100,true);
+                //Drawable d = new BitmapDrawable(getResources(), b);
+                //t.setLogo(d);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+
+
         final RecyclerView mylist = (RecyclerView) findViewById(R.id.listView2);
 
+        t= (Toolbar)findViewById(R.id.expenseToolbar);
+        ImageView img = (ImageView) findViewById(R.id.show_GroupIcon);
+        img.setImageResource(R.drawable.default_img);
+       TextView tv1 = (TextView) findViewById(R.id.show_namegroup);
+        TextView tv2 = (TextView) findViewById(R.id.show_welcome);
+        tv1.setText(" "+gruppo.getGroupName());
+        tv2.setText(" Welcome: "+user.getUsername());
+        setSupportActionBar(t);
+        getSupportActionBar().setDisplayUseLogoEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        if(gruppo.getUri()!=null) {
+            Picasso.with(getBaseContext()).load(gruppo.getUri()).placeholder(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
+            t.setTitle(" "+gruppo.getGroupName());
+            t.setSubtitle(" Welcome: "+user.getUsername());
+        setSupportActionBar(t);
+        }
+        else
+            Picasso.with(getBaseContext()).load(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
 
+        t.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                user.resetUnread(gruppo.getGroupID());
+                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
+                groups_ref.child(gruppo.getGroupID()).child("partecipanti").child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
+                finish();
+            }
+        });
 
         Query ref = groups_ref.child(gruppo.getGroupID()).child("spese");
         ExpenseRecyclerAdapter adapter= new ExpenseRecyclerAdapter(Spesa.class,R.layout.listview_expense_row, ExpensesActivity.ExpenseHolder.class,ref,getBaseContext());
@@ -166,6 +244,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
             public void onClick(View v) {
                 user.resetUnread(gruppo.getGroupID());
                 users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
+                groups_ref.child(gruppo.getGroupID()).child("partecipanti").child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
                 finish();
             }
         });
@@ -208,6 +287,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     {
         user.resetUnread(gruppo.getGroupID());
         users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
+        groups_ref.child(gruppo.getGroupID()).child("partecipanti").child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
         finish();
     }
 

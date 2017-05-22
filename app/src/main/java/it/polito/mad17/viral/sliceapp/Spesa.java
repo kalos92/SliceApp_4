@@ -30,6 +30,38 @@ public class Spesa implements Serializable {
     private HashMap<String, Soldo> divisioni = new HashMap<String,Soldo>();
     private String expenseID;
 
+    public boolean getMethod() {
+        return method;
+    }
+
+    public void setMethod(boolean method) {
+        this.method = method;
+    }
+
+    private boolean method=false;
+    //true -> repay
+    //false -> salvataggio normale
+
+    public int getDigit() {
+        return digit;
+    }
+
+    public void setDigit(int digit) {
+        this.digit = digit;
+    }
+
+    private int digit;
+
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
+    }
+
+    private String img;
+
     public HashMap<String,HashMap<String,Soldo>> getDebiti_restituiti() {
         return debiti_restituiti;
     }

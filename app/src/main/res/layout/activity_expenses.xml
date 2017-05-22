@@ -26,9 +26,42 @@
                 app:titleTextColor="@android:color/white"
                 app:subtitleTextColor="@android:color/white"
                 android:background="@color/colorPrimary">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                android:id="@+id/show_GroupIcon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginRight="205dp"/>
+                <TextView
+                    android:id="@+id/show_namegroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:textColor="@color/slider_tab"
+                    android:textSize="20sp"
+                    android:layout_marginTop="3dp"
+                    android:textStyle="bold"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignLeft="@+id/show_welcome"
+                    android:layout_alignStart="@+id/show_welcome"
+              />
+                <TextView
+                    android:layout_marginBottom="2dp"
+                    android:layout_marginTop="1dp"
+                    android:id="@+id/show_welcome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:textColor="@color/slider_tab"
+                    android:textSize="18sp"
+                    android:textStyle="italic"
+                    android:layout_below="@+id/show_namegroup"
+                    android:layout_centerHorizontal="true" />
+            </RelativeLayout>
                 /></android.support.v7.widget.Toolbar>
 
 

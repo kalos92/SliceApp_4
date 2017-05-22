@@ -53,8 +53,7 @@ public class LoginActivity extends AppCompatActivity{
         prefix = (Spinner) findViewById(R.id.prefix_log);
         mPhoneView = (AutoCompleteTextView) findViewById(R.id.phoneNumber);
         mPasswordView = (EditText) findViewById(R.id.password);
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(this,
-                R.array.prefix, R.layout.spinner_item);
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.prefix, R.layout.spinner_item);
 
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         prefix.setAdapter(adapter);
