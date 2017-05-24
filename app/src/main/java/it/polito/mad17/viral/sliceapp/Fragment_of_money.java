@@ -56,7 +56,7 @@ public class Fragment_of_money extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         gruppo = SliceAppDB.getGroup(ID);
-
+        System.out.println("gruppo " + gruppo.getGroupName());
         groups_ref.child(ID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -82,6 +82,7 @@ public class Fragment_of_money extends Fragment {
 
         debts =(TextView) v.findViewById(R.id.debts_number);
         credits = (TextView) v.findViewById(R.id.credits_number);
+        gruppo.setUser(SliceAppDB.getUser());
         if(gruppo!=null) {
             String s = String.format("%."+gruppo.getCurr().getDigits()+"f", gruppo.getAllDebts()*-1);
             debts.setText(s+" "+gruppo.getCurr().getSymbol());

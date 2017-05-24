@@ -1,5 +1,6 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -101,8 +102,17 @@ public class ExpenseDetails extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        final String groupID = s.getGruppo(); // non so se lo prende
+        final String groupID = s.getGruppo();
         final String expenseID = s.getExpenseID();
+
+
+        if(item.getItemId()==R.id.contestation_expense_item_menu){
+            Intent i = new Intent(ExpenseDetails.this,AddContestationActivity.class);
+            i.putExtra("spesa",expenseID);
+            i.putExtra("gruppo",groupID);
+            startActivity(i);
+        }else{
+
 
         // controllo prima se colui che vuole pagare la spesa è il pagante della spesa stessa
         // il pagante, già quando carica la spesa, paga la sua parte
@@ -138,7 +148,7 @@ public class ExpenseDetails extends AppCompatActivity {
                 double myPart = spesa.child("divisioni").child(SliceAppDB.getUser().getTelephone()).child("importo").getValue(Double.class);
                 // gestraggo credito/debito attuale nei confronti del pagante
                 double creditsDebts = dataSnapshot.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("amici")
-                                                  .child(s.getPagante().getTelephone()).child("importo").getValue(Double.class);
+                                                  .child(s.getPagante().getTelephone() + ";" + s.getChosenCurr()).child("importo").getValue(Double.class);
                 // aggiorno credito/debito
                 creditsDebts += myPart;
                 // setto il nuovo credito/debito nei confronti del pagante
@@ -194,7 +204,9 @@ public class ExpenseDetails extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         });
+        }
         return true;
+
     }
 
 

@@ -34,11 +34,14 @@
         <activity
             android:name=".Group_Details"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ExpenseDetails"/>
-        <service
-            android:name=".FirebaseBackgroundService">
+        <activity android:name=".ExpenseDetails" />
 
-        </service>
+        <service android:name=".FirebaseBackgroundService" />
+
+        <activity
+            android:name=".AddContestationActivity"
+            android:label="@string/title_activity_add_contestation"
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

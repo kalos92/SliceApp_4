@@ -157,6 +157,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             s1.setDigit(gruppo.getCurr().getDigits());
                             s1.setCat_string(cat);
                             s1.setImg(downloadUrl.toString());
+                            s1.setChosenCurr(gruppo.getCurr().getChoosencurr());
                             gruppo.refreshC();
 
 
@@ -301,6 +302,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             s1.setDigit(gruppo.getCurr().getDigits());
                             s1.setCat_string(cat);
                             s1.setUri(downloadUrl);
+                            s1.setChosenCurr(gruppo.getCurr().getChoosencurr());
                             gruppo.refreshC();
 
 
@@ -429,7 +431,8 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 Spesa s1 = gruppo.AddSpesa(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
                     s1.setValuta(gruppo.getCurr().getSymbol());
                     s1.setDigit(gruppo.getCurr().getDigits());
-                s1.setCat_string(cat);
+                    s1.setCat_string(cat);
+                    s1.setChosenCurr(gruppo.getCurr().getChoosencurr());
 
                 gruppo.refreshC();
 
@@ -574,6 +577,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             s1.setDigit(gruppo.getCurr().getDigits());
                             s1.setCat_string(cat);
                             s1.setImg(downloadUrl.toString());
+                            s1.setChosenCurr(gruppo.getCurr().getChoosencurr());
                             gruppo.refreshC();
 
 
@@ -724,7 +728,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 s1.setBitmap_spesa(b);
                 s1.setUri(uri);
                 s1.setCat_string(cat);
-
+                s1.setChosenCurr(gruppo.getCurr().getChoosencurr());
                 gruppo.refreshC();
 
 

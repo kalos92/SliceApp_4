@@ -46,10 +46,12 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
      *                        using some combination of {@code limit()}, {@code startAt()}, and {@code endAt()}.
      */
     Context context;
+    Gruppo gruppo;
 
-    public ExpenseRecyclerAdapter(Class<Spesa> modelClass, int modelLayout, Class<ExpensesActivity.ExpenseHolder> viewHolderClass, Query ref, Context context) {
+    public ExpenseRecyclerAdapter(Class<Spesa> modelClass, int modelLayout, Class<ExpensesActivity.ExpenseHolder> viewHolderClass, Query ref, Context context, Gruppo gruppo) {
         super(modelClass, modelLayout, viewHolderClass, ref);
         this.context=context;
+        this.gruppo = gruppo;
     }
 
     @Override

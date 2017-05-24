@@ -46,8 +46,6 @@ public class Gruppo implements Serializable,Cloneable {
 
 
 
-
-
     @Expose
     private String GroupCreator = SliceAppDB.getUser().getTelephone();
 

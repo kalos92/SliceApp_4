@@ -1,67 +1,94 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ThirdFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ThirdFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ThirdFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+    private DatabaseReference rootRef = database.getReference();
+    private DatabaseReference user_ref = rootRef.child("users_prova");
+
 
     public ThirdFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ThirdFragment.
-     */
-    // TODO: Rename and change types and number of parameters
+
     public static ThirdFragment newInstance(String param1, String param2) {
         ThirdFragment fragment = new ThirdFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
+
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        final View v = inflater.inflate(R.layout.slide_balance, container, false);
+        final RecyclerView mylist = (RecyclerView) v.findViewById(R.id.listView1);
+
+        Query ref = rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni");
+        FirebaseRecyclerAdapter<Contestazione,ContestationHolder> adapter = new FirebaseRecyclerAdapter<Contestazione, ContestationHolder>(Contestazione.class,R.layout.listview_contestation_row,ContestationHolder.class,ref) {
+            @Override
+            protected void populateViewHolder(ContestationHolder viewHolder, Contestazione model, int position) {
+
+                viewHolder.nameContestation.setText("Reason: " + model.getTitle());
+                viewHolder.nameExpense.setText("Contested expense: " + model.getNameExpense());
+                viewHolder.nameGroup.setText("Expense group: " + model.getGroupName());
+                viewHolder.namePerson.setText("Contestator: " + model.getUserName());
+
+            }
+        };
+
+        LinearLayoutManager llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        mylist.setLayoutManager(llm);
+        DividerItemDecoration verticalDecoration = new DividerItemDecoration(mylist.getContext(), DividerItemDecoration.VERTICAL);
+        Drawable verticalDivider = getContext().getDrawable(R.drawable.horizontal_divider);
+        verticalDecoration.setDrawable(verticalDivider);
+        mylist.addItemDecoration(verticalDecoration);
+        mylist.setAdapter(adapter);
+
+
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_third, container, false);
+        return v;
+    }
+
+    public static class ContestationHolder extends RecyclerView.ViewHolder{
+        TextView namePerson;//colui che contesta
+        TextView nameContestation;//titolo
+        TextView nameExpense;
+        TextView nameGroup;
+
+        public ContestationHolder(View itemView) {
+            super(itemView);
+
+            namePerson = (TextView) itemView.findViewById(R.id.contestator);
+            nameContestation = (TextView) itemView.findViewById(R.id.titleContestation);
+            nameExpense = (TextView) itemView.findViewById(R.id.expenseContested);
+            nameGroup = (TextView) itemView.findViewById(R.id.groupContestation);
+        }
     }
 }

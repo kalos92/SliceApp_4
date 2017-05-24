@@ -204,4 +204,5 @@
     <string name="wrong_phone_pwd">"The email or password are wrong!"</string>
     <string name="title_activity_splash_screen">SplashScreen</string>
     <string name="title_activity_group__details">Group_Details</string>
+    <string name="title_activity_add_contestation">AddContestationActivity</string>
 </resources>

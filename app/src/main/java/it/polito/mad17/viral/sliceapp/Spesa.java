@@ -30,6 +30,18 @@ public class Spesa implements Serializable {
     private HashMap<String, Soldo> divisioni = new HashMap<String,Soldo>();
     private String expenseID;
 
+    public String getChosenCurr() {
+        return chosenCurr;
+    }
+
+    public void setChosenCurr(String chosenCurr) {
+        this.chosenCurr = chosenCurr;
+    }
+
+    private String chosenCurr;
+
+
+
     public boolean getMethod() {
         return method;
     }

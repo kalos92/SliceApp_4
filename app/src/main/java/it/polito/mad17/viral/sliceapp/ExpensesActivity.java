@@ -174,7 +174,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         });
 
         Query ref = groups_ref.child(gruppo.getGroupID()).child("spese");
-        ExpenseRecyclerAdapter adapter= new ExpenseRecyclerAdapter(Spesa.class,R.layout.listview_expense_row, ExpensesActivity.ExpenseHolder.class,ref,getBaseContext());
+        ExpenseRecyclerAdapter adapter= new ExpenseRecyclerAdapter(Spesa.class,R.layout.listview_expense_row, ExpensesActivity.ExpenseHolder.class,ref,getBaseContext(), gruppo);
 
 
 

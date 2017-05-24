@@ -8,9 +8,6 @@ import java.io.Serializable;
 
 public class Riga_Bilancio implements Serializable {
 
-
-
-
     private String ncname;
     private Double importo;
 

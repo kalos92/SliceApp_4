@@ -78,8 +78,6 @@ public class SecondFragment extends Fragment {
             @Override
             protected void populateViewHolder(BalanceHolder viewHolder, Riga_Bilancio model, int position) {
 
-
-
                 if(model.getImporto()<0) {
                     String str = String.format("%."+model.getDigits()+"f",model.getImporto()*-1);
                     viewHolder.money.setText("-" + str);
@@ -108,10 +106,6 @@ public class SecondFragment extends Fragment {
                     viewHolder.name_p.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
                 }
             }
-
-
-
-
 
         };
         LinearLayoutManager llm = new LinearLayoutManager(getContext());
