@@ -1,6 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -49,14 +50,28 @@ public class ThirdFragment extends Fragment {
         final RecyclerView mylist = (RecyclerView) v.findViewById(R.id.listView1);
 
         Query ref = rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni");
-        FirebaseRecyclerAdapter<Contestazione,ContestationHolder> adapter = new FirebaseRecyclerAdapter<Contestazione, ContestationHolder>(Contestazione.class,R.layout.listview_contestation_row,ContestationHolder.class,ref) {
+        final FirebaseRecyclerAdapter<Contestazione,ContestationHolder> adapter = new FirebaseRecyclerAdapter<Contestazione, ContestationHolder>(Contestazione.class,R.layout.listview_contestation_row,ContestationHolder.class,ref) {
             @Override
-            protected void populateViewHolder(ContestationHolder viewHolder, Contestazione model, int position) {
+            protected void populateViewHolder(ContestationHolder viewHolder, final Contestazione model, int position) {
 
                 viewHolder.nameContestation.setText("Reason: " + model.getTitle());
                 viewHolder.nameExpense.setText("Contested expense: " + model.getNameExpense());
                 viewHolder.nameGroup.setText("Expense group: " + model.getGroupName());
                 viewHolder.namePerson.setText("Contestator: " + model.getUserName());
+
+                // attacco un listener alla contestazione
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String contestationID = model.getContestID();
+                        Intent i = new Intent(getActivity(), CommentsActivity.class);
+                        i.putExtra("contestationID", contestationID);
+                        i.putExtra("expenseID", model.getExpenseID());
+                        i.putExtra("groupID", model.getGroupID());
+                        startActivity(i);
+                    }
+                });
+
 
             }
         };
@@ -69,6 +84,7 @@ public class ThirdFragment extends Fragment {
         verticalDecoration.setDrawable(verticalDivider);
         mylist.addItemDecoration(verticalDecoration);
         mylist.setAdapter(adapter);
+
 
 
 

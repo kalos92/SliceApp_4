@@ -10,9 +10,21 @@ public class Commento {
     private String commento;
     private String userID;
     private String userName;
+    private Long timestamp;
+
+
+
 
     public Commento(){
 
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getCommentoID() {

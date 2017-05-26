@@ -42,6 +42,7 @@
             android:name=".AddContestationActivity"
             android:label="@string/title_activity_add_contestation"
             android:theme="@style/AppTheme" />
+        <activity android:name=".CommentsActivity"></activity>
     </application>
 
 </manifest>

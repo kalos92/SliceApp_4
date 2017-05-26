@@ -31,8 +31,6 @@ import java.util.Map;
 
 public class FirebaseBackgroundService extends Service {
 
-    // TODO notifiche per aggiunta spesa, aggiunta gruppi, rimozione spesa, pagato spesa normale
-
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private ChildEventListener groupsListener;
     private Long lastTimestampGroup = System.currentTimeMillis();
@@ -54,6 +52,12 @@ public class FirebaseBackgroundService extends Service {
         sharedPref= getSharedPreferences("data",MODE_PRIVATE);
         final String userTelephone = sharedPref.getString("telefono", null);
         DatabaseReference groupsRef = database.getReference().child("groups_prova");
+
+        //DatabaseReference contestationsRef = database.getReference().child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni");
+
+
+
+
 
         groupsListener = new ChildEventListener() {
             @Override

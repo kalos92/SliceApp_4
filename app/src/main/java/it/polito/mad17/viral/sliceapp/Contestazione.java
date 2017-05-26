@@ -17,10 +17,21 @@ public class Contestazione {
     private String phoneNumber;
     private String groupName;
     private String userName;
+    private Long timestamp;
     private Map<String,Commento> commenti = new HashMap<String,Commento>();
+
+
 
     public Contestazione(){
 
+    }
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Long timestamp) {
+        this.timestamp = timestamp;
     }
 
     public String getUserName() {
