@@ -326,6 +326,19 @@ public class ExpenseDetails extends AppCompatActivity {
             }
         });
 
+        Button contestExpense = (Button) findViewById(R.id.contest_btn);
+        contestExpense.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(ExpenseDetails.this, AddContestationActivity.class);
+                System.out.println("spesa " + s.getExpenseID());
+                System.out.println("gruppo " + s.getGruppo());
+                i.putExtra("spesa", s.getExpenseID());
+                i.putExtra("gruppo", s.getGruppo());
+                startActivity(i);
+            }
+        });
+
 
 
 

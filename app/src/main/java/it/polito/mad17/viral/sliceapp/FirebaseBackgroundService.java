@@ -53,8 +53,80 @@ public class FirebaseBackgroundService extends Service {
         final String userTelephone = sharedPref.getString("telefono", null);
         DatabaseReference groupsRef = database.getReference().child("groups_prova");
 
-        //DatabaseReference contestationsRef = database.getReference().child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni");
+        final DatabaseReference contestationsRef = database.getReference().child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni");
+        contestationsRef.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+                // get data to show in the notification
+                String userName = (String) dataSnapshot.child("userName").getValue();
+                String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
+                String groupName = (String) dataSnapshot.child("groupName").getValue();
+                String contestTitle = (String) dataSnapshot.child("title").getValue();
+
+                // notification
+                Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
+                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.added_contestation)
+                        .setContentTitle(userName + " has contested expense " + expenseName + " of group " + groupName)
+                        .setContentText(contestTitle)
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        //.setPriority(NotificationCompat.PRIORITY_HIGH)
+                        .setContentIntent(contentIntent);
+                Notification noti = builder.build();
+                noti.flags = Notification.FLAG_AUTO_CANCEL;
+                // Add notification
+                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.notify((int) System.currentTimeMillis(), noti);
+
+                // add listener for comment
+                contestationsRef.child(dataSnapshot.getKey()).child("commenti").addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+
+                        String userName = (String) dataSnapshot.child("userName").getValue();
+                        String commento = (String) dataSnapshot.child("commento").getValue();
+
+                        // notification
+                        Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
+                        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT);
+                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                .setSmallIcon(R.drawable.added_comment)
+                                .setContentTitle(userName + " has commented a contestation over an expense") // mi servirebbe il nome della spesa :(
+                                .setContentText(commento)
+                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                //.setPriority(NotificationCompat.PRIORITY_HIGH)
+                                .setContentIntent(contentIntent);
+                        Notification noti = builder.build();
+                        noti.flags = Notification.FLAG_AUTO_CANCEL;
+                        // Add notification
+                        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        manager.notify((int) System.currentTimeMillis(), noti);
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+            @Override
+            public void onCancelled(DatabaseError databaseError) {}
+        });
 
 
 
@@ -90,7 +162,7 @@ public class FirebaseBackgroundService extends Service {
                                     .setContentTitle("You have been added to a new group!")
                                     .setContentText(groupName)
                                     .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                    //.setPriority(NotificationCompat.PRIORITY_HIGH)
                                     .setContentIntent(contentIntent);
                             Notification noti = builder.build();
                             noti.flags = Notification.FLAG_AUTO_CANCEL;
@@ -135,7 +207,7 @@ public class FirebaseBackgroundService extends Service {
                                 .setContentTitle("An expense has been removed from ")
                                 .setContentText( expenseName + " - group " + gName) // non riusciamo a ricavare il nome della spesa
                                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                //.setPriority(NotificationCompat.PRIORITY_HIGH)
                                 .setContentIntent(contentIntent);
                         Notification noti = builder.build();
                         noti.flags = Notification.FLAG_AUTO_CANCEL;
@@ -187,8 +259,7 @@ public class FirebaseBackgroundService extends Service {
                                                             .setContentTitle("The user " + user2 + " has paid his part (" + importo + ")")
                                                             .setContentText("expense " + expenseName + " - group " + groupName)
                                                             .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                                            .setPriority(NotificationCompat.PRIORITY_HIGH)
-                                                            //.setDefaults(Notification.DEFAULT_VIBRATE)
+                                                            //.setPriority(NotificationCompat.PRIORITY_HIGH)
                                                             .setContentIntent(contentIntent);
 
                                                     Notification noti = builder.build();
@@ -234,7 +305,7 @@ public class FirebaseBackgroundService extends Service {
                                         .setContentTitle("An expense has been added to the group " + groupName)
                                         .setContentText(expenseName + " - Payer is " + usernamePagante)
                                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                        .setPriority(NotificationCompat.PRIORITY_HIGH)
+                                        //.setPriority(NotificationCompat.PRIORITY_HIGH)
                                         .setContentIntent(contentIntent);
                                 Notification noti = builder.build();
                                 noti.flags = Notification.FLAG_AUTO_CANCEL;

@@ -203,7 +203,8 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                                 Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
                                 p1.setIsInDB(1);
                                 users2.child(p1.getTelephone()).setValue(p1);
-                                database.getReference().push().child(p1.getTelephone());
+                                DatabaseReference userRef = database.getReference().push().child(p1.getTelephone());
+                                userRef.child("contestazioni").setValue("");
 
                                 SliceAppDB.setUser(p1);
                                 progressDialog.dismiss();
