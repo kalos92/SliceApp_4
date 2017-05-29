@@ -1,17 +1,24 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
@@ -32,20 +39,33 @@ import static java.security.AccessController.getContext;
 
 public class CommentsActivity extends AppCompatActivity {
 
+    private String groupID,expenseID,contestationID,contestatorID;
+    private SharedPreferences sharedPref;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
+        //this.getWindow().setSoftInputMode(
+          //      WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        //creazione della toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.contestationToolbar);
+        setSupportActionBar(toolbar);
+
+
 
         final DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
         Bundle extras = getIntent().getExtras();
-        final String contestationID = extras.getString("contestationID");
-        final String expenseID = extras.getString("expenseID");
-        final String groupID = extras.getString("groupID");
+        contestationID = extras.getString("contestationID");
+        expenseID = extras.getString("expenseID");
+        groupID = extras.getString("groupID");
+        contestatorID = extras.getString("contestator");
 
         RecyclerView mylist = (RecyclerView) findViewById(R.id.listViewComments);
 
-        Query commentsRef = databaseRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni").child(contestationID).child("commenti");
+        sharedPref= getSharedPreferences("data",MODE_PRIVATE);
+        final String userTelephone = sharedPref.getString("telefono", null);
+        Query commentsRef = databaseRef.child("users_prova").child(userTelephone).child("contestazioni").child(contestationID).child("commenti");
         FirebaseRecyclerAdapter<Commento, CommentHolder> adapter = new FirebaseRecyclerAdapter<Commento, CommentHolder>(Commento.class, R.layout.comment_row, CommentHolder.class, commentsRef) {
             @Override
             protected void populateViewHolder(CommentHolder viewHolder, Commento model, int position) {
@@ -117,6 +137,65 @@ public class CommentsActivity extends AppCompatActivity {
             userName = (TextView) itemView.findViewById(R.id.userNameComment);
             comment = (TextView) itemView.findViewById(R.id.comment);
         }
+    }
+
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.comments_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        int id = item.getItemId();
+
+        if(id == R.id.remove_contestation){
+            //Eliminiamo la contestazione
+            FirebaseDatabase dbContest = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+            DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese")
+                                                                     .child(expenseID).child("contestazioni")
+                                                                     .child(contestationID);
+            if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
+                dbContestRef.removeValue();
+                final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
+
+                dbUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                        while(iterator.hasNext()){
+                            DataSnapshot user = iterator.next();
+                            if(user.child("contestazioni").hasChild(contestationID)){
+                                String keyUser = (String)user.getKey();
+                                dbUserRef.child(keyUser).child("contestazioni").child(contestationID).removeValue();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
+                Log.d("ContestSuccess","I'm here");
+                Toast.makeText(this,"You succesfully delete your contestation",Toast.LENGTH_SHORT).show();
+
+                Intent i = new Intent(CommentsActivity.this,List_Pager_Act.class);
+                i.putExtra("three",2);
+                startActivity(i);
+
+            }else{
+                Log.d("ContestFailure","I'm here");
+                Toast.makeText(this,"You can't delete the contestation!",Toast.LENGTH_SHORT).show();
+
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
 

@@ -68,6 +68,7 @@ public class ThirdFragment extends Fragment {
                         i.putExtra("contestationID", contestationID);
                         i.putExtra("expenseID", model.getExpenseID());
                         i.putExtra("groupID", model.getGroupID());
+                        i.putExtra("contestator",model.getPhoneNumber());
                         startActivity(i);
                     }
                 });

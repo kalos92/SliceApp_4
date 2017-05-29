@@ -1,38 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="it.polito.mad17.viral.sliceapp.CommentsActivity"
-    android:orientation="vertical">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:design="http://schemas.android.com/tools"
+    android:background="@color/tab_bck"
+    android:orientation="vertical"
+    android:id="@+id/container">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/listViewComments"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
-        android:layout_weight="1" />
+        android:layout_height="match_parent"
+        tools:context="it.polito.mad17.viral.sliceapp.CommentsActivity"
+        android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="bottom">
-        <EditText
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/contestationToolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/addComment"
-            android:hint="Insert a comment"/>
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            design:layout_collapseMode="pin"
+            design:layout_scrollFlags="scroll|enterAlways"
+            design:navigationIcon="?attr/homeAsUpIndicator"
+            design:popupTheme="@style/AppTheme"
+            design:subtitleTextColor="#FFFFFF"
+            design:title="Comments"
+            design:titleTextColor="#FFFFFF"
+            />
 
-        <Button
+
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/listViewComments"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/commentButton"
-            android:text="Add comment"
-            android:layout_gravity="right"/>
-    </LinearLayout>
+            android:layout_height="0dip"
+            android:layout_weight="1" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="bottom">
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/addComment"
+                android:hint="Insert a comment"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/commentButton"
+                android:text="Add comment"
+                android:layout_gravity="right"/>
+        </LinearLayout>
 
 
 </LinearLayout>
+</android.support.design.widget.CoordinatorLayout>
 
 
