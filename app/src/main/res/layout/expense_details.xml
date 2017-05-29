@@ -1,83 +1,266 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:design="http://schemas.android.com/tools"
-    android:fitsSystemWindows="true"
-    android:orientation="vertical">
+    android:background="@color/tab_bck"
+    android:orientation="vertical"
+    android:id="@+id/container">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbarExpenseDetail"
-        android:minHeight="?attr/actionBarSize"
+        android:id="@+id/expenseToolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:titleTextColor="@android:color/black"
-        android:background="?attr/colorPrimary"
-        app:navigationIcon="?attr/homeAsUpIndicator">
-
-           <LinearLayout
-               android:layout_width="match_parent"
-               android:layout_height="match_parent"
-               android:orientation="horizontal">
-
-               <LinearLayout
-                   android:layout_width="match_parent"
-                   android:layout_height="match_parent"
-                   android:orientation="vertical">
-                   <TextView
-                       android:id="@+id/ExpenseDetailsName"
-                       android:layout_width="match_parent"
-                       android:layout_height="wrap_content"
-                       android:layout_marginLeft="@dimen/activity_vertical_margin"
-                       android:layout_marginRight="60dp"
-                       android:layout_alignParentLeft="true"
-                       android:layout_centerInParent="true"
-                       android:gravity="left|center"
-                       android:textColor="@color/tw__solid_white"
-                       android:textColorHighlight="@color/text"
-                       android:textStyle="italic"
-                       />
-                   <TextView
-                       android:id="@+id/TextExpenseDetailsValue"
-                       android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_marginRight="60dp"
-                       android:layout_marginLeft="@dimen/activity_vertical_margin"
-                       android:layout_alignParentLeft="true"
-                       android:layout_centerInParent="true"
-                       android:gravity="left|center"
-                       android:textColor="@color/tw__solid_white"
-                       android:textColorHighlight="@color/text"
-                       android:textStyle="italic"
-                       android:textSize="20sp"
-                       />
-               </LinearLayout>
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimary"
+        design:layout_collapseMode="pin"
+        design:layout_scrollFlags="scroll|enterAlways"
+        design:navigationIcon="?attr/homeAsUpIndicator"
+        design:popupTheme="@style/AppTheme"
+        design:subtitleTextColor="#FFFFFF"
+        design:title="Select contacts"
+        design:titleTextColor="#FFFFFF" />
 
 
-           </LinearLayout>
-
-    </android.support.v7.widget.Toolbar>
-
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:background="@color/tab_bck">
+        android:id="@+id/status_card"
+        android:layout_height="60dp"
+        app:cardElevation="2dp"
+        android:layout_marginTop="65dp"
 
-        <ListView
-            android:id="@+id/listViewExpenseDetails"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:background="@color/tab_bck"
-            android:descendantFocusability="afterDescendants" />
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/default_img"
+                    android:id="@+id/status_pic1"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:layout_alignParentLeft="true" />
+
+                    <TextView
+                    android:id="@+id/status_txt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="WE UAJJOO"
+                    android:textAlignment="center"
+                    android:textColor="@color/text"
+                    android:layout_marginLeft="80dp"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginTop="@dimen/activity_horizontal_margin"
+                    android:padding="4dp"
+                    android:textSize="18dp"
+                        android:maxLines="1"/>
+
+                        <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/default_img"
+                        android:id="@+id/status_pic2"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="10dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginTop="@dimen/activity_horizontal_margin"/>
+                </RelativeLayout>
+        </android.support.v7.widget.CardView>
+
+        <android.support.v7.widget.CardView
+        android:layout_marginTop="135dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="360dp"
+        android:backgroundTint="#DADFE1"
+        app:cardElevation="2dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageButton
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/default_img"
+                android:id="@+id/buyerPic"
+                android:layout_centerHorizontal="true"
+                android:background="@drawable/solidcircle"
+                android:backgroundTint="#DADFE1"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                />
+
+            <TextView
+                android:layout_below="@id/buyerPic"
+                android:id="@+id/compratore_txt"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:text="Buyer:"
+                android:textColor="@color/text"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:textSize="18dp"/>
+            <TextView
+                android:layout_below="@id/buyerPic"
+                android:id="@+id/compratore_show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Calogero Carrabbotta"
+                android:layout_toRightOf="@id/compratore_txt"
+                android:textColor="@color/text"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:textSize="18dp"/>
+
+            <TextView
+                android:id="@+id/importo_txt"
+                android:layout_width="90dp"
+                android:layout_below="@+id/compratore_txt"
+                android:layout_height="wrap_content"
+                android:text="Import:"
+                android:textColor="@color/text"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:textSize="18dp"/>
+            <TextView
+                android:id="@+id/importo_show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/compratore_show"
+                android:text="17.99€"
+                android:layout_toRightOf="@id/importo_txt"
+                android:textColor="@color/text"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:textSize="18dp"/>
+
+            <TextView
+                android:id="@+id/data_txt"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:text="Data:"
+                android:textColor="@color/text"
+                android:layout_below="@id/importo_txt"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:textSize="18dp"/>
+            <TextView
+                android:id="@+id/data_show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="17/05/2017"
+                android:layout_below="@id/importo_show"
+                android:layout_toRightOf="@id/data_txt"
+                android:textColor="@color/text"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:textSize="18dp"/>
+
+            <TextView
+                android:id="@+id/part_txt"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/data_txt"
+                android:text="Your Part:"
+                android:textColor="@color/text"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:textSize="18dp"/>
+            <TextView
+                android:id="@+id/part_show"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/data_show"
+                android:text="4.30€"
+                android:layout_toRightOf="@id/part_txt"
+                android:textColor="@color/text"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="@dimen/activity_horizontal_margin"
+                android:padding="4dp"
+                android:textSize="18dp"/>
 
 
-    </LinearLayout>
 
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/part_show"
+                android:id="@+id/contest_btn"
+                android:background="#DADFE1"
+                android:text="Contest"
+                android:textSize="20sp"
+                android:textColor="@color/colorAccent"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginTop="10dp"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/part_show"
+                android:id="@+id/remove_btn"
+                android:text="Remove"
+                android:textSize="20sp"
+                android:textColor="@color/debiti"
+                android:layout_alignParentEnd="true"
+                android:background="#DADFE1"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
+                android:layout_alignParentRight="true"
+            android:layout_marginTop="10dp"/>
 
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/contest_btn"
+                android:id="@+id/see_division_button"
+                android:text="Policy"
+                android:textSize="20sp"
+                android:textColor="@color/colorPrimaryDark"
+                android:layout_alignParentLeft="true"
+                android:background="#DADFE1"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
 
-    <!-- Layout for content is here. This can be a RelativeLayout  -->
+                android:layout_marginTop="5dp"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/contest_btn"
+                android:id="@+id/download_PDF_button"
+                android:text="PDF"
+                android:textSize="20sp"
+                android:textColor="#663399"
+                android:layout_alignParentRight="true"
+                android:background="#DADFE1"
+                android:layout_marginLeft="@dimen/activity_vertical_margin"
+                android:layout_marginRight="@dimen/activity_vertical_margin"
 
-</LinearLayout>
+                android:layout_marginTop="5dp"/>
+
+        </RelativeLayout>
+
+    </android.support.v7.widget.CardView>
+
+    <ImageView
+        android:id="@+id/expanded_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:elevation="12dp"
+        android:visibility="invisible" />
+
+</android.support.design.widget.CoordinatorLayout>

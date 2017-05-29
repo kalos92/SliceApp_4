@@ -80,17 +80,17 @@ public class SecondFragment extends Fragment {
 
 
 
-                if(model.getImporto()<0) {
-                    String str = String.format("%."+model.getDigits()+"f",model.getImporto()*-1);
-                    viewHolder.money.setText("-" + str);
+                if(model.calculate().compareTo(0d)<0) {
+                    String str = String.format("%."+model.getDigits()+"f",model.calculate());
+                    viewHolder.money.setText(str);
                     viewHolder.name_p.setText("You owe to "+ model.getNcname()+":");
                     viewHolder.money.setTextColor(getContext().getResources().getColor(R.color.debiti));
                     viewHolder.name_p.setTextColor(getContext().getResources().getColor(R.color.debiti));
                     viewHolder.currency.setText(model.getSymbol());
                     viewHolder.currency.setTextColor(getContext().getResources().getColor(R.color.debiti));
                 }
-                else if (model.getImporto()>0){
-                    String str = String.format("%."+model.getDigits()+"f",model.getImporto());
+                else if (model.calculate().compareTo(0d)>0){
+                    String str = String.format("%."+model.getDigits()+"f",model.calculate());
                     viewHolder.money.setText("+"+ str);
                     viewHolder.name_p.setText(model.getNcname()+ " owe to you:");
 
@@ -99,13 +99,14 @@ public class SecondFragment extends Fragment {
                     viewHolder.currency.setText(model.getSymbol());
                     viewHolder.currency.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
                 }
-                else if (model.getImporto()==0){
+                else if (model.calculate().compareTo(0d)==0){
                     viewHolder.currency.setText("");
                     viewHolder.money.setText("");
                     viewHolder.name_p.setText(model.getNcname()+ " has no problem with you");
 
                     viewHolder.money.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
                     viewHolder.name_p.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
+
                 }
             }
 

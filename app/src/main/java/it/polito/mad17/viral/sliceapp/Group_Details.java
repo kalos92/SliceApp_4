@@ -59,6 +59,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
     private FirebaseStorage storageReference = FirebaseStorage.getInstance("gs://sliceapp-a55d6.appspot.com/");
     private byte[] datas;
     private StorageReference images;
+    private Bitmap b;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +71,16 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
+        if(savedInstanceState!=null){
+
+            b=savedInstanceState.getParcelable("bitmap");
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+            datas = baos.toByteArray();
+            photoAttack= (ImageButton) findViewById(R.id.add_groupicon);
+            photoAttack.setImageBitmap(b);
+
+        }
 
         Bundle extra =getIntent().getExtras();
 
@@ -281,7 +292,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
 
             case PICK_IMAGE_ID:
 
-                Bitmap b = ImagePicker.getImageFromResult(this, resultCode, data);
+                b = ImagePicker.getImageFromResult(this, resultCode, data);
                 if(b!=null){
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -312,6 +323,9 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
         if (images != null) {
             outState.putString("reference", images.toString());
         }
+
+        if(b!=null)
+            outState.putParcelable("bitmap",b);
     }
 
     @Override

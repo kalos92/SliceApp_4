@@ -156,8 +156,8 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
     }
 
     @Override
-    public void returnSelection_2(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy) {
-        chtp.returnSelection_2(cat,data,buyer,b,uri,price,nome,gruppo,user,null,policy);
+    public void returnSelection_2(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy,int tipo) {
+        chtp.returnSelection_2(cat,data,buyer,b,uri,price,nome,gruppo,user,null,policy,tipo);
     }
 
     @Override

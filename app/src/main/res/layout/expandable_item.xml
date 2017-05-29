@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:orientation="vertical"
+    android:background="#DADFE1">
+
+    <TextView
+        android:id="@+id/name_p"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginTop="5dp"
+        android:text="Calogero Carrabbotta"
+        android:textAlignment="center"
+        android:textStyle="italic"
+        android:padding="5dp"
+        android:textColor="@color/text"
+       />
+    <TextView
+
+        android:layout_below="@id/name_p"
+        android:id="@+id/num_p"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:paddingTop="5dp"
+        android:text="Total: 3,3€"
+        android:layout_gravity="end"
+        android:textColor="@color/text"
+        android:paddingBottom="5dp"
+        android:layout_marginLeft="@dimen/activity_vertical_margin" />
+
+    <TextView
+        android:layout_below="@id/name_p"
+        android:layout_alignRight="@id/num_p"
+        android:layout_alignParentRight="true"
+        android:id="@+id/perc_p"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:paddingTop="5dp"
+        android:text="Percentage: 70%"
+        android:textColor="@color/text"
+        android:paddingBottom="5dp"
+       android:layout_marginRight="@dimen/activity_vertical_margin"/>
+
+</RelativeLayout>

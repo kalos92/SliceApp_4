@@ -1,6 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Created by abdel on 28/04/2017.
@@ -12,16 +13,13 @@ public class Riga_Bilancio implements Serializable {
 
 
     private String ncname;
-    private Double importo;
-
-
-
+    private HashMap<String,Double> importo= new HashMap<>();
     private String symbol;
     private int digits;
 
     public Riga_Bilancio(){};
 
-    public Riga_Bilancio(String ncname,Double importo,String symbol, int digits){
+    public Riga_Bilancio(String ncname,HashMap<String,Double> importo,String symbol, int digits){
         this.ncname= ncname;
         this.importo=importo;
         this.symbol=symbol;
@@ -37,11 +35,11 @@ public class Riga_Bilancio implements Serializable {
         this.ncname = ncname;
     }
 
-    public Double getImporto() {
+    public HashMap<String,Double> getImporto() {
         return importo;
     }
 
-    public void setImporto(Double importo) {
+    public void setImporto(HashMap<String,Double> importo) {
         this.importo = importo;
     }
 
@@ -61,4 +59,15 @@ public class Riga_Bilancio implements Serializable {
         this.digits = digits;
     }
 
+    public Double calculate(){
+
+        Double f = new Double(0d);
+
+
+        for(Double d :importo.values())
+            f+=d;
+
+        return f;
+
+    }
 }

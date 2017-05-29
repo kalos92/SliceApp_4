@@ -2,28 +2,39 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="it.polito.mad17.viral.sliceapp.Little_fragment_2">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="wrap_content"
-    android:layout_width="match_parent"
-    android:orientation="vertical">
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="#DADFE1"
+        app:cardElevation="2dp">
 
-<ListView
-    android:id="@+id/littleFragment1"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:background="@color/tab_bck"
-    android:layout_weight="1"
-    android:descendantFocusability="afterDescendants"/>
-
-        <Button
-            android:id="@+id/save"
-            android:layout_width="wrap_content"
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="SAVE PERCENTAGES" />
-    </LinearLayout>
+            android:background="@color/tab_bck"
+            android:orientation="vertical">
+
+            <it.polito.mad17.viral.sliceapp.CustomListV
+                android:id="@+id/littleFragment1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:background="@color/tab_bck"
+                android:scrollbars="none"
+               />
+
+            <Button
+                android:id="@+id/save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="SAVE PERCENTAGES" />
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
 
 </FrameLayout>

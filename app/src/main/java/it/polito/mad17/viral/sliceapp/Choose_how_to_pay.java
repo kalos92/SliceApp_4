@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 import java.util.GregorianCalendar;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
@@ -27,6 +29,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -36,6 +39,8 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import dmax.dialog.SpotsDialog;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -56,6 +61,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     private Bitmap b;
     private FirebaseStorage storageReference = FirebaseStorage.getInstance("gs://sliceapp-a55d6.appspot.com/");
     private StorageReference images;
+    private int tipo_policy;
 
 
     public static Choose_how_to_pay newInstance(Gruppo g) {
@@ -101,22 +107,75 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
             if(savedInstanceState.getSerializable("Policy")!=null)
                 policy = (Policy) savedInstanceState.getSerializable("Policy");
+
+            tipo_policy=savedInstanceState.getInt("Tipo");
         }
-        Button save = (Button) v.findViewById(R.id.save_b);
+
+        Button save = (Button) v.findViewById(R.id.save_btn);
+
+        TextView tv1 = (TextView) v.findViewById(R.id.summary_name_show);
+        TextView tv2= (TextView) v.findViewById(R.id.buyer_show);
+        TextView tv3= (TextView) v.findViewById(R.id.import_show);
+        TextView tv4= (TextView) v.findViewById(R.id.date_show);
+        TextView tv5= (TextView) v.findViewById(R.id.photo_txt);
+        TextView tv6= (TextView) v.findViewById(R.id.pdf_txt);
+        TextView tv7= (TextView) v.findViewById(R.id.policy_show);
+
+        tv1.setText(nome);
+        tv2.setText(buyer.getName()+" "+buyer.getSurname());
+        tv3.setText(price+" "+gruppo.getCurr().getChoosencurr());
+
+        String data_ss;
+
+        if(data!=null){
+            int month = data.get(Calendar.MONTH);
+            month++;
+            data_ss = data.get(Calendar.DAY_OF_MONTH)+"/"+month+"/"+data.get(Calendar.YEAR);
+        }
+        else{
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            month++;
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            data_ss=day+"/"+month+"/"+year;
+            }
+
+        tv4.setText(data_ss);
+
+        if(b!=null)
+            tv5.setText("Attached Photo:         Yes");
+        else
+            tv5.setText("Attached Photo:         No");
+
+        if(uri!=null)
+            tv6.setText("Attached PDF:         Yes");
+        else
+            tv6.setText("Attached PDF:         No");
+
+        if(tipo_policy==1)
+            tv7.setText("Equal Division");
+        else if(tipo_policy==2)
+            tv7.setText("Custom Division");
+        else if(tipo_policy==0)
+            tv7.setText("Group Policy");
+
 
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final SpotsDialog dialog = new SpotsDialog(getContext(),"Saving Expense");
+                dialog.show();
 
-               // if(gruppo.getN_partecipanti()!= gruppo_backup.getN_partecipanti() || !confronta_map(gruppo.getPolicy(),gruppo_backup.getPolicy())){
-               // Toast.makeText(getContext(),"Group info are changed, Expense NOT saved!",Toast.LENGTH_LONG).show();
 
                 final FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
                 final DatabaseReference expensesRef = database.getReference().child("expenses");
                 final DatabaseReference expense = expensesRef.push();
                 final String expenseID = expense.getKey();
-                // else{
-                if(b!=null && uri==null) {
+                final DatabaseReference groups_prova_2 = database.getReference().child("groups_prova");
+
+
+                if(b!=null && uri==null) {                                              //SOLO IMG
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     datas = baos.toByteArray();
@@ -131,7 +190,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+
                             @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
                             final Intent intent = new Intent(getActivity(), ExpensesActivity.class);
@@ -157,15 +216,13 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             s1.setDigit(gruppo.getCurr().getDigits());
                             s1.setCat_string(cat);
                             s1.setImg(downloadUrl.toString());
+
                             gruppo.refreshC();
 
+                            final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
-
-
-                            ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
-
-                            Collection<Soldo> parti = s1.getDivisioni().values();
                             for(Persona p: partecipanti){
+
                                 if(!p.getTelephone().equals(user.getTelephone()))
                                     p.plusOneUnread(gruppo.getGroupID());
 
@@ -176,18 +233,16 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             }
 
 
+                            //Fino a qui ho solo fatto roba in locale
+
+                            //Devo aggiornare il bilancio del gruppo e il bilancio totale su amici
+
                             final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID()).child("spese").child(s1.getExpenseID());
                             Gson gson = new Gson();
                             Spesa g1 = gson.fromJson(gson.toJson(s1),Spesa.class);
                             groups_prova.setValue(g1);
 
-
-
                             final DatabaseReference users_prova = database.getReference().child("users_prova");
-
-
-                            final Spesa s2=s1;
-                            final Collection<Soldo> parti2 = s1.getDivisioni().values();
                             for(final Persona p: partecipanti) {
                                 users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
                                     @Override
@@ -202,50 +257,10 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                                         int i = dg.getUnread();
                                         Gson gson = new Gson();
                                         Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
-                                        //users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).setValue(p1);
                                         i++;
                                         p1.setUnread(i);
                                         mutableData.setValue(p1);
                                         SliceAppDB.setUser(user);
-                                        getActivity().startActivity(intent);
-                                        getActivity().finish();
-
-                                        users_prova.child(p.getTelephone()).child("amici").runTransaction(new Transaction.Handler() {
-
-                                            @Override
-                                            public Transaction.Result doTransaction(MutableData mutableData) {
-                                                HashMap<String, Riga_Bilancio> amici_took = (HashMap<String, Riga_Bilancio>) mutableData.getValue();
-
-                                                //if (amici_took != null)
-                                                  //  p.setAmici(amici_took);
-
-                                                if (s2.getPagante().getTelephone().equals(p.getTelephone())) { //Se il pagante sono io
-
-                                                    for (Soldo s : parti2) {
-                                                        if (!s.getPersona().getTelephone().equals(p.getTelephone())) {// per tutti i soldi che non sono io
-                                                            p.addTobalance(s.getPersona(), s.getImporto(), gruppo.getCurr());
-                                                        }
-                                                    }
-                                                } else { //non lo sono
-
-                                                    for (Soldo s : parti2) {
-                                                        if (s.getPersona().getTelephone().equals(p.getTelephone())) {// solo il mio soldo
-                                                            p.addTobalance(s.getPagante(), (s.getImporto()) * -1d, gruppo.getCurr()); //prendo la mia parte in negativo per quella persona e andrò a sommarla al pagante
-                                                        }
-
-                                                    }
-                                                }
-
-                                                mutableData.setValue(p.getAmici());
-                                                return Transaction.success(mutableData);
-                                            }
-
-                                            @Override
-                                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                                getActivity().startActivity(intent);
-                                                getActivity().finish();
-                                            }
-                                        });
 
                                         return Transaction.success(mutableData);
                                     }
@@ -255,14 +270,55 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                                     }
                                 });
+                                //Aggiornamento di amici che posso fare senza transaction
+                                String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
+                                if(!p.getTelephone().equals(s1.getPagante().getTelephone()))
+                                    users_prova.child(p.getTelephone()).child("amici").child(s1.getPagante().getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto()*-1);
+                                else
+                                {
+                                    for(Persona altri : partecipanti){
+                                        if(!altri.getTelephone().equals(s1.getPagante().getTelephone()))
+                                            users_prova.child(s1.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto());
 
-                        }
+                                    }
+                                }
+
+
+                                //ORA devo aggiornare tutti i bilanci relativi e gli ID spesa e importo, tel pagante;
+                                for(Persona altri : partecipanti){
+                                    if(!altri.getTelephone().equals(p.getTelephone()) && !altri.getTelephone().equals(s1.getPagante().getTelephone())) {
+                                        String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).push().getKey();
+
+                                        if(p.getTelephone().equals(s1.getPagante().getTelephone())){
+                                            Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto());
+                                            Gson gson_2 = new Gson();
+                                            Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
+                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child(key_g).setValue(rbp_pojo);
+                                        }
+                                        else
+                                        {
+                                            Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto()*-1);
+                                            Gson gson_2 = new Gson();
+                                            Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
+                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(altri.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child(key_g).setValue(rbp_pojo);
+                                        }
+                                    }
+                                }
+
+                            }//for
+
+                            String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
+                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").child(key_s).setValue(s1.getImporto());
+                            //dialog.dismiss();
+                            getActivity().startActivity(intent);
+                            //
+                            //getActivity().finish();
                 }
 
                 });
-                }
+                }                       //FINE SOLO PDF
 
-                if(b==null && uri!=null) {
+                if(b==null && uri!=null) {                  //SOLO PDF
 
                     images = storageReference.getReference().child(expenseID+"PDF");
                     UploadTask uploadTask = images.putFile(uri);
@@ -300,16 +356,14 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             s1.setValuta(gruppo.getCurr().getSymbol());
                             s1.setDigit(gruppo.getCurr().getDigits());
                             s1.setCat_string(cat);
-                            s1.setUri(downloadUrl);
+                            s1.setUri(downloadUrl.toString());
+
                             gruppo.refreshC();
 
+                            final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
-
-
-                            ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
-
-                            Collection<Soldo> parti = s1.getDivisioni().values();
                             for(Persona p: partecipanti){
+
                                 if(!p.getTelephone().equals(user.getTelephone()))
                                     p.plusOneUnread(gruppo.getGroupID());
 
@@ -320,18 +374,17 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             }
 
 
+                            //Fino a qui ho solo fatto roba in locale
+
+                            //Devo aggiornare il bilancio del gruppo e il bilancio totale su amici
+
                             final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID()).child("spese").child(s1.getExpenseID());
                             Gson gson = new Gson();
                             Spesa g1 = gson.fromJson(gson.toJson(s1),Spesa.class);
                             groups_prova.setValue(g1);
 
-
-
                             final DatabaseReference users_prova = database.getReference().child("users_prova");
 
-
-                            final Spesa s2=s1;
-                            final Collection<Soldo> parti2 = s1.getDivisioni().values();
                             for(final Persona p: partecipanti) {
                                 users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
                                     @Override
@@ -346,50 +399,10 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                                         int i = dg.getUnread();
                                         Gson gson = new Gson();
                                         Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
-                                        //users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).setValue(p1);
                                         i++;
                                         p1.setUnread(i);
                                         mutableData.setValue(p1);
                                         SliceAppDB.setUser(user);
-                                        getActivity().startActivity(intent);
-                                        getActivity().finish();
-
-                                        users_prova.child(p.getTelephone()).child("amici").runTransaction(new Transaction.Handler() {
-
-                                            @Override
-                                            public Transaction.Result doTransaction(MutableData mutableData) {
-                                                HashMap<String, Riga_Bilancio> amici_took = (HashMap<String, Riga_Bilancio>) mutableData.getValue();
-
-                                                //if (amici_took != null)
-                                                   // p.setAmici(amici_took);
-
-                                                if (s2.getPagante().getTelephone().equals(p.getTelephone())) { //Se il pagante sono io
-
-                                                    for (Soldo s : parti2) {
-                                                        if (!s.getPersona().getTelephone().equals(p.getTelephone())) {// per tutti i soldi che non sono io
-                                                            p.addTobalance(s.getPersona(), s.getImporto(), gruppo.getCurr());
-                                                        }
-                                                    }
-                                                } else { //non lo sono
-
-                                                    for (Soldo s : parti2) {
-                                                        if (s.getPersona().getTelephone().equals(p.getTelephone())) {// solo il mio soldo
-                                                            p.addTobalance(s.getPagante(), (s.getImporto()) * -1d, gruppo.getCurr()); //prendo la mia parte in negativo per quella persona e andrò a sommarla al pagante
-                                                        }
-
-                                                    }
-                                                }
-
-                                                mutableData.setValue(p.getAmici());
-                                                return Transaction.success(mutableData);
-                                            }
-
-                                            @Override
-                                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                                getActivity().startActivity(intent);
-                                                getActivity().finish();
-                                            }
-                                        });
 
                                         return Transaction.success(mutableData);
                                     }
@@ -399,14 +412,54 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                                     }
                                 });
+                                //Aggiornamento di amici che posso fare senza transaction
+                                String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
+                                if(!p.getTelephone().equals(s1.getPagante().getTelephone()))
+                                    users_prova.child(p.getTelephone()).child("amici").child(s1.getPagante().getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto()*-1);
+                                else
+                                {
+                                    for(Persona altri : partecipanti){
+                                        if(!altri.getTelephone().equals(s1.getPagante().getTelephone()))
+                                            users_prova.child(s1.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto());
 
-                            }
+                                    }
+                                }
+
+
+                                //ORA devo aggiornare tutti i bilanci relativi e gli ID spesa e importo, tel pagante;
+                                for(Persona altri : partecipanti){
+                                    if(!altri.getTelephone().equals(p.getTelephone()) && !altri.getTelephone().equals(s1.getPagante().getTelephone())) {
+                                        String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).push().getKey();
+
+                                        if(p.getTelephone().equals(s1.getPagante().getTelephone())){
+                                            Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto());
+                                            Gson gson_2 = new Gson();
+                                            Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
+                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child(key_g).setValue(rbp_pojo);
+                                        }
+                                        else
+                                        {
+                                            Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto()*-1);
+                                            Gson gson_2 = new Gson();
+                                            Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
+                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(altri.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child(key_g).setValue(rbp_pojo);
+                                        }
+                                    }
+                                }
+
+                            }//for
+
+                            String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
+                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").child(key_s).setValue(s1.getImporto());
+                          //  dialog.dismiss();
+                            getActivity().startActivity(intent);
+                           // getActivity().finish();
                         }
 
                     });
-                }
+                }   // FINE SOLO IMMAGINE
 
-                else if(b==null && uri==null) {
+                else if(b==null && uri==null) {  //TODO QUESTO é QUELLO CHE é FUNZIONA ORA DEVO ADATTARE A TUTTO
 
                 final Intent intent = new Intent(getActivity(), ExpensesActivity.class);
                 String data_s;
@@ -415,7 +468,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                 if(data!=null){
                     int month = data.get(Calendar.MONTH);
-                month++;
+                    month++;
                     data_s = data.get(Calendar.DAY_OF_MONTH)+"/"+month+"/"+data.get(Calendar.YEAR);}
                 else {
                     final Calendar c = Calendar.getInstance();
@@ -426,43 +479,39 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     data_s=day+"/"+month+"/"+year;
                 }
                 // aggiungo key della spesa
-                Spesa s1 = gruppo.AddSpesa(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
+                    Spesa s1 = gruppo.AddSpesa(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
                     s1.setValuta(gruppo.getCurr().getSymbol());
                     s1.setDigit(gruppo.getCurr().getDigits());
-                s1.setCat_string(cat);
+                    s1.setCat_string(cat);
 
-                gruppo.refreshC();
+                    gruppo.refreshC();
 
+                    final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
+                    for(Persona p: partecipanti){
 
+                        if(!p.getTelephone().equals(user.getTelephone()))
+                            p.plusOneUnread(gruppo.getGroupID());
 
-                ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
-
-                Collection<Soldo> parti = s1.getDivisioni().values();
-            for(Persona p: partecipanti){
-                if(!p.getTelephone().equals(user.getTelephone()))
-                    p.plusOneUnread(gruppo.getGroupID());
-
-                user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
-                p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
-                p.refreshTimeOfGroup(gruppo.getGroupID());
+                        user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
+                        p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
+                        p.refreshTimeOfGroup(gruppo.getGroupID());
 
             }
 
+
+            //Fino a qui ho solo fatto roba in locale
+
+                    //Devo aggiornare il bilancio del gruppo e il bilancio totale su amici
 
                 final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID()).child("spese").child(s1.getExpenseID());
                 Gson gson = new Gson();
                 Spesa g1 = gson.fromJson(gson.toJson(s1),Spesa.class);
                 groups_prova.setValue(g1);
 
+                    final DatabaseReference users_prova = database.getReference().child("users_prova");
 
-
-                final DatabaseReference users_prova = database.getReference().child("users_prova");
-
-
-                    final Spesa s2=s1;
-                    final Collection<Soldo> parti2 = s1.getDivisioni().values();
-                for(final Persona p: partecipanti) {
+                    for(final Persona p: partecipanti) {
                     users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
                         @Override
                         public Transaction.Result doTransaction(MutableData mutableData) {
@@ -476,49 +525,10 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             int i = dg.getUnread();
                             Gson gson = new Gson();
                             Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
-                            //users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).setValue(p1);
                             i++;
                             p1.setUnread(i);
                             mutableData.setValue(p1);
                             SliceAppDB.setUser(user);
-
-
-                            users_prova.child(p.getTelephone()).child("amici").runTransaction(new Transaction.Handler() {
-
-                                @Override
-                                public Transaction.Result doTransaction(MutableData mutableData) {
-                                    HashMap<String, Riga_Bilancio> amici_took = (HashMap<String, Riga_Bilancio>) mutableData.getValue();
-
-                                   // if (amici_took != null)
-                                    //    p.setAmici(amici_took);
-
-                                    if (s2.getPagante().getTelephone().equals(p.getTelephone())) { //Se il pagante sono io
-
-                                        for (Soldo s : parti2) {
-                                            if (!s.getPersona().getTelephone().equals(p.getTelephone())) {// per tutti i soldi che non sono io
-                                                p.addTobalance(s.getPersona(), s.getImporto(), gruppo.getCurr());
-                                            }
-                                        }
-                                    } else { //non lo sono
-
-                                        for (Soldo s : parti2) {
-                                            if (s.getPersona().getTelephone().equals(p.getTelephone())) {// solo il mio soldo
-                                                p.addTobalance(s.getPagante(), (s.getImporto()) * -1d, gruppo.getCurr()); //prendo la mia parte in negativo per quella persona e andrò a sommarla al pagante
-                                            }
-
-                                        }
-                                    }
-
-                                    users_prova.child(p.getTelephone()).child("amici").setValue(p.getAmici());
-                                    return Transaction.success(mutableData);
-                                }
-
-                                @Override
-                                public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                    getActivity().startActivity(intent);
-                                    getActivity().finish();
-                                }
-                            });
 
                             return Transaction.success(mutableData);
                         }
@@ -528,10 +538,49 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                         }
                     });
-                    //Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)),Dettagli_Gruppo.class);
-                    //users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).setValue(p1);
+                    //Aggiornamento di amici che posso fare senza transaction
+                    String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
+                    if(!p.getTelephone().equals(s1.getPagante().getTelephone()))
+                        users_prova.child(p.getTelephone()).child("amici").child(s1.getPagante().getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto()*-1);
+                    else
+                    {
+                        for(Persona altri : partecipanti){
+                            if(!altri.getTelephone().equals(s1.getPagante().getTelephone()))
+                            users_prova.child(s1.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto());
 
-                }       }
+                        }
+                    }
+
+
+                    //ORA devo aggiornare tutti i bilanci relativi e gli ID spesa e importo, tel pagante;
+                    for(Persona altri : partecipanti){
+                        if(!altri.getTelephone().equals(p.getTelephone()) && !altri.getTelephone().equals(s1.getPagante().getTelephone())) {
+                            String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).push().getKey();
+
+                            if(p.getTelephone().equals(s1.getPagante().getTelephone())){
+                                Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto());
+                                Gson gson_2 = new Gson();
+                                Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
+                                groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child(key_g).setValue(rbp_pojo);
+                            }
+                            else
+                            {
+                                Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto()*-1);
+                                Gson gson_2 = new Gson();
+                                Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
+                                groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(altri.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child(key_g).setValue(rbp_pojo);
+                            }
+                        }
+                    }
+
+                }//for
+
+                    String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
+                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").child(key_s).setValue(s1.getImporto());
+                   // dialog.dismiss();
+                    getActivity().startActivity(intent);
+                   // getActivity().finish();
+                }// FINE NIENTE
 
                 if(b!=null && uri!=null) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -573,16 +622,13 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             s1.setValuta(gruppo.getCurr().getSymbol());
                             s1.setDigit(gruppo.getCurr().getDigits());
                             s1.setCat_string(cat);
-                            s1.setImg(downloadUrl.toString());
+
                             gruppo.refreshC();
 
+                            final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
-
-
-                            ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
-
-                            Collection<Soldo> parti = s1.getDivisioni().values();
                             for(Persona p: partecipanti){
+
                                 if(!p.getTelephone().equals(user.getTelephone()))
                                     p.plusOneUnread(gruppo.getGroupID());
 
@@ -593,213 +639,124 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             }
 
 
-                            final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID()).child("spese").child(s1.getExpenseID());
-                            Gson gson = new Gson();
-                            Spesa g1 = gson.fromJson(gson.toJson(s1),Spesa.class);
-                            groups_prova.setValue(g1);
-
-
-
-                            final DatabaseReference users_prova = database.getReference().child("users_prova");
-
-
+                            StorageReference images_2 = storageReference.getReference().child(expenseID+"PDF");
+                            UploadTask uploadTask = images_2.putFile(uri);
                             final Spesa s2=s1;
-                            final Collection<Soldo> parti2 = s1.getDivisioni().values();
-                            for(final Persona p: partecipanti) {
-                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
-                                    @Override
-                                    public Transaction.Result doTransaction(MutableData mutableData) {
 
-                                        Dettagli_Gruppo dg = mutableData.getValue(Dettagli_Gruppo.class);
+                            uploadTask.addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
 
-                                        if (dg == null) {
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                    @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
+                                    s2.setUri(downloadUrl.toString());
 
-                                            return Transaction.success(mutableData);
-                                        }
-                                        int i = dg.getUnread();
-                                        Gson gson = new Gson();
-                                        Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
-                                        //users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).setValue(p1);
-                                        i++;
-                                        p1.setUnread(i);
-                                        mutableData.setValue(p1);
-                                        SliceAppDB.setUser(user);
-                                        getActivity().startActivity(intent);
-                                        getActivity().finish();
+                                    final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID()).child("spese").child(s2.getExpenseID());
+                                    Gson gson = new Gson();
+                                    Spesa g1 = gson.fromJson(gson.toJson(s2),Spesa.class);
+                                    groups_prova.setValue(g1);
 
-                                        users_prova.child(p.getTelephone()).child("amici").runTransaction(new Transaction.Handler() {
+                                    final DatabaseReference users_prova = database.getReference().child("users_prova");
 
+                                    for(final Persona p: partecipanti) {
+                                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
                                             @Override
                                             public Transaction.Result doTransaction(MutableData mutableData) {
-                                                HashMap<String, Riga_Bilancio> amici_took = (HashMap<String, Riga_Bilancio>) mutableData.getValue();
 
-                                               // if (amici_took != null)
-                                                  //  p.setAmici(amici_took);
+                                                Dettagli_Gruppo dg = mutableData.getValue(Dettagli_Gruppo.class);
 
-                                                if (s2.getPagante().getTelephone().equals(p.getTelephone())) { //Se il pagante sono io
+                                                if (dg == null) {
 
-                                                    for (Soldo s : parti2) {
-                                                        if (!s.getPersona().getTelephone().equals(p.getTelephone())) {// per tutti i soldi che non sono io
-                                                            p.addTobalance(s.getPersona(), s.getImporto(), gruppo.getCurr());
-                                                        }
-                                                    }
-                                                } else { //non lo sono
-
-                                                    for (Soldo s : parti2) {
-                                                        if (s.getPersona().getTelephone().equals(p.getTelephone())) {// solo il mio soldo
-                                                            p.addTobalance(s.getPagante(), (s.getImporto()) * -1d, gruppo.getCurr()); //prendo la mia parte in negativo per quella persona e andrò a sommarla al pagante
-                                                        }
-
-                                                    }
+                                                    return Transaction.success(mutableData);
                                                 }
+                                                int i = dg.getUnread();
+                                                Gson gson = new Gson();
+                                                Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
+                                                i++;
+                                                p1.setUnread(i);
+                                                mutableData.setValue(p1);
+                                                SliceAppDB.setUser(user);
 
-                                                mutableData.setValue(p.getAmici());
-
-                                             //TODO aggiungo il PDF e aggiorno solo puntualmente
                                                 return Transaction.success(mutableData);
                                             }
 
                                             @Override
                                             public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                                getActivity().startActivity(intent);
-                                                getActivity().finish();
+
                                             }
                                         });
+                                        //Aggiornamento di amici che posso fare senza transaction
+                                        String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
+                                        if(!p.getTelephone().equals(s2.getPagante().getTelephone()))
+                                            users_prova.child(p.getTelephone()).child("amici").child(s2.getPagante().getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s2.getDivisioni().get(p.getTelephone()).getImporto()*-1);
+                                        else
+                                        {
+                                            for(Persona altri : partecipanti){
+                                                if(!altri.getTelephone().equals(s2.getPagante().getTelephone()))
+                                                    users_prova.child(s2.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s2.getDivisioni().get(p.getTelephone()).getImporto());
 
-                                        return Transaction.success(mutableData);
-                                    }
+                                            }
+                                        }
 
-                                    @Override
-                                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-                                       ;
-                                    }
-                                });
 
-                            }
+                                        //ORA devo aggiornare tutti i bilanci relativi e gli ID spesa e importo, tel pagante;
+                                        for(Persona altri : partecipanti){
+                                            if(!altri.getTelephone().equals(p.getTelephone()) && !altri.getTelephone().equals(s2.getPagante().getTelephone())) {
+                                                String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).push().getKey();
+
+                                                if(p.getTelephone().equals(s2.getPagante().getTelephone())){
+                                                    Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s2.getExpenseID(),p.getTelephone(),s2.getDivisioni().get(altri.getTelephone()).getImporto());
+                                                    Gson gson_2 = new Gson();
+                                                    Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
+                                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child(key_g).setValue(rbp_pojo);
+                                                }
+                                                else
+                                                {
+                                                    Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s2.getExpenseID(),p.getTelephone(),s2.getDivisioni().get(altri.getTelephone()).getImporto()*-1);
+                                                    Gson gson_2 = new Gson();
+                                                    Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
+                                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(altri.getTelephone()).child("bilancio_relativo").child(s2.getPagante().getTelephone()).child(key_g).setValue(rbp_pojo);
+                                                }
+                                            }
+                                        }
+
+                                    }//for
+
+                                    String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s2.getPagante().getTelephone()).child("importo").push().getKey();
+                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s2.getPagante().getTelephone()).child("importo").child(key_s).setValue(s2.getImporto());
+
+                                    getActivity().startActivity(intent);
+
+                                }
+
+
+                            });
+
+
+                            //Fino a qui ho solo fatto roba in locale
+
+                            //Devo aggiornare il bilancio del gruppo e il bilancio totale su amici
+
+
                         }
 
                     });
                 }
-
-            }
-        });
-
-        Button save_r = (Button) v.findViewById(R.id.save_r);
-
-        save_r.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity(), ExpensesActivity.class);
-                String data_s;
-                i.putExtra("Gruppo", gruppo);
-                i.putExtra("User", user);
-
-                if(data!=null){
-                    int month = data.get(Calendar.MONTH);
-                    month++;
-                    data_s = data.get(Calendar.DAY_OF_MONTH)+"/"+month+"/"+data.get(Calendar.YEAR);}
-                else {
-                    final Calendar c = Calendar.getInstance();
-                    int year = c.get(Calendar.YEAR);
-                    int month = c.get(Calendar.MONTH);
-                    month++;
-                    int day = c.get(Calendar.DAY_OF_MONTH);
-                    data_s=day+"/"+month+"/"+year;
-                }
-                FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference expensesRef = database.getReference().child("expenses");
-                String groupID = gruppo.getGroupID(); // groupID del gruppo in questione
-                DatabaseReference expense = expensesRef.push();
-
-                // Siccome il metodo AddSpesa_and_try_repay, mette la spesa nella mappa,
-                // con ID: nome_spesa+data, devo modificarlo con l'expenseID ritornato da firebase
-                String expenseID = expense.getKey(); // aggiungo key della spesa
-                Spesa s1 = gruppo.AddSpesa_and_try_repay(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
-                if(s1==null) {
-                Toast.makeText(getContext(),"There is a good news, you do not have any debts! Be Happy", Toast.LENGTH_LONG).show();
-                    return;
-                }
-                s1.setValuta(gruppo.getCurr().getSymbol());
-                s1.setDigit(gruppo.getCurr().getDigits());
-                s1.setBitmap_spesa(b);
-                s1.setUri(uri);
-                s1.setCat_string(cat);
-
-                gruppo.refreshC();
-
-
-
-
-                ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
-
-                Collection<Soldo> parti = s1.getDivisioni().values();
-                for(Persona p: partecipanti){
-                    if(!p.getTelephone().equals(user.getTelephone()))
-                        p.plusOneUnread(gruppo.getGroupID());
-
-                    user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
-                    p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
-                    p.refreshTimeOfGroup(gruppo.getGroupID());
-                    if(s1.getPagante().getTelephone().equals(p.getTelephone())){ //Se il pagante sono io
-
-                        for(Soldo s: parti){
-                            if(!s.getPersona().getTelephone().equals(p.getTelephone())){// per tutti i soldi che non sono io
-                                p.addTobalance(s.getPersona(),s.getImporto(),gruppo.getCurr());
-                            }}
-                    }
-                    else { //non lo sono
-
-                        for (Soldo s : parti) {
-                            if (s.getPersona().getTelephone().equals(p.getTelephone())) {// solo il mio soldo
-                                p.addTobalance(s.getPagante(), (s.getImporto()) * -1d,gruppo.getCurr()); //prendo la mia parte in negativo per quella persona e andrò a sommarla al pagante
-                            }
-
-                        }
-                    }
-                }
-
-                final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID());
-                Gson gson = new Gson();
-                Gruppo g1 = gson.fromJson(gson.toJson(gruppo),Gruppo.class);
-                groups_prova.setValue(g1);
-                final DatabaseReference users_prova = database.getReference().child("users_prova");
-
-                for(Persona p: partecipanti){
-                    Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
-                    users_prova.child(p1.getTelephone()).setValue(p1);
-
-                }
-
-                SliceAppDB.setUser(user);
-
-                getActivity().startActivity(i);
+                dialog.dismiss();
                 getActivity().finish();
             }
         });
-
         return v;
     }
 
-    private boolean confronta_map(Policy policy, Policy policy1) {
-
-
-        for(String s: policy.getPercentuali().keySet()){
-            if(!policy1.getPercentuali().containsKey(s))
-                return false; //se c'è uno nuovo
-
-            if(!policy1.getPercentuali().get(s).equals(policy.getPercentuali().get(s)))
-                return false; //se mi hanno cambiato la policy
-
-        }
-
-
-
-                return true;
-    }
 
 
     @Override
-    public void returnSelection_2( String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String nome, String price, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy) {
+    public void returnSelection_2( String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String nome, String price, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy, int tipo_policy) {
 
         this.cat=cat;
         this.data=data;//
@@ -812,6 +769,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
         this.user=SliceAppDB.getUser();//
         this.policy=policy;//
         this.price=price;
+        this.tipo_policy=tipo_policy;
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -834,6 +792,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 nome = (String) savedInstanceState.getSerializable("Name");
             if(savedInstanceState.getSerializable("Policy")!=null)
                 policy = (Policy) savedInstanceState.getSerializable("Policy");
+                tipo_policy= savedInstanceState.getInt("Tipo");
         }
     }
 }

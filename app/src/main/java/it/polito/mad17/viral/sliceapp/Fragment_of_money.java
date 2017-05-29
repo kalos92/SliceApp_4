@@ -17,6 +17,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 
 public class Fragment_of_money extends Fragment {
 
@@ -56,18 +59,34 @@ public class Fragment_of_money extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         gruppo = SliceAppDB.getGroup(ID);
+        gruppo.setUser(SliceAppDB.getUser());
 
         groups_ref.child(ID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 gruppo = dataSnapshot.getValue(Gruppo.class);
                 gruppo.setUser(SliceAppDB.getUser());
+                Double credit=gruppo.getAllCredits();
+                Double debt=gruppo.getAllDebts();
+                if(debt.compareTo(credit)>0){
+                    debt-=credit;
+                    debt=debt*(-1);
+                    credit=0d;}
+                else if(debt.compareTo(credit)==0){
+                    debt=0d;
+                    credit=0d;
+                }
+                else if(debt.compareTo(credit)<0){
+                    credit-=debt;
+                    debt=0d;
+
+                }
                 if(gruppo!=null) {
-                    String s = String.format("%."+gruppo.getCurr().getDigits()+"f", gruppo.getAllDebts()*-1);
+                    String s = String.format("%."+gruppo.getCurr().getDigits()+"f", debt);
                     debts.setText(s+" "+gruppo.getCurr().getSymbol());
                 }
                 if(gruppo!=null) {
-                    String s = String.format("%."+gruppo.getCurr().getDigits()+"f", gruppo.getAllCredits());
+                    String s = String.format("%."+gruppo.getCurr().getDigits()+"f", credit);
                     credits.setText("+"+s+" "+gruppo.getCurr().getSymbol());
                 }
             }
@@ -82,12 +101,28 @@ public class Fragment_of_money extends Fragment {
 
         debts =(TextView) v.findViewById(R.id.debts_number);
         credits = (TextView) v.findViewById(R.id.credits_number);
+        Double credit=gruppo.getAllCredits();
+                Double debt=gruppo.getAllDebts();
+   if(debt.compareTo(credit)>0){
+        debt-=credit;
+        debt=debt*(-1);
+        credit=0d;}
+        else if(debt.compareTo(credit)==0){
+       debt=0d;
+       credit=0d;
+   }
+   else if(debt.compareTo(credit)<0){
+       credit-=debt;
+       debt=0d;
+
+   }
+
         if(gruppo!=null) {
-            String s = String.format("%."+gruppo.getCurr().getDigits()+"f", gruppo.getAllDebts()*-1);
+            String s = String.format("%."+gruppo.getCurr().getDigits()+"f", debt);
             debts.setText(s+" "+gruppo.getCurr().getSymbol());
         }
         if(gruppo!=null) {
-            String s = String.format("%."+gruppo.getCurr().getDigits()+"f", gruppo.getAllCredits());
+            String s = String.format("%."+gruppo.getCurr().getDigits()+"f", credit);
             credits.setText("+"+s+" "+gruppo.getCurr().getSymbol());
         }
         return v;

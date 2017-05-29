@@ -24,11 +24,59 @@ public class Spesa implements Serializable {
     private String data;
     private String nome_spesa;
     private Bitmap b;
-    private Uri uri;
+    private String uri;
     private String valuta;
     private Double importo;
     private HashMap<String, Soldo> divisioni = new HashMap<String,Soldo>();
     private String expenseID;
+
+    public boolean getRemoved() {
+        return removed;
+    }
+
+    public void setRemoved(boolean removed) {
+        this.removed = removed;
+    }
+
+    public String getRemover() {
+        return remover;
+    }
+
+    public void setRemover(String remover) {
+        this.remover = remover;
+    }
+
+    public String getRemoved_msg() {
+        return removed_msg;
+    }
+
+    public void setRemoved_msg(String removed_msg) {
+        this.removed_msg = removed_msg;
+    }
+
+    private boolean removed=false;
+    private String remover;
+    private String removed_msg;
+
+
+    public boolean getFullypayed() {
+        return fullypayed;
+    }
+
+    public void setFullypayed(boolean fullypayed) {
+        this.fullypayed = fullypayed;
+    }
+
+    public boolean getContested() {
+        return contested;
+    }
+
+    public void setContested(boolean contested) {
+        this.contested = contested;
+    }
+
+    private boolean fullypayed;
+    private boolean contested;
 
     public boolean getMethod() {
         return method;
@@ -88,6 +136,20 @@ public class Spesa implements Serializable {
         this.data=data;
         this.nome_spesa=nome_spesa;
         c= Calendar.getInstance().getTimeInMillis();
+        this.fullypayed=false;
+        this.contested=false;
+        this.removed=false;
+    }
+
+    public Spesa(String nome, Double importo,String user,String ID,int precision,String valuta){
+        this.removed=true;
+        this.removed_msg=nome+" Deleted";
+        this.importo=importo*-1;
+        this.remover=user;
+        this.expenseID=ID;
+        this.valuta=valuta;
+        this.digit=precision;
+
     }
 
     public String getData() {
@@ -144,7 +206,7 @@ public class Spesa implements Serializable {
 
     }
 
-    public void setUri (Uri uri){
+    public void setUri (String uri){
         this.uri=uri;
     }
 
@@ -200,7 +262,7 @@ public class Spesa implements Serializable {
         this.b = b;
     }
 
-    public Uri getUri() {
+    public String getUri() {
         return uri;
     }
 
@@ -224,5 +286,11 @@ public class Spesa implements Serializable {
         this.c = c;
     }
 
+    public void pay(String telephone){
+        Soldo s = divisioni.get(telephone);
+        s.setHaPagato(true);
+        divisioni.put(telephone,s);
+
+    }
 
 }

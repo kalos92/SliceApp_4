@@ -5,14 +5,17 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+
 
     <application
         android:allowBackup="true"
         android:hardwareAccelerated="false"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/slice_app_icon_s"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@drawable/slice_app_icon_s"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
@@ -35,11 +38,11 @@
         <activity
             android:name=".Group_Details"
             android:theme="@style/AppTheme" />
-        <activity android:name=".ExpenseDetails"/>
-        <service
-            android:name=".FirebaseBackgroundService">
+        <activity android:name=".ExpenseDetails" />
 
-        </service>
+        <service android:name=".FirebaseBackgroundService"></service>
+
+        <activity android:name=".Group_balance"></activity>
     </application>
 
 </manifest>

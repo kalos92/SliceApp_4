@@ -46,8 +46,8 @@ public class SplashScreen extends AppCompatActivity {
         animation.setDuration(900);
         animation.setRepeatCount(Animation.INFINITE);
         ImageView logo = (ImageView)  findViewById(R.id.logo_to_fade);
-        ColorFilter filter = new LightingColorFilter(Color.rgb(249,105,14), Color.rgb(249,105,14));
-        logo.setColorFilter(filter);
+        //ColorFilter filter = new LightingColorFilter(Color.rgb(249,105,14), Color.rgb(249,105,14));
+        //logo.setColorFilter(filter);
 
         logo.setAlpha(1f);
         logo.startAnimation(animation);

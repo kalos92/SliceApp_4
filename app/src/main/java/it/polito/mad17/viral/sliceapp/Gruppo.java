@@ -3,6 +3,7 @@ package it.polito.mad17.viral.sliceapp;
 
 
 import android.net.Uri;
+import android.webkit.HttpAuthHandler;
 import android.widget.ImageView;
 
 import java.util.Calendar;
@@ -43,14 +44,19 @@ public class Gruppo implements Serializable,Cloneable {
     private String uri;
     @Expose
     private mCurrency curr;
-
-
-
-
-
     @Expose
     private String GroupCreator = SliceAppDB.getUser().getTelephone();
 
+    public HashMap<String, Riga_bilancio_Gruppo> getDettaglio_bilancio() {
+        return dettaglio_bilancio;
+    }
+
+    public void setDettaglio_bilancio(HashMap<String, Riga_bilancio_Gruppo> dettaglio_bilancio) {
+        this.dettaglio_bilancio = dettaglio_bilancio;
+    }
+
+    @Expose
+    private HashMap<String,Riga_bilancio_Gruppo> dettaglio_bilancio = new HashMap<String,Riga_bilancio_Gruppo>();
 
 
     public Gruppo(){
@@ -71,12 +77,15 @@ public class Gruppo implements Serializable,Cloneable {
         img= R.drawable.default_img;
         setImg(img);
 
-        for(final Persona p: partecipanti_array) {
 
+        for(final Persona p: partecipanti_array) {
+            p.initiliazeBalance(partecipanti_array,curr,p);
             partecipanti_numero_cnome.put(p.getTelephone(), p.getName() + " " + p.getSurname());
             p.AddToGroup(this, i,img);
             partecipanti.put(p.getTelephone(),p);
             i++;
+            Double f = 0d;
+            dettaglio_bilancio.put(p.getTelephone(),new Riga_bilancio_Gruppo(p.getName()+" "+p.getSurname(),curr.getSymbol(),curr.getDigits(),f,p.getTelephone(),partecipanti_array));
         }
 
         c = Calendar.getInstance().getTimeInMillis();
@@ -100,7 +109,7 @@ public class Gruppo implements Serializable,Cloneable {
 
         public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
 
-        public Spesa AddSpesa_and_try_repay(String spesaId,Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
+        /*public Spesa AddSpesa_and_try_repay(String spesaId,Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
 
             Spesa spesa;
             if(user.obtain_a_debt(getGroupID())==1){
@@ -117,7 +126,7 @@ public class Gruppo implements Serializable,Cloneable {
             else
                 return null;
 
-        }
+        }*/
 
 
     public Spesa AddSpesa(String spesaId,Persona pagante,Policy policy, String nome_spesa, String data, Double importo){
@@ -131,31 +140,70 @@ public class Gruppo implements Serializable,Cloneable {
 
         spese.put(spesaId,spesa);
 
+
+
+
         return spesa;
+
+    }
+
+
+    public void balance_one(String tel){
+
+
+
+       // for(String s : spese.keySet()){
+          //  if(spese.get)
+           // Spesa s2=spese.get(s);
+
+       //     s2.setFullypayed(true);
+
+         //   for(String num:partecipanti.keySet()) {
+           //     if(!num.equals(s2.getPagante().getTelephone())){
+             //       s2.getDivisioni().get(num).setHaPagato(true);
+
+
+               //     Double importo = dettaglio_bilancio.get(num).getImporto();
+
+                 //   partecipanti.get(s2.getPagante().getTelephone()).addTobalance_2(num+";"+getCurr().getChoosencurr(),(importo*-1),curr);
+                   // partecipanti.get(num).addTobalance_2(s2.getPagante().getTelephone()+";"+getCurr().getChoosencurr(),importo,curr);
+                //}}
+
+
+        //}
+    }
+
+    public void balance_all(){
+
+
+
+
 
     }
 
     public Double getAllDebts(){ //i debiti sono calcolati nelle spese che NON ho fatto io e devo ancora pagare
         Double f= new Double(0);
         for(Spesa s: spese.values()){
+            if(!s.getRemoved()){
             if(!s.getPagante().getTelephone().equals(user.getTelephone())){
                 for(Soldo soldo: s.getDivisioni().values())
                     if(!soldo.getHaPagato() && soldo.getPersona().getTelephone().equals(user.getTelephone()))
                         f+=soldo.getImporto();
             }
-        }
+        }}
         return f;
     }
 
     public Double getAllCredits(){  //i crediti sono calcolti nelle spese che HO fatto io e gli altri non mi hanno pagato
         Double f= new Double(0);
         for(Spesa s: spese.values()){
+            if(!s.getRemoved()){
             if(s.getPagante().getTelephone().equals(user.getTelephone())){
                 for(Soldo soldo: s.getDivisioni().values())
                     if(!soldo.getHaPagato() && !soldo.getPersona().getTelephone().equals(user.getTelephone()))
                         f+=soldo.getImporto();
             }
-        }
+        }}
         return f;
     }
 
@@ -294,7 +342,17 @@ public class Gruppo implements Serializable,Cloneable {
         this.uri = uri;
     }
 
+    public Spesa addFake(String ID, String name, Double importo, String user,int precision, String currenc){
+        Spesa s = new Spesa(name,importo,user,ID,precision,currenc);
+        spese.put(ID,s);
 
+            return s;
+    }
+
+
+    public Riga_bilancio_Gruppo obtainbalanceofuser(String telephone) {
+        return dettaglio_bilancio.get(telephone);
+    }
 }
 
 

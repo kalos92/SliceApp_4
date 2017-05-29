@@ -33,7 +33,7 @@ import java.util.Iterator;
  * Created by Kalos on 27/03/2017.
  */
 //1a prova video
-    //2a prova
+//2a prova
 public class FirstFragment extends Fragment{
 
    private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
@@ -77,7 +77,7 @@ public class FirstFragment extends Fragment{
 
 
        // DatabaseReference user_ref= rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("gruppi_partecipo");
-        Query ref = rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("gruppi_partecipo");
+        Query ref = rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("gruppi_partecipo").orderByChild("time");
 
         GroupsRecyclerAdapter adapter= new GroupsRecyclerAdapter(Dettagli_Gruppo.class,R.layout.listview_group_row, FirstFragment.GroupHolder.class,ref,getContext(),numbers,g,partecipanti);
 

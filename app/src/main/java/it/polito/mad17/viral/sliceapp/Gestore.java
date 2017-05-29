@@ -10,7 +10,7 @@ import java.util.HashMap;
  */
 
 public class Gestore implements Serializable {
-            HashMap<String,HashMap<String,Soldo>> vecchi_dati_backup = new HashMap<String,HashMap<String,Soldo>>();
+
     public Soldo[] Calculate_Credits(Persona pagante, Policy policy, Double importo, HashMap<String,Persona> persone, int n_persone, Persona user, Gruppo g) {
         Soldo[] crediti = new Soldo[n_persone];
         HashMap<String, Double> percentages;
@@ -40,7 +40,7 @@ public class Gestore implements Serializable {
         return crediti;
     }
 
-    public Soldo[] Calculate_Credits_To_Buyer_With_Repaing(Persona pagante, Policy policy, Double importo, HashMap<String,Persona> persone, int n_persone, HashMap<String,Spesa>spese, Persona user, Gruppo g) {
+    /*public Soldo[] Calculate_Credits_To_Buyer_With_Repaing(Persona pagante, Policy policy, Double importo, HashMap<String,Persona> persone, int n_persone, HashMap<String,Spesa>spese, Persona user, Gruppo g) {
         //sto pagando la nuova spesa per me e per uno con cui ho il debito
 
         Soldo[] crediti = new Soldo[n_persone];
@@ -134,11 +134,8 @@ public class Gestore implements Serializable {
             return crediti;
         }
         return null;
-    }
-//TODO COMPARE DOUBLE
-public HashMap<String,HashMap<String,Soldo>> getVecchi_dati_backup(){
-    return vecchi_dati_backup;
-}
+    }*/
+
 
 
 }

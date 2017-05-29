@@ -57,7 +57,7 @@ public class Little_fragment_2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v= inflater.inflate(R.layout.fragment_little_fragment_2, container, false);
 
-        final ListView list = (ListView) v.findViewById(R.id.littleFragment2);
+        final CustomListV list = (CustomListV) v.findViewById(R.id.littleFragment2);
 
         persone.addAll(g.obtainPartecipanti().values());
 

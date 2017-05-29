@@ -46,19 +46,30 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
      *                        using some combination of {@code limit()}, {@code startAt()}, and {@code endAt()}.
      */
     Context context;
+    Gruppo gruppo;
 
-    public ExpenseRecyclerAdapter(Class<Spesa> modelClass, int modelLayout, Class<ExpensesActivity.ExpenseHolder> viewHolderClass, Query ref, Context context) {
+    public ExpenseRecyclerAdapter(Class<Spesa> modelClass, int modelLayout, Class<ExpensesActivity.ExpenseHolder> viewHolderClass, Query ref, Context context,Gruppo gruppo) {
         super(modelClass, modelLayout, viewHolderClass, ref);
         this.context=context;
+        this.gruppo=gruppo;
     }
 
     @Override
     protected void populateViewHolder(ExpensesActivity.ExpenseHolder viewHolder, final Spesa model, int position) {
 
+    if(model.getRemoved()==true){
+        Picasso.with(context).load(R.drawable.img_removed).into(viewHolder.expIcon);
+        viewHolder.expCurrency.setText(model.getValuta());
+        viewHolder.buyer.setText(model.getRemover());
+        viewHolder.expName.setText(model.getRemoved_msg());
+        String str = String.format("%."+model.getDigit()+"f",model.getImporto());
+        viewHolder.expPrice.setText(""+str);
 
 
-        Picasso.with(context).load(model.getCat().getImg()).into(viewHolder.expIcon);
-       // viewHolder.expIcon.setImageResource(model.getCat().getImg());
+    }
+            else if(model.getRemoved()!=true){
+
+            Picasso.with(context).load(model.getCat().getImg()).into(viewHolder.expIcon);
             viewHolder.expCurrency.setText(model.getValuta());
             viewHolder.buyer.setText(model.getPagante().getName()+" " +model.getPagante().getSurname());
             viewHolder.expName.setText(model.getNome_spesa());
@@ -94,7 +105,8 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
             @Override
             public void onClick(View v) {
                 Intent i = new Intent(v.getContext(), ExpenseDetails.class);
-                i.putExtra("spesa", model);
+                i.putExtra("Spesa", model);
+                i.putExtra("Gruppo",gruppo);
                 v.getContext().startActivity(i);
             }
         });
@@ -154,5 +166,5 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
             }
         });
 
-    }
+    }}
 }

@@ -3,216 +3,216 @@
     xmlns:design="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/tools"
 
     android:background="@color/tab_bck">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="60dp">
+        android:layout_height="match_parent"
+        >
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:design="http://schemas.android.com/apk/res-auto"
-            xmlns:tools="http://schemas.android.com/tools"
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/tab_bck"
-            android:orientation="vertical"
-            android:weightSum="1">
+            android:layout_margin="5dp"
+            android:backgroundTint="#DADFE1"
+            app:cardElevation="2dp"
+            design:cardElevation="2dp">
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/tab_bck"
+                android:orientation="vertical"
+                android:weightSum="1">
 
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp">
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp">
 
-                <Spinner
-                    android:id="@+id/s_category"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:layout_marginLeft="@dimen/normal_v_margin"
-                    android:background="@drawable/myrect"
-                    android:spinnerMode="dialog" />
+                    <Spinner
+                        android:id="@+id/s_category"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_marginLeft="@dimen/normal_v_margin"
+                        android:background="@drawable/roundedbutton"
+                        android:spinnerMode="dialog" />
 
-                <EditText
-                    android:id="@+id/expense_description"
+                    <EditText
+                        android:id="@+id/expense_description"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="@id/s_category"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="85dp"
+                        android:layout_toEndOf="@+id/s_category"
+                        android:layout_toRightOf="@+id/s_category"
+                        android:hint="Name"
+                        android:inputType="text"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/text"
+                        android:textColorLink="@color/text" />
+                </RelativeLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_alignParentRight="@id/s_category"
-                    android:layout_centerVertical="true"
-                    android:layout_marginLeft="85dp"
-                    android:layout_toEndOf="@+id/s_category"
-                    android:layout_toRightOf="@+id/s_category"
-                    android:hint="Name"
-                    android:inputType="text"
-                    android:textColor="@color/text"
-                    android:textColorHint="@color/text"
-                    android:textColorLink="@color/text" />
-            </RelativeLayout>
+                    android:layout_weight="0.02"
+                    android:orientation="horizontal"
+                    android:weightSum="1">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.02"
-                android:orientation="horizontal"
-                android:weightSum="1">
+                    <EditText
+                        android:id="@+id/expense_price"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/normal_v_margin"
+                        android:layout_marginStart="@dimen/normal_v_margin"
+                        android:layout_weight="0.91"
+                        android:hint="00,00"
+                        android:inputType="numberDecimal"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/text" />
 
-                <EditText
-                    android:id="@+id/expense_price"
-                    android:layout_width="0dp"
+                    <TextView
+                        android:id="@+id/currencies_gruppo"
+                        android:layout_width="150dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="@dimen/normal_v_margin"
+                        android:layout_marginRight="@dimen/normal_v_margin"
+                        android:ellipsize="end"
+                        android:padding="10dp"
+                        android:text="EUR-€"
+                        android:textAlignment="center"
+                        android:textColor="@color/text"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/normal_v_margin"
-                    android:layout_weight="0.91"
-                    android:hint="00,00"
-                    android:inputType="numberDecimal"
-                    android:textColor="@color/text"
-                    android:textColorHint="@color/text"
-                    android:layout_marginLeft="@dimen/normal_v_margin" />
-
-                <TextView
-                    android:id="@+id/currencies_gruppo"
-                    android:layout_width="150dp"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="end"
-                    android:text="EUR-€"
-                    android:ellipsize="end"
-                    android:padding="10dp"
-                    android:textSize="20sp"
-                    android:textColor="@color/text"
-                    android:layout_marginEnd="@dimen/normal_v_margin"
-                    android:textAlignment="center"
-                    android:layout_marginRight="@dimen/normal_v_margin" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.1"
-                android:orientation="horizontal">
+                    android:layout_weight="0.1"
+                    android:orientation="horizontal">
 
 
-                <Spinner
-                    android:id="@+id/BuyerSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="37dp"
-                    android:layout_gravity="left"
-                    android:layout_marginRight="@dimen/normal_v_margin"
-                    android:layout_weight="0.5"
-                    android:spinnerMode="dialog" />
+                    <Spinner
+                        android:id="@+id/BuyerSpinner"
+                        android:layout_width="wrap_content"
+                        android:layout_height="37dp"
+                        android:layout_gravity="left"
+                        android:layout_marginRight="@dimen/normal_v_margin"
+                        android:layout_weight="0.5"
+                        android:spinnerMode="dialog" />
 
-                <ImageButton
-                    android:id="@+id/calendar"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_weight="0.20"
-                    android:background="@drawable/myrect"
-                    android:contentDescription="Calendar"
-                    android:elevation="2dp"
-                    android:gravity="end"
-                    android:onClick="showDatePickerDialog"
-                    android:src="@drawable/img_cal" />
+                    <ImageButton
+                        android:id="@+id/calendar"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_weight="0.20"
+                        android:background="@drawable/myrect"
+                        android:contentDescription="Calendar"
+                        android:elevation="2dp"
+                        android:gravity="end"
+                        android:onClick="showDatePickerDialog"
+                        android:src="@drawable/img_cal" />
 
-            </LinearLayout>
+                </LinearLayout>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:weightSum="1">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:weightSum="1"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="You can attach an image OR a PDF"
+                        android:textSize="20sp"
+                        android:layout_margin="15dp"
+                        android:textAlignment="center"
+                        android:textColor="@color/text"/>
 
-                <ImageButton
-                    android:id="@+id/attach_photo"
-                    android:layout_width="wrap_content"
+
+
+                    <Button
+                        android:id="@+id/attach_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/normal_v_margin"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/tab_bck"
+                        android:src="@drawable/img_img"
+                        android:text="ADD A PHOTO"
+                        android:textColor="@color/colorFAB1"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="80dp"
+                    android:weightSum="1">
+
+                    <Button
+                        android:id="@+id/attach_pdf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/normal_v_margin"
+                        android:layout_marginRight="5dp"
+                        android:layout_marginTop="5dp"
+                        android:background="@color/tab_bck"
+                        android:src="@drawable/img_img"
+                        android:text="ADD A PDF"
+                        android:textColor="@color/debiti"
+                        android:textSize="20sp" />
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="@dimen/normal_v_margin"
-                    android:layout_weight="0.15"
-                    android:background="@drawable/myrect"
-                    android:src="@drawable/img_img" />
+                    android:layout_weight="0.55">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_weight="0.29"
-                    android:text="Click To add a Photo"
-                    android:textAlignment="center"
-                    android:textColor="@color/text"
-                    android:textSize="24sp" />
+                    <ImageView
+                        android:id="@+id/preview"
+                        android:layout_width="75dp"
+                        android:layout_height="75dp"
+                        android:layout_centerHorizontal="true"
+                        android:layout_gravity="left" />
 
+                    <TextView
+                        android:id="@+id/pdfName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignEnd="@id/preview"
+                        android:layout_centerHorizontal="true"
+                        android:layout_centerVertical="true"
+                        android:textAlignment="center"
+                        android:textColor="@color/text"
+                        android:textSize="24sp"
+                        android:layout_alignRight="@id/preview" />
+                </RelativeLayout>
 
             </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="48dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_weight="0.29"
-                    android:text="- or -"
-                    android:textAlignment="center"
-                    android:textColor="@color/text"
-                    android:textSize="24sp" />
-            </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:outlineProvider="bounds"
-                android:weightSum="1">
-
-                <ImageButton
-                    android:id="@+id/attach_pdf"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_marginLeft="@dimen/normal_v_margin"
-                    android:layout_weight="0.14"
-                    android:background="@drawable/myrect"
-                    android:clipToPadding="false"
-
-                    android:src="@drawable/img_pdf" />
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="47dp"
-                    android:layout_gravity="end"
-                    android:layout_weight="0.37"
-                    android:text="Click to add a PDF"
-                    android:textAlignment="center"
-                    android:textColor="@color/text"
-                    android:textSize="24sp" />
-            </LinearLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.55">
-
-                <ImageView
-                    android:id="@+id/preview"
-                    android:layout_width="75dp"
-                    android:layout_height="75dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_gravity="left" />
-
-                <TextView
-                    android:id="@+id/pdfName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/preview"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
-                    android:textAlignment="center"
-                    android:textColor="@color/text"
-                    android:textSize="24sp" />
-            </RelativeLayout>
-
-        </LinearLayout>
-
+        </android.support.v7.widget.CardView>
     </ScrollView>
-
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_exp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        android:src="@drawable/img_avanti"
+        app:elevation="6dp"
+        design:fabSize="normal"
+        app:background="#F44336"
+        app:pressedTranslationZ="12dp"
+        app:layout_anchorGravity="bottom|right|end" />
 
 </android.support.design.widget.CoordinatorLayout>

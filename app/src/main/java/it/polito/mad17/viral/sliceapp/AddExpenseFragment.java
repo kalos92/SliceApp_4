@@ -6,12 +6,15 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+
+import java.io.ByteArrayOutputStream;
 import java.util.GregorianCalendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
@@ -22,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -57,15 +61,12 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
     private Gruppo gruppo;
     private static final int PICK_IMAGE_ID = 234;
     private static final int SELECT_PDF = 1212;
-
     private Persona user;
-
     private Bitmap b;
     private Uri uri;
     private boolean first_time=true;
     private View v;
     private GregorianCalendar data;
-    private MenuItem ibnb2;
     private int pos=0;
     private int me=0;
     private String category = "General expenditure";
@@ -73,6 +74,8 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
     private Spinner sp_ct;
     private ReturnSelection returnSelection;
     private Select_Policy_Fragment spf = new Select_Policy_Fragment();
+    EditText et1;
+    EditText et2;
 
     public AddExpenseFragment() {
         // Required empty public constructor
@@ -164,25 +167,24 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         curr.setText(gruppo.getCurr().getSymbol());
 
         // change the title and the icon of the button in the bottom navigation bar
-        BottomNavigationView bnb = (BottomNavigationView)v.findViewById(R.id.bottom_nav_bar);
-        MenuItem ibnb = bnb.getMenu().getItem(1);
-        bnb.setElevation(2);
-        bnb.setTranslationZ(2);
+        FloatingActionButton bnb= (FloatingActionButton) v.findViewById(R.id.fab_exp);
 
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) bnb.getChildAt(0);
-        for (int i = 0; i < menuView.getChildCount(); i++) {
-            final View iconView = menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
-            final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
-            final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        et1 = (EditText) v.findViewById((R.id.expense_description));
+        et2 = (EditText) v.findViewById(R.id.expense_price);
+
+        //BottomNavigationMenuView menuView = (BottomNavigationMenuView) bnb.getChildAt(0);
+        //for (int i = 0; i < menuView.getChildCount(); i++) {
+         //   final View iconView = menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
+          //  final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
+           // final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             // set your height here
-            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
+           // layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
             // set your width here
-            layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
-            iconView.setLayoutParams(layoutParams);
-        }
+           // layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
+         //   iconView.setLayoutParams(layoutParams);
+        //}
 
-        Spinner sp_values = (Spinner)v.findViewById(R.id.currencies_spinner);
-        //TODO fare l'adapter se non riesco a cambiare il colore
+
 
         sp_ct= (Spinner) v.findViewById(R.id.s_category);
         sp_ct.setAdapter(new Category_adapter(getContext()));
@@ -208,7 +210,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
             }
         });
 
-        ibnb2=bnb.getMenu().getItem(0);
+        //ibnb2=bnb.getMenu().getItem(0);
 
 
         final List<String> names = new ArrayList<>();
@@ -244,23 +246,31 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         float[] pers_percentages = new float[gruppo.getN_partecipanti()];
 
         // preparing dialog to choose members
+        final ImageView preview = (ImageView) v.findViewById(R.id.preview);
+        final TextView name =(TextView)v.findViewById(R.id.pdfName);
 
-
-        ImageButton photoAttack= (ImageButton) v.findViewById(R.id.attach_photo);
+        Button photoAttack= (Button) v.findViewById(R.id.attach_photo);
         photoAttack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                uri=null;
+                b=null;
+                name.setText(null);
+                preview.setImageBitmap(b);
                 Intent chooseImageIntent = ImagePicker.getPickImageIntent(getContext());
                 startActivityForResult(chooseImageIntent, PICK_IMAGE_ID);
 
             }
 
         });
-        ImageButton PDFAttack= (ImageButton) v.findViewById(R.id.attach_pdf);
-        PDFAttack.setElevation(2);
+        Button PDFAttack= (Button) v.findViewById(R.id.attach_pdf);
         PDFAttack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                uri=null;
+                b=null;
+                name.setText(null);
+                preview.setImageBitmap(b);
                 Intent intent = new Intent();
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 intent.setType("application/pdf");
@@ -268,61 +278,48 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
             }
         });
 
-        ibnb.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-                EditText et1 = (EditText) v.findViewById((R.id.expense_description));
-                EditText et2 = (EditText) v.findViewById(R.id.expense_price);
-                String stringEt1 = et1.getText().toString(); //nome
-                String stringEt2 = et2.getText().toString(); //prezzo
-
-                if(TextUtils.isEmpty(stringEt1) || !stringEt1.matches("^[a-zA-Z0-9,.!? ]*$") || stringEt1.length()>30){
-                    et1.setError("You didn't specify the expense description! Or name is too long");
-                    return false;
-                }
-
-                if(TextUtils.isEmpty(stringEt2) || stringEt2.equals("")){
-                    et2.setError("You didn't specify the price!");
-                    return false;
-                }
 
 
+        bnb.setOnClickListener(new View.OnClickListener() {
+                                   @Override
+                                   public void onClick(View v) {
+
+                                       String stringEt1 = et1.getText().toString(); //nome
+                                       String stringEt2 = et2.getText().toString(); //prezzo
+
+                                       if (TextUtils.isEmpty(stringEt1) || !stringEt1.matches("^[a-zA-Z0-9,.!'? ]*$") || stringEt1.length() > 30) {
+                                           et1.setError("You didn't specify the expense description! Or name is too long");
+                                           return;
+                                       }
+
+                                       if (TextUtils.isEmpty(stringEt2) || stringEt2.equals("")) {
+                                           et2.setError("You didn't specify the price!");
+                                           return;
+                                       }
 
 
-                String cat = (String) sp_ct.getSelectedItem();
-                //data è settato
-                //buyer cel'ho da prima
-                //photo e pdf cel'ho
+                                       String cat = (String) sp_ct.getSelectedItem();
+                                       //data è settato
+                                       //buyer cel'ho da prima
+                                       //photo e pdf cel'ho
 
-                if (returnSelection != null)
-                    returnSelection.returnSelection( cat, data, buyer, b, uri, stringEt2, stringEt1, gruppo, user,spf);
+                                       if (returnSelection != null)
+                                           returnSelection.returnSelection(cat, data, buyer, b, uri, stringEt2, stringEt1, gruppo, user, spf);
 
 
-                FragmentTransaction transaction = getFragmentManager().beginTransaction();
+                                       FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
 // Replace whatever is in the fragment_container view with this fragment,
 // and add the transaction to the back stack if needed
-                transaction.replace(R.id.fragment, spf);
-                transaction.addToBackStack(null);
+                                       transaction.replace(R.id.fragment, spf);
+                                       transaction.addToBackStack(null);
 
 // Commit the transaction
-                transaction.commit();
-                return true;
-            }
+                                       transaction.commit();
+                                       return;
+                                   }
+                               });
 
-        });
-
-
-
-        ibnb2.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
-                //posto per i commenti...
-                return true;
-            }
-        });
 
     return v;
     }
@@ -331,9 +328,12 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         switch(requestCode) {
             case PICK_IMAGE_ID:
                 b = ImagePicker.getImageFromResult(getActivity(), resultCode, data);
-                ImageView preview= (ImageView) v.findViewById(R.id.preview);
-                preview.setImageBitmap(b);
-
+                if(b!=null) {
+                    ImageView preview = (ImageView) v.findViewById(R.id.preview);
+                    ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                    b.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+                    preview.setImageBitmap(b);
+                }
                 break;
             case SELECT_PDF:
                 if (resultCode == RESULT_OK) {

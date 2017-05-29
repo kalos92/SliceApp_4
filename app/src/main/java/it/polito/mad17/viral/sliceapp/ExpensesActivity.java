@@ -62,7 +62,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     private DatabaseReference groups_ref = rootRef.child("groups_prova");
     private DatabaseReference users_prova= rootRef.child("users_prova");
     private Boolean isFabOpen = false;
-    private FloatingActionButton fab,fab1,fab2,fab3;
+    private FloatingActionButton fab,fab1,fab2;
     private Animation fab_open,fab_close,rotate_forward,rotate_backward;
 
     //private TextView tv1,tv2,tv3;
@@ -124,13 +124,6 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
                 }else
                     Picasso.with(getBaseContext()).load(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
 
-
-
-                //BitmapManager  bm = new BitmapManager(getBaseContext(),gruppo_2.getImg(),50,70);
-
-                //Bitmap b=  bm.scaleDown(gruppo_2.getImg(),100,true);
-                //Drawable d = new BitmapDrawable(getResources(), b);
-                //t.setLogo(d);
             }
 
             @Override
@@ -174,14 +167,14 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         });
 
         Query ref = groups_ref.child(gruppo.getGroupID()).child("spese");
-        ExpenseRecyclerAdapter adapter= new ExpenseRecyclerAdapter(Spesa.class,R.layout.listview_expense_row, ExpensesActivity.ExpenseHolder.class,ref,getBaseContext());
+        ExpenseRecyclerAdapter adapter= new ExpenseRecyclerAdapter(Spesa.class,R.layout.listview_expense_row, ExpensesActivity.ExpenseHolder.class,ref,getBaseContext(),gruppo);
 
 
 
         fab = (FloatingActionButton)findViewById(R.id.fab);
         fab1 = (FloatingActionButton)findViewById(R.id.fab1);
         fab2 = (FloatingActionButton)findViewById(R.id.fab2);
-        fab3 = (FloatingActionButton)findViewById(R.id.fab3);
+
 
 
         fab_open = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.fab_open);
@@ -191,7 +184,6 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         fab.setOnClickListener(this);
         fab1.setOnClickListener(this);
         fab2.setOnClickListener(this);
-        fab3.setOnClickListener(this);
 
        // final ExpensesAdapter adapter_2 = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, speseGruppo, user);
         LinearLayoutManager llm = new LinearLayoutManager(getBaseContext());
@@ -214,10 +206,9 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
                         fab1.hide();
                         fab1.hide();
                         fab2.hide();
-                        fab3.hide();
                         fab1.setClickable(false);
                         fab2.setClickable(false);
-                        fab3.setClickable(false);
+
                     }
 
                 }
@@ -228,10 +219,9 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
                     if(isFabOpen){
                     fab1.show();
                     fab2.show();
-                    fab3.show();
                     fab1.setClickable(true);
                     fab2.setClickable(true);
-                    fab3.setClickable(true);
+
                     }}
             }
         });
@@ -250,36 +240,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         });
 
 
-      //  tv1.setOnClickListener(this);
-       // tv2.setOnClickListener(this);
-       // tv3.setOnClickListener(this);
 
-
-        // What to do when the user long press an item from the expenses list
-       /* mlist.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-
-
-            }
-        });*/
-
-        /*BottomNavigationView bottomBar = (BottomNavigationView)findViewById(R.id.bottom_nav_bar);
-        bottomBar.setOnNavigationItemSelectedListener(
-                new BottomNavigationView.OnNavigationItemSelectedListener() {
-                    @Override
-                    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-                        user.resetUnread(gruppo.getGroupID());
-                        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-                        Intent appInfo= new Intent(ExpensesActivity.this, AddExpenseActivity.class);
-                        appInfo.putExtra("Gruppo",gruppo);
-
-                        ExpensesActivity.this.startActivity(appInfo);
-                        finish();
-                        return false;
-                }
-        });*/
     }
 
     @Override
@@ -298,11 +259,11 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
             fab.startAnimation(rotate_backward);
             fab1.startAnimation(fab_close);
             fab2.startAnimation(fab_close);
-            fab3.startAnimation(fab_close);
+
 
             fab1.setClickable(false);
             fab2.setClickable(false);
-            fab3.setClickable(false);
+
             isFabOpen = false;
 
 
@@ -311,11 +272,10 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
             fab.startAnimation(rotate_forward);
             fab1.startAnimation(fab_open);
             fab2.startAnimation(fab_open);
-            fab3.startAnimation(fab_open);
+
 
             fab1.setClickable(true);
             fab2.setClickable(true);
-            fab3.setClickable(true);
             isFabOpen = true;
 
 
@@ -341,9 +301,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
 
                 break;
 
-            case R.id.fab3:
 
-                break;
         }
     }
 

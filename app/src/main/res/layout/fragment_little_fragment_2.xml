@@ -10,13 +10,13 @@ tools:context="it.polito.mad17.viral.sliceapp.Little_fragment_2">
     android:layout_width="match_parent"
     android:orientation="vertical">
 
-    <ListView
+    <it.polito.mad17.viral.sliceapp.CustomListV
         android:id="@+id/littleFragment2"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:background="@color/tab_bck"
-        android:layout_weight="1"
-        android:descendantFocusability="afterDescendants"/>
+       android:scrollbars="none"
+        android:nestedScrollingEnabled="false"/>
 
     <Button
         android:id="@+id/save2"

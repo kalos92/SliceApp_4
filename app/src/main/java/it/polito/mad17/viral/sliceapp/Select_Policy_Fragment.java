@@ -5,15 +5,11 @@ import java.util.GregorianCalendar;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
-import android.support.design.internal.BottomNavigationMenuView;
-import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.util.DisplayMetrics;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
@@ -24,7 +20,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
     private ReturnSelection_2 returnSelection_2;
     public interface ReturnSelection_2{
-        void returnSelection_2(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy);
+        void returnSelection_2(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy,int tipo);
     }
 
     private String values;
@@ -42,6 +38,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
     private Policy policy;
     private Choose_how_to_pay chtp = new Choose_how_to_pay();
     private RadioGroup rg;
+    private int tipo;
 
 
 
@@ -110,7 +107,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
 
                 if(group.getCheckedRadioButtonId()== R.id.b1){
-
+                    tipo=1;
                     policy = null;
                     fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
@@ -120,6 +117,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
                 }
 
                 if(group.getCheckedRadioButtonId()== R.id.b2){
+                    tipo=2;
                     policy=null;
                     fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
@@ -130,7 +128,7 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
                 }
 
                 if(group.getCheckedRadioButtonId()== R.id.b3){
-
+                    tipo=0;
                     policy=gruppo.getPolicy();
                     fm = getActivity().getSupportFragmentManager();
                     FragmentTransaction ft = fm.beginTransaction();
@@ -138,38 +136,31 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
                     ft.remove(fm.findFragmentById(R.id.f1));
                     ft.addToBackStack(null);
                     ft.commit();
-
-
-
-
-
-
                 }}
             }
         });
 
-        BottomNavigationView bnb = (BottomNavigationView) v.findViewById(R.id.bottom_nav_bar);
-        MenuItem ibnb = bnb.getMenu().getItem(1);
-        BottomNavigationMenuView menuView = (BottomNavigationMenuView) bnb.getChildAt(0);
-        for (int i = 0; i < menuView.getChildCount(); i++) {
-            final View iconView = menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
-            final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
-            final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        FloatingActionButton bnb = (FloatingActionButton) v.findViewById(R.id.fab_exp2);
+       // MenuItem ibnb = bnb.getMenu().getItem(1);
+       // BottomNavigationMenuView menuView = (BottomNavigationMenuView) bnb.getChildAt(0);
+       // for (int i = 0; i < menuView.getChildCount(); i++) {
+       //     final View iconView = menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
+       //     final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
+       //     final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
             // set your height here
-            layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
+       //     layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
             // set your width here
-            layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
-            iconView.setLayoutParams(layoutParams);
-        }
+         //   layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
+       //     iconView.setLayoutParams(layoutParams);
+       // }
 
 
-        ibnb.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+        bnb.setOnClickListener(new View.OnClickListener() {
             @Override
-            public boolean onMenuItemClick(MenuItem item) {
-
+            public void onClick(View v) {
                 if(policy!=null) {
                     if (returnSelection_2 != null)
-                        returnSelection_2.returnSelection_2(cat, data, buyer, b, uri, nome, price, gruppo, user, chtp, policy);
+                        returnSelection_2.returnSelection_2(cat, data, buyer, b, uri, nome, price, gruppo, user, chtp, policy,tipo);
 
 
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
@@ -179,20 +170,16 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
 
 
                     transaction.commit();
-                    return true;
+                    return;
                 }
                 else{
                     Toast.makeText(getContext(),"Policy is not setted",Toast.LENGTH_SHORT).show();
-                    return false;
+                    return;
                 }
             }
+
         });
-
-
-
         return v;
-
-
     }
 
 

@@ -1,18 +1,38 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Point;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
+import android.os.Environment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,182 +41,568 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 public class ExpenseDetails extends AppCompatActivity {
-
+    private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+    private DatabaseReference rootRef = database.getReference();
+    private DatabaseReference groups_ref = rootRef.child("groups_prova");
     private Spesa s;
+    private Gruppo gruppo;
+    LinearLayoutManager mLayoutManager;
+    final DatabaseReference user_ref = rootRef.child("users_prova");
+    private Animator mCurrentAnimator;
+
+
+    private int mShortAnimationDuration;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.expense_details);
 
-        // setto la toolbar
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbarExpenseDetail);
-        setSupportActionBar(toolbar);
-
-        // definisco il tasto indietro
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        // pesco spesa selezionata e suo gruppo dall'intent
-        s = (Spesa)getIntent().getExtras().get("spesa");
-
-        // Riempio la toolbar
-        String nomeSpesa = s.getNome_spesa();
-        String currency = s.getValuta();
-        String importo = s.getImporto().toString();
-        // String payer = s.getPagante().getName()+" "+s.getPagante().getSurname();
-        TextView nameExpense = (TextView) findViewById(R.id.ExpenseDetailsName);
-        nameExpense.setText(nomeSpesa);
-        TextView valueExpense = (TextView) findViewById(R.id.TextExpenseDetailsValue);
-        valueExpense.setText(currency+" "+importo);
-
-        // rimepio la listview  con la suddivisione del pagamento
-        List<String> items = new ArrayList<String>();
-        Collection<Soldo> soldi = s.getDivisioni().values();
-        for(Soldo soldo: soldi){
-            Persona p = soldo.getPersona();
-            String nome =  p.getName();
-            String cognome = p.getSurname();
-            Boolean haPagato = soldo.getHaPagato();
-            String t;
-            if(haPagato)
-                t = nome +" "+cognome+" "+"has already payed his part " + "(" + soldo.getImporto().toString()+ " " + currency +")";
-            else t = nome +" "+cognome+" "+"has to pay " + soldo.getImporto().toString() + " " + currency;
-            // la valuta non c'è in soldo
-            items.add(t);
-        }
-        ArrayAdapter<String> itemsAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,items){
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                View view = super.getView(position, convertView, parent);
-                TextView text = (TextView) view.findViewById(android.R.id.text1);
-                text.setTextColor(Color.BLACK);
-                text.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-                return view;
-            }
-        };
-        ListView mList = (ListView) findViewById(R.id.listViewExpenseDetails);
-        mList.setAdapter(itemsAdapter);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.toolbar_expense_details_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        final String groupID = s.getGruppo(); // non so se lo prende
-        final String expenseID = s.getExpenseID();
-
-        // controllo prima se colui che vuole pagare la spesa è il pagante della spesa stessa
-        // il pagante, già quando carica la spesa, paga la sua parte
-        if(s.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())){
-            Toast.makeText(getApplicationContext(),
-                           "You have already payed your part (you have added this expense in the past)",
-                           Toast.LENGTH_SHORT)
-                    .show();
-            return true;
+        Bundle extra = getIntent().getExtras();
+        if(extra!= null) {
+            s= (Spesa) extra.get("Spesa");
+            gruppo = (Gruppo) extra.get("Gruppo");
         }
 
-        final DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
-        databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Spesa s2;
+                s2=dataSnapshot.getValue(Spesa.class);
 
-                // Individuo la spesa in questione
-                DataSnapshot spesa = dataSnapshot.child("groups_prova").child(groupID).child("spese").child(expenseID);
-                DatabaseReference spesaRef = databaseRef.child("groups_prova").child(groupID).child("spese").child(expenseID);
+                if(s2.getContested()==true && s2.getFullypayed()!=true){
+                    CardView cd = (CardView) findViewById(R.id.status_card);
+                    cd.setBackgroundColor(Color.argb(255,248,148,6));
+                    ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+                    status_1.setImageResource(R.drawable.status_1);
+                    ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+                    status_2.setImageResource(R.drawable.status_1);
+                    TextView tx_status = (TextView) findViewById(R.id.status_txt);
+                    tx_status.setText("CONTESTED");
 
-                // controllo se la spesa è stata già pagata: se è stata già pagata, esco e stampo un toast all'utente
-                Boolean giaPagata = (Boolean) spesa.child("divisioni").child(SliceAppDB.getUser().getTelephone()).child("haPagato").getValue();
-                if(giaPagata == true){
-                    Toast.makeText(getApplicationContext(), "You have already payed your part", Toast.LENGTH_SHORT).show();
-                    return;
                 }
-                // se non è stata pagata, setto il campo "haPagato" a true...
-                spesaRef.child("divisioni").child(SliceAppDB.getUser().getTelephone()).child("haPagato").setValue(true);
-
-                // ... e aggiorno crediti e debiti che ho nei confronti del pagante della spesa
-
-                // estraggo la parte che devo
-                double myPart = spesa.child("divisioni").child(SliceAppDB.getUser().getTelephone()).child("importo").getValue(Double.class);
-                // gestraggo credito/debito attuale nei confronti del pagante
-                double creditsDebts = dataSnapshot.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("amici")
-                                                  .child(s.getPagante().getTelephone()).child("importo").getValue(Double.class);
-                // aggiorno credito/debito
-                creditsDebts += myPart;
-                // setto il nuovo credito/debito nei confronti del pagante
-                databaseRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("amici").child(s.getPagante().getTelephone()).child("importo").setValue(creditsDebts);
-
-                // le modifiche fatte sotto "users_prova" devono essere propagate anche in locale
-                //SliceAppDB.getUser().getAmici().get(s.getPagante().getTelephone()).setImporto(creditsDebts); //
-                Toast.makeText(getApplicationContext(), "Expense payed with success!", Toast.LENGTH_SHORT).show();
-
-                // ...se non è stata ancora pagata...
-                // ...controllo se ci sono altre spese da pagare
-                Iterator<DataSnapshot> listaSpeseIter2 = dataSnapshot.child("groups_prova").child(groupID).child("spese").getChildren().iterator();
-                Boolean hasAtLeastOneExpenseToPay = false;
-                while(listaSpeseIter2.hasNext()){
-                    DataSnapshot sp = listaSpeseIter2.next();
-                    if(!sp.child("expenseID").getKey().equals(expenseID)){ // Se considerassi la spesa in questione, hasDebts è true
-                        Boolean haPagato = (Boolean) sp.child("divisioni").child(SliceAppDB.getUser().getTelephone()).child("haPagato").getValue();
-                        if(!haPagato) {
-                            hasAtLeastOneExpenseToPay = true; // almeno un'altra spesa non è stata pagata => hasDebst se è true, deve rimanere true
-                            break;
-                        }
-                    }
+                else if(s2.getContested()!=true && s2.getFullypayed()!=true){
+                    CardView cd = (CardView) findViewById(R.id.status_card);
+                    cd.setBackgroundColor(Color.argb(255,238,90,75));
+                    ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+                    status_1.setImageResource(R.drawable.status_2);
+                    ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+                    status_2.setImageResource(R.drawable.status_2);
+                    TextView tx_status = (TextView) findViewById(R.id.status_txt);
+                    tx_status.setText("NOT PAYED");
                 }
-                // se c'è ne almento una, setto a true il campo "hasDebts"...
-                if(hasAtLeastOneExpenseToPay == true){
-                    Iterator<DataSnapshot> listaSpeseIter3 = dataSnapshot.child("groups_prova").child(groupID).child("spese").getChildren().iterator();
-                    while(listaSpeseIter3.hasNext()){
-                        DataSnapshot sp = listaSpeseIter3.next();
-                        DatabaseReference spe = databaseRef.child("groups_prova").child(groupID).child("spese").child(sp.getKey());
-                        spe.child("divisioni").child(SliceAppDB.getUser().getTelephone()).child("persona").child("hasDebts").setValue(true);
-                    }
-                    // setto a true il campo "hasDebts" anche in users_prova
-                    databaseRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("hasDebts").setValue(false);
-                }
-                // ...altrimenti, lo setto a false
-                else {
-                    Iterator<DataSnapshot> listaSpeseIter3 = dataSnapshot.child("groups_prova").child(groupID).child("spese").getChildren().iterator();
-                    while (listaSpeseIter3.hasNext()) {
-                        DataSnapshot sp = listaSpeseIter3.next();
-                        DatabaseReference spe = databaseRef.child("groups_prova").child(groupID).child("spese").child(sp.getKey());
-                        spe.child("divisioni").child(SliceAppDB.getUser().getTelephone()).child("persona").child("hasDebts").setValue(false);
-                    }
-                    // setto a true il campo "hasDebts" anche in users_prova
-                    databaseRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("hasDebts").setValue(false);
 
-                    // Siccome non ho trovato altre spese in cui ho debito, quella pagata era l'ultima
-                    // posso togliere il gruppo della spesa dai gruppo in cui ho debito (il value del groupID sotto "dove_ho_debito" va settato a 0
-                    databaseRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("dove_ho_debito").child(groupID).setValue(0);
+                else if(s2.getContested()!=true && s2.getFullypayed()==true){
+                    CardView cd = (CardView) findViewById(R.id.status_card);
+                    cd.setBackgroundColor(Color.argb(255,135,211,124));
+                    ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+                    status_1.setImageResource(R.drawable.status_3);
+                    ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+                    status_2.setImageResource(R.drawable.status_3);
+                    TextView tx_status = (TextView) findViewById(R.id.status_txt);
+                    tx_status.setText("FULL PAYED");
                 }
+
+                else if(s2.getContested()==true && s2.getFullypayed()==true){
+
+                    CardView cd = (CardView) findViewById(R.id.status_card);
+                    cd.setBackgroundColor(Color.argb(255,248,148,6));
+                    ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+                    status_1.setImageResource(R.drawable.status_1);
+                    ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+                    status_2.setImageResource(R.drawable.status_1);
+                    TextView tx_status = (TextView) findViewById(R.id.status_txt);
+                    tx_status.setText("CONTESTED");
+                }
+
 
             }
 
             @Override
-            public void onCancelled(DatabaseError databaseError) {}
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
-        return true;
+
+        final ImageButton thumbview = (ImageButton) findViewById(R.id.buyerPic);
+        if(s.getImg()!=null){
+            Picasso.with(getBaseContext()).load(s.getImg()).placeholder(s.getCat().getImg()).into(thumbview);
+            thumbview.getDrawable();
+            thumbview.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    zoomImageFromThumb(thumbview, thumbview.getDrawable());
+                    mShortAnimationDuration = getResources().getInteger(
+                            android.R.integer.config_shortAnimTime);
+                }
+            });}
+        else {
+            Picasso.with(getBaseContext()).load(s.getCat().getImg()).into(thumbview);
+            thumbview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                zoomImageFromThumb_res(thumbview, R.drawable.no_img);
+                mShortAnimationDuration = getResources().getInteger(
+                        android.R.integer.config_shortAnimTime);
+            }
+        });
+        }
+        Toolbar t = (Toolbar) findViewById(R.id.expenseToolbar);
+        t.setTitle(s.getNome());
+
+        if(s.getContested()==true && s.getFullypayed()!=true){
+            CardView cd = (CardView) findViewById(R.id.status_card);
+            cd.setBackgroundColor(Color.argb(255,248,148,6));
+            ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+            status_1.setImageResource(R.drawable.status_1);
+            ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+            status_2.setImageResource(R.drawable.status_1);
+            TextView tx_status = (TextView) findViewById(R.id.status_txt);
+            tx_status.setText("CONTESTED");
+
+        }
+        else if(s.getContested()!=true && s.getFullypayed()!=true){
+            CardView cd = (CardView) findViewById(R.id.status_card);
+            cd.setBackgroundColor(Color.argb(255,238,90,75));
+            ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+            status_1.setImageResource(R.drawable.status_2);
+            ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+            status_2.setImageResource(R.drawable.status_2);
+            TextView tx_status = (TextView) findViewById(R.id.status_txt);
+            tx_status.setText("NOT PAYED");
+        }
+
+        else if(s.getContested()!=true && s.getFullypayed()==true){
+            CardView cd = (CardView) findViewById(R.id.status_card);
+            cd.setBackgroundColor(Color.argb(255,135,211,124));
+            ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+            status_1.setImageResource(R.drawable.status_3);
+            ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+            status_2.setImageResource(R.drawable.status_3);
+            TextView tx_status = (TextView) findViewById(R.id.status_txt);
+            tx_status.setText("FULL PAYED");
+        }
+
+        else if(s.getContested()==true && s.getFullypayed()==true){
+
+            CardView cd = (CardView) findViewById(R.id.status_card);
+            cd.setBackgroundColor(Color.argb(255,248,148,6));
+            ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+            status_1.setImageResource(R.drawable.status_1);
+            ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+            status_2.setImageResource(R.drawable.status_1);
+            TextView tx_status = (TextView) findViewById(R.id.status_txt);
+            tx_status.setText("CONTESTED");
+        }
+
+
+        TextView tv1 = (TextView) findViewById(R.id.compratore_show);
+        TextView tv2=(TextView) findViewById(R.id.importo_show);
+        TextView tv3=(TextView) findViewById(R.id.data_show);
+        TextView tv4=(TextView) findViewById(R.id.part_show);
+
+        tv1.setText(s.getPagante().getName()+" "+ s.getPagante().getSurname());
+        String str = String.format("%."+s.getDigit()+"f", s.getImporto());
+        tv2.setText(str+" "+s.getValuta());
+        tv3.setText(s.getData());
+        String str2 = String.format("%."+s.getDigit()+"f", s.getDivisioni().get(SliceAppDB.getUser().getTelephone()).getImporto());
+        tv4.setText(str2+" "+s.getValuta());
+
+
+
+        Button checkP= (Button) findViewById(R.id.see_division_button);
+
+        checkP.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog builder = new Dialog(ExpenseDetails.this);
+                builder.setTitle("Price Report");
+                builder.setContentView(R.layout.policy_dialog);
+
+                RecyclerView rw = (RecyclerView)builder.findViewById(R.id.policies);
+                rw.setHasFixedSize(true);
+                RecyclerPolicyAdapter rpa = new RecyclerPolicyAdapter(s.getPolicy(),s.getDivisioni(),s.getDigit(),s.getValuta());
+                rw.setAdapter(rpa);
+
+                mLayoutManager = new LinearLayoutManager(ExpenseDetails.this);
+                mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+                rw.setLayoutManager(mLayoutManager);
+                DividerItemDecoration verticalDecoration = new DividerItemDecoration(rw.getContext(), DividerItemDecoration.VERTICAL);
+                Drawable verticalDivider = getBaseContext().getDrawable(R.drawable.horizontal_divider);
+                verticalDecoration.setDrawable(verticalDivider);
+                rw.addItemDecoration(verticalDecoration);
+
+
+
+
+
+                builder.show();
+
+            }
+
+        });
+
+        Button remove = (Button) findViewById(R.id.remove_btn);
+
+        remove.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                if (s.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())) {
+                    groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeValue();
+                    for(final Persona p: gruppo.obtainPartecipanti().values()){
+
+                            String key =user_ref.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
+                            if(!p.getTelephone().equals(s.getPagante().getTelephone()))
+                                user_ref.child(p.getTelephone()).child("amici").child(s.getPagante().getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto());
+                            else
+                            {
+                                for(Persona altri : gruppo.obtainPartecipanti().values()){
+                                    if(!altri.getTelephone().equals(s.getPagante().getTelephone()))
+                                        user_ref.child(s.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto()*-1);
+
+                                }
+                            }
+
+                        String key_s =  groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s.getPagante().getTelephone()).child("importo").push().getKey();
+                        groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s.getPagante().getTelephone()).child("importo").child(key_s).setValue(s.getImporto()*-1);
+
+
+                    }
+                    String id_remove = s.getExpenseID();
+                    Persona user = SliceAppDB.getUser();
+                    Spesa s_r =gruppo.addFake(id_remove,s.getNome(),s.getImporto(),user.getName()+" "+user.getSurname(),s.getDigit(),s.getValuta());
+
+
+                    Gson gson = new Gson();
+                    Spesa s_r_pojo =gson.fromJson(gson.toJson(s_r),Spesa.class);
+                    groups_ref.child(gruppo.getGroupID()).child("spese").child(id_remove).setValue(s_r_pojo);
+
+
+                    Intent i = new Intent(getBaseContext(),ExpensesActivity.class);
+                    i.putExtra("Gruppo",gruppo);
+                    startActivity(i);
+                        } else {
+                        Toast.makeText(getBaseContext(), "Only who bought the item can delete this expense", Toast.LENGTH_LONG).show();
+                        }
+                        }});
+
+
+
+        Button downloadPDF = (Button) findViewById(R.id.download_PDF_button);
+
+        downloadPDF.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(s.getUri()!=null){
+
+                    new downloadPDF(getBaseContext()).execute(s.getUri(),s.getNome());
+                }
+                else
+                    Toast.makeText(getBaseContext(),"No PDF was uploaded", Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+
+
+        }
+
+    private void zoomImageFromThumb(final View thumbView, Drawable imageResId) {
+        // If there's an animation in progress, cancel it
+        // immediately and proceed with this one.
+        if (mCurrentAnimator != null) {
+            mCurrentAnimator.cancel();
+        }
+
+        // Load the high-resolution "zoomed-in" image.
+        final ImageView expandedImageView = (ImageView) findViewById(
+                R.id.expanded_image);
+        expandedImageView.setImageDrawable(imageResId);
+
+        // Calculate the starting and ending bounds for the zoomed-in image.
+        // This step involves lots of math. Yay, math.
+        final Rect startBounds = new Rect();
+        final Rect finalBounds = new Rect();
+        final Point globalOffset = new Point();
+
+        // The start bounds are the global visible rectangle of the thumbnail,
+        // and the final bounds are the global visible rectangle of the container
+        // view. Also set the container view's offset as the origin for the
+        // bounds, since that's the origin for the positioning animation
+        // properties (X, Y).
+        thumbView.getGlobalVisibleRect(startBounds);
+        findViewById(R.id.container)
+                .getGlobalVisibleRect(finalBounds, globalOffset);
+        startBounds.offset(-globalOffset.x, -globalOffset.y);
+        finalBounds.offset(-globalOffset.x, -globalOffset.y);
+
+        // Adjust the start bounds to be the same aspect ratio as the final
+        // bounds using the "center crop" technique. This prevents undesirable
+        // stretching during the animation. Also calculate the start scaling
+        // factor (the end scaling factor is always 1.0).
+        float startScale;
+        if ((float) finalBounds.width() / finalBounds.height()
+                > (float) startBounds.width() / startBounds.height()) {
+            // Extend start bounds horizontally
+            startScale = (float) startBounds.height() / finalBounds.height();
+            float startWidth = startScale * finalBounds.width();
+            float deltaWidth = (startWidth - startBounds.width()) / 2;
+            startBounds.left -= deltaWidth;
+            startBounds.right += deltaWidth;
+        } else {
+            // Extend start bounds vertically
+            startScale = (float) startBounds.width() / finalBounds.width();
+            float startHeight = startScale * finalBounds.height();
+            float deltaHeight = (startHeight - startBounds.height()) / 2;
+            startBounds.top -= deltaHeight;
+            startBounds.bottom += deltaHeight;
+        }
+
+        // Hide the thumbnail and show the zoomed-in view. When the animation
+        // begins, it will position the zoomed-in view in the place of the
+        // thumbnail.
+        thumbView.setAlpha(0f);
+        expandedImageView.setVisibility(View.VISIBLE);
+
+        // Set the pivot point for SCALE_X and SCALE_Y transformations
+        // to the top-left corner of the zoomed-in view (the default
+        // is the center of the view).
+        expandedImageView.setPivotX(0f);
+        expandedImageView.setPivotY(0f);
+
+        // Construct and run the parallel animation of the four translation and
+        // scale properties (X, Y, SCALE_X, and SCALE_Y).
+        AnimatorSet set = new AnimatorSet();
+        set
+                .play(ObjectAnimator.ofFloat(expandedImageView, View.X,
+                        startBounds.left, finalBounds.left))
+                .with(ObjectAnimator.ofFloat(expandedImageView, View.Y,
+                        startBounds.top, finalBounds.top))
+                .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X,
+                        startScale, 1f)).with(ObjectAnimator.ofFloat(expandedImageView,
+                View.SCALE_Y, startScale, 1f));
+        set.setDuration(mShortAnimationDuration);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mCurrentAnimator = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mCurrentAnimator = null;
+            }
+        });
+        set.start();
+        mCurrentAnimator = set;
+
+        // Upon clicking the zoomed-in image, it should zoom back down
+        // to the original bounds and show the thumbnail instead of
+        // the expanded image.
+        final float startScaleFinal = startScale;
+        expandedImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mCurrentAnimator != null) {
+                    mCurrentAnimator.cancel();
+                }
+
+                // Animate the four positioning/sizing properties in parallel,
+                // back to their original values.
+                AnimatorSet set = new AnimatorSet();
+                set.play(ObjectAnimator
+                        .ofFloat(expandedImageView, View.X, startBounds.left))
+                        .with(ObjectAnimator
+                                .ofFloat(expandedImageView,
+                                        View.Y,startBounds.top))
+                        .with(ObjectAnimator
+                                .ofFloat(expandedImageView,
+                                        View.SCALE_X, startScaleFinal))
+                        .with(ObjectAnimator
+                                .ofFloat(expandedImageView,
+                                        View.SCALE_Y, startScaleFinal));
+                set.setDuration(mShortAnimationDuration);
+                set.setInterpolator(new DecelerateInterpolator());
+                set.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        thumbView.setAlpha(1f);
+                        expandedImageView.setVisibility(View.GONE);
+                        mCurrentAnimator = null;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        thumbView.setAlpha(1f);
+                        expandedImageView.setVisibility(View.GONE);
+                        mCurrentAnimator = null;
+                    }
+                });
+                set.start();
+                mCurrentAnimator = set;
+            }
+        });
     }
+    private void zoomImageFromThumb_res(final View thumbView, int imageResId) {
+        // If there's an animation in progress, cancel it
+        // immediately and proceed with this one.
+        if (mCurrentAnimator != null) {
+            mCurrentAnimator.cancel();
+        }
 
+        // Load the high-resolution "zoomed-in" image.
+        final ImageView expandedImageView = (ImageView) findViewById(
+                R.id.expanded_image);
+        expandedImageView.setImageResource(imageResId);
 
+        // Calculate the starting and ending bounds for the zoomed-in image.
+        // This step involves lots of math. Yay, math.
+        final Rect startBounds = new Rect();
+        final Rect finalBounds = new Rect();
+        final Point globalOffset = new Point();
 
+        // The start bounds are the global visible rectangle of the thumbnail,
+        // and the final bounds are the global visible rectangle of the container
+        // view. Also set the container view's offset as the origin for the
+        // bounds, since that's the origin for the positioning animation
+        // properties (X, Y).
+        thumbView.getGlobalVisibleRect(startBounds);
+        findViewById(R.id.container)
+                .getGlobalVisibleRect(finalBounds, globalOffset);
+        startBounds.offset(-globalOffset.x, -globalOffset.y);
+        finalBounds.offset(-globalOffset.x, -globalOffset.y);
+
+        // Adjust the start bounds to be the same aspect ratio as the final
+        // bounds using the "center crop" technique. This prevents undesirable
+        // stretching during the animation. Also calculate the start scaling
+        // factor (the end scaling factor is always 1.0).
+        float startScale;
+        if ((float) finalBounds.width() / finalBounds.height()
+                > (float) startBounds.width() / startBounds.height()) {
+            // Extend start bounds horizontally
+            startScale = (float) startBounds.height() / finalBounds.height();
+            float startWidth = startScale * finalBounds.width();
+            float deltaWidth = (startWidth - startBounds.width()) / 2;
+            startBounds.left -= deltaWidth;
+            startBounds.right += deltaWidth;
+        } else {
+            // Extend start bounds vertically
+            startScale = (float) startBounds.width() / finalBounds.width();
+            float startHeight = startScale * finalBounds.height();
+            float deltaHeight = (startHeight - startBounds.height()) / 2;
+            startBounds.top -= deltaHeight;
+            startBounds.bottom += deltaHeight;
+        }
+
+        // Hide the thumbnail and show the zoomed-in view. When the animation
+        // begins, it will position the zoomed-in view in the place of the
+        // thumbnail.
+        thumbView.setAlpha(0f);
+        expandedImageView.setVisibility(View.VISIBLE);
+
+        // Set the pivot point for SCALE_X and SCALE_Y transformations
+        // to the top-left corner of the zoomed-in view (the default
+        // is the center of the view).
+        expandedImageView.setPivotX(0f);
+        expandedImageView.setPivotY(0f);
+
+        // Construct and run the parallel animation of the four translation and
+        // scale properties (X, Y, SCALE_X, and SCALE_Y).
+        AnimatorSet set = new AnimatorSet();
+        set
+                .play(ObjectAnimator.ofFloat(expandedImageView, View.X,
+                        startBounds.left, finalBounds.left))
+                .with(ObjectAnimator.ofFloat(expandedImageView, View.Y,
+                        startBounds.top, finalBounds.top))
+                .with(ObjectAnimator.ofFloat(expandedImageView, View.SCALE_X,
+                        startScale, 1f)).with(ObjectAnimator.ofFloat(expandedImageView,
+                View.SCALE_Y, startScale, 1f));
+        set.setDuration(mShortAnimationDuration);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mCurrentAnimator = null;
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                mCurrentAnimator = null;
+            }
+        });
+        set.start();
+        mCurrentAnimator = set;
+
+        // Upon clicking the zoomed-in image, it should zoom back down
+        // to the original bounds and show the thumbnail instead of
+        // the expanded image.
+        final float startScaleFinal = startScale;
+        expandedImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (mCurrentAnimator != null) {
+                    mCurrentAnimator.cancel();
+                }
+
+                // Animate the four positioning/sizing properties in parallel,
+                // back to their original values.
+                AnimatorSet set = new AnimatorSet();
+                set.play(ObjectAnimator
+                        .ofFloat(expandedImageView, View.X, startBounds.left))
+                        .with(ObjectAnimator
+                                .ofFloat(expandedImageView,
+                                        View.Y,startBounds.top))
+                        .with(ObjectAnimator
+                                .ofFloat(expandedImageView,
+                                        View.SCALE_X, startScaleFinal))
+                        .with(ObjectAnimator
+                                .ofFloat(expandedImageView,
+                                        View.SCALE_Y, startScaleFinal));
+                set.setDuration(mShortAnimationDuration);
+                set.setInterpolator(new DecelerateInterpolator());
+                set.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        thumbView.setAlpha(1f);
+                        expandedImageView.setVisibility(View.GONE);
+                        mCurrentAnimator = null;
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+                        thumbView.setAlpha(1f);
+                        expandedImageView.setVisibility(View.GONE);
+                        mCurrentAnimator = null;
+                    }
+                });
+                set.start();
+                mCurrentAnimator = set;
+            }
+        });
+    }
 }

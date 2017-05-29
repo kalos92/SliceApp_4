@@ -167,18 +167,46 @@ public class Persona implements Serializable {
         this.telephone = telephone;
     }
 
-    public void addTobalance(Persona amico, Double importo, mCurrency curr){
+    public void addTobalance(Persona amico, Double importo, mCurrency curr, String importo_key){
 
         if(amici.containsKey(amico.getTelephone()+";"+curr.getChoosencurr())) { //se c'è devo accedere e metterlo nel DB
             Riga_Bilancio balance = amici.get(amico.getTelephone()+";"+curr.getChoosencurr());
-            Double d = balance.getImporto();
-            d+=importo;
-            balance.setImporto(d);
+            balance.getImporto().put(importo_key,importo);
             amici.put(amico.getTelephone()+";"+curr.getChoosencurr(), balance);
         }
         else{ //se non c'è lo aggiungo alla mappa
-            Riga_Bilancio balance = new Riga_Bilancio(amico.getName()+" "+amico.getSurname(), importo,curr.getSymbol(),curr.getDigits());
+            HashMap<String,Double> map = new HashMap<>();
+            map.put(importo_key,importo);
+            Riga_Bilancio balance = new Riga_Bilancio(amico.getName()+" "+amico.getSurname(), map,curr.getSymbol(),curr.getDigits());
             amici.put(amico.getTelephone()+";"+curr.getChoosencurr(), balance);
+        }
+    }
+
+    public void initiliazeBalance(ArrayList<Persona> amici_array,mCurrency curr, Persona soggetto){
+
+        for(Persona p: amici_array) {
+            if (!amici.containsKey(p.getTelephone() + ";" + curr.getChoosencurr()) && !p.getTelephone().equals(soggetto.getTelephone())) {
+                //se non c'è lo aggiungo alla mappa
+                HashMap<String, Double> map = new HashMap<>();
+                map.put("STARTING POINT", 0d);
+                Riga_Bilancio balance = new Riga_Bilancio(p.getName() + " " + p.getSurname(), map, curr.getSymbol(), curr.getDigits());
+                amici.put(p.getTelephone() + ";" + curr.getChoosencurr(), balance);
+            }
+        }
+
+    }
+    public void addTobalance_2(String amico, Double importo, mCurrency curr,String importo_key){
+
+        if(amici.containsKey(amico)) { //se c'è devo accedere e metterlo nel DB
+            Riga_Bilancio balance = amici.get(amico);
+            balance.getImporto().put(importo_key,importo);
+            amici.put(amico, balance);
+        }
+        else{ //se non c'è lo aggiungo alla mappa
+            HashMap<String,Double> map = new HashMap<>();
+            map.put(importo_key,importo);
+            Riga_Bilancio balance = new Riga_Bilancio(amico, map,curr.getSymbol(),curr.getDigits());
+            amici.put(amico, balance);
         }
     }
 
