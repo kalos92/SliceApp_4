@@ -11,9 +11,9 @@
         android:layout_height="100dp"
         android:backgroundTint="#DADFE1"
         app:cardElevation="2dp"
-        android:layout_margin="5dp"
         android:id="@+id/first_card"
-        >
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true">
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -28,6 +28,7 @@
             android:id="@+id/total"/>
 
             <TextView
+                android:id="@+id/total_show"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/total"

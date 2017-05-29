@@ -6,12 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/tab_bck">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="40dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:src="@drawable/clubbing" />
 
     <TextView
         android:id="@+id/member_name"

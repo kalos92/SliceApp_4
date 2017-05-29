@@ -9,6 +9,7 @@
 
     <TextView
         android:id="@+id/contestator"
+        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="#000000"
@@ -25,6 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="20sp"
+        android:maxLines="2"
         android:textStyle="italic"
         android:textColor="#6C7A89"
         android:ellipsize="end"

@@ -1,5 +1,6 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -125,6 +127,22 @@ public class Fragment_of_money extends Fragment {
             String s = String.format("%."+gruppo.getCurr().getDigits()+"f", credit);
             credits.setText("+"+s+" "+gruppo.getCurr().getSymbol());
         }
+
+
+        Button openbal = (Button) v.findViewById(R.id.openbal);
+
+
+      v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i =  new Intent (getActivity(),Group_balance.class);
+                i.putExtra("Gruppo",gruppo);
+                startActivity(i);
+
+
+            }
+        });
+
         return v;
 
     }

@@ -78,16 +78,19 @@ public class LittleFragment3  extends Fragment {
                 v.requestFocus();
 
                 if(adapter.getPercentages()!=null)
-                p = new Policy(adapter.getPercentages());
-                else
-                    p=null;
-
-                if(getPercentages!=null)
+                    p = new Policy(adapter.getPercentages());
+                else {
+                    p = null;
+                    Toast.makeText(getContext(),"You have insered an invad policy",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if(getPercentages!=null && p!=null){
                     getPercentages.getPercentages(p);
+                    Toast.makeText(getContext(),"Policy Setted",Toast.LENGTH_LONG).show();}
                 v.setFocusable(false);
                 v.setFocusableInTouchMode(false);
                 v.clearFocus();
-                Toast.makeText(getContext(),"Policy Setted",Toast.LENGTH_LONG).show();
+
 
             }
         });

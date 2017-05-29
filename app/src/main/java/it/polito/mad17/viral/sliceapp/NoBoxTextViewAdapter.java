@@ -20,15 +20,10 @@ import java.util.List;
  */
 
 public class NoBoxTextViewAdapter extends ArrayAdapter<Persona> {
+
     private int layoutResourceId;
     private List<Persona> memberNames;
-    private boolean[] checkMarks;
-
     private Context context;
-    private String value;
-    private Gruppo gruppo;
-
-    private Policy policy;
     private HashMap<String,Double> percentages_map = new HashMap<String,Double>();
 
 
@@ -44,7 +39,7 @@ public class NoBoxTextViewAdapter extends ArrayAdapter<Persona> {
 
         this.context = context;
         this.layoutResourceId=layoutResourceId;
-        this.gruppo=gruppo;
+
     }
 
 

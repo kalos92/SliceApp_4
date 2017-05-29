@@ -55,7 +55,7 @@ public class FirebaseBackgroundService extends Service {
         final String userTelephone = sharedPref.getString("telefono", null);
         DatabaseReference groupsRef = database.getReference().child("groups_prova");
 
-        final DatabaseReference contestationsRef = database.getReference().child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni");
+        final DatabaseReference contestationsRef = database.getReference().child("users_prova").child(userTelephone).child("contestazioni");
         contestationsRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {

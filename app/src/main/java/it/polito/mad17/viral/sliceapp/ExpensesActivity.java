@@ -298,7 +298,9 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
 
                 break;
             case R.id.fab2:
-
+                Intent i =  new Intent (this,Group_balance.class);
+                i.putExtra("Gruppo",gruppo);
+                startActivity(i);
                 break;
 
 
