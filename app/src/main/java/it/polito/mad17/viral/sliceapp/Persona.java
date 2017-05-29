@@ -37,6 +37,9 @@ public class Persona implements Serializable {
     private String prefix;
 
 
+
+
+
     public Persona(){}
     // Constructor
     public Persona(String name, String surname, String username, String birthdate, String telephone, String password, int i, String prefix, Uri propic){
@@ -268,4 +271,6 @@ public class Persona implements Serializable {
     public void setPrefix(String prefix) {
         this.prefix = prefix;
     }
+
+
 }

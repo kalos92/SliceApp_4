@@ -5,5 +5,9 @@
         android:title="remove expense"
         android:icon="@drawable/pay_expense"
         app:showAsAction="ifRoom"/>
+    <item android:id="@+id/contestation_expense_item_menu"
+        android:title="contestation expense"
+        android:icon="@drawable/bar"
+        app:showAsAction="ifRoom"/>
 
 </menu>

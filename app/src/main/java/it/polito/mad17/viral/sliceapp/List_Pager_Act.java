@@ -58,7 +58,7 @@ public class List_Pager_Act extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Start the background Firebase activity //
-        //startService(new Intent(getBaseContext(), FirebaseBackgroundService.class));
+        startService(new Intent(getBaseContext(), FirebaseBackgroundService.class));
 
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
@@ -78,10 +78,19 @@ public class List_Pager_Act extends AppCompatActivity {
         tabLayout.setupWithViewPager(vpPager);
 
         setupTabIcons();
-        TabLayout.Tab tab= tabLayout.getTabAt(0);
-        tab.select();
-        // inietto i dati
+        Bundle extras = getIntent().getExtras();
+        if(extras!=null){
+            int value = extras.getInt("three");
+            if(value==2){
 
+                TabLayout.Tab tab= tabLayout.getTabAt(value);
+                tab.select();
+            }
+        }else{
+            TabLayout.Tab tab= tabLayout.getTabAt(0);
+            tab.select();
+            // inietto i dati
+        }
     }
 
     private void setupViewPager(ViewPager viewPager) {

@@ -23,7 +23,7 @@
     </style>
 
     <style name="TextAppearence.App.TextInputLayout" parent="@android:style/TextAppearance">
-    <item name="android:textColor">@color/text</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />

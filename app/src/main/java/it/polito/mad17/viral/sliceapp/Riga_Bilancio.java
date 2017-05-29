@@ -9,9 +9,6 @@ import java.util.HashMap;
 
 public class Riga_Bilancio implements Serializable {
 
-
-
-
     private String ncname;
     private HashMap<String,Double> importo= new HashMap<>();
     private String symbol;
