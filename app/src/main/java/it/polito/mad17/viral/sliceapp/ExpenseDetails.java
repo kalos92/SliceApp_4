@@ -330,12 +330,14 @@ public class ExpenseDetails extends AppCompatActivity {
         contestExpense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent i = new Intent(ExpenseDetails.this, AddContestationActivity.class);
-                System.out.println("spesa " + s.getExpenseID());
-                System.out.println("gruppo " + s.getGruppo());
-                i.putExtra("spesa", s.getExpenseID());
-                i.putExtra("gruppo", s.getGruppo());
-                startActivity(i);
+                if(!s.getContested()){
+                    Intent i = new Intent(ExpenseDetails.this, AddContestationActivity.class);
+                    i.putExtra("spesa", s.getExpenseID());
+                    i.putExtra("gruppo", s.getGruppo());
+                    startActivity(i);
+                } else {
+                    Toast.makeText(getApplicationContext(), "The expense has been already contested!", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 

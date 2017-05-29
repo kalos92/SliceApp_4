@@ -83,6 +83,7 @@ public class CommentsActivity extends AppCompatActivity {
                 commento.setUserName(SliceAppDB.getUser().getUsername());
                 commento.setCommentoID(commentRef.getKey());
                 commento.setUserID(SliceAppDB.getUser().getTelephone()); // è giusto? chi mette il commento è l'utente dell'app?
+                commento.setTimestamp(System.currentTimeMillis());
                 commentRef.setValue(commento);
                 comment.getText().clear();
 

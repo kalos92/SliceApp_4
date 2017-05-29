@@ -57,11 +57,13 @@ public class AddContestationActivity extends AppCompatActivity {
                         contest.setUserName(SliceAppDB.getUser().getUsername());
                         contest.setGroupName(groupName);
                         contest.setNameExpense(expenseName);
+                        contest.setTimestamp(System.currentTimeMillis());
 
                         Commento c = new Commento();
                         c.setCommento(comment.getText().toString());
                         c.setUserID(SliceAppDB.getUser().getTelephone());
                         c.setUserName(SliceAppDB.getUser().getUsername());
+                        c.setTimestamp(System.currentTimeMillis());
 
                         //per commento e contes IDs prima fare il listener su firebase
 

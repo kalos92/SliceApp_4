@@ -38,6 +38,8 @@ public class FirebaseBackgroundService extends Service {
     private Map<String, List<String>> groupsExpenses = new HashMap<String, List<String>>();
     private ArrayList <String> groupsID = new ArrayList<String>();
     private SharedPreferences sharedPref;
+    private Long lastTimestampComment = System.currentTimeMillis();
+    private Long lastTimestampContestation = System.currentTimeMillis();
 
     @Nullable
     @Override
@@ -58,53 +60,64 @@ public class FirebaseBackgroundService extends Service {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                // get data to show in the notification
-                String userName = (String) dataSnapshot.child("userName").getValue();
-                String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
-                String groupName = (String) dataSnapshot.child("groupName").getValue();
-                String contestTitle = (String) dataSnapshot.child("title").getValue();
+                long contestationTimestamp = (long) dataSnapshot.child("timestamp").getValue();
 
-                // notification
-                Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
-                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                        PendingIntent.FLAG_UPDATE_CURRENT);
-                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                        .setSmallIcon(R.drawable.added_contestation)
-                        .setContentTitle(userName + " has contested expense " + expenseName + " of group " + groupName)
-                        .setContentText(contestTitle)
-                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                        //.setPriority(NotificationCompat.PRIORITY_HIGH)
-                        .setContentIntent(contentIntent);
-                Notification noti = builder.build();
-                noti.flags = Notification.FLAG_AUTO_CANCEL;
-                // Add notification
-                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                manager.notify((int) System.currentTimeMillis(), noti);
+                if(contestationTimestamp > lastTimestampContestation) {
+
+                    lastTimestampContestation = contestationTimestamp;
+                    // get data to show in the notification
+                    String userName = (String) dataSnapshot.child("userName").getValue();
+                    String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
+                    String groupName = (String) dataSnapshot.child("groupName").getValue();
+                    String contestTitle = (String) dataSnapshot.child("title").getValue();
+
+                    // notification
+                    Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
+                    PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
+                    android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                            .setSmallIcon(R.drawable.added_contestation)
+                            .setContentTitle(userName + " has contested expense " + expenseName + " of group " + groupName)
+                            .setContentText(contestTitle)
+                            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                            //.setPriority(NotificationCompat.PRIORITY_HIGH)
+                            .setContentIntent(contentIntent);
+                    Notification noti = builder.build();
+                    noti.flags = Notification.FLAG_AUTO_CANCEL;
+                    // Add notification
+                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    manager.notify((int) System.currentTimeMillis(), noti);
+                }
 
                 // add listener for comment
                 contestationsRef.child(dataSnapshot.getKey()).child("commenti").addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-                        String userName = (String) dataSnapshot.child("userName").getValue();
-                        String commento = (String) dataSnapshot.child("commento").getValue();
+                        long commentTimestamp = (long) dataSnapshot.child("timestamp").getValue();
 
-                        // notification
-                        Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
-                        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT);
-                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                .setSmallIcon(R.drawable.added_comment)
-                                .setContentTitle(userName + " has commented a contestation over an expense") // mi servirebbe il nome della spesa :(
-                                .setContentText(commento)
-                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                //.setPriority(NotificationCompat.PRIORITY_HIGH)
-                                .setContentIntent(contentIntent);
-                        Notification noti = builder.build();
-                        noti.flags = Notification.FLAG_AUTO_CANCEL;
-                        // Add notification
-                        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        manager.notify((int) System.currentTimeMillis(), noti);
+                        if(commentTimestamp > lastTimestampComment) {
+
+                            lastTimestampComment = commentTimestamp;
+                            String userName = (String) dataSnapshot.child("userName").getValue();
+                            String commento = (String) dataSnapshot.child("commento").getValue();
+                            // notification
+                            Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
+                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT);
+                            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                    .setSmallIcon(R.drawable.added_comment)
+                                    .setContentTitle(userName + " has commented a contestation over an expense") // mi servirebbe il nome della spesa :(
+                                    .setContentText(commento)
+                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    //.setPriority(NotificationCompat.PRIORITY_HIGH)
+                                    .setContentIntent(contentIntent);
+                            Notification noti = builder.build();
+                            noti.flags = Notification.FLAG_AUTO_CANCEL;
+                            // Add notification
+                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            manager.notify((int) System.currentTimeMillis(), noti);
+                        }
                     }
 
                     @Override
