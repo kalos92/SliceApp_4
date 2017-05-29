@@ -1,31 +1,108 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="it.polito.mad17.viral.sliceapp.AddContestationActivity">
+    xmlns:design="http://schemas.android.com/apk/res-auto"
+    tools:context="it.polito.mad17.viral.sliceapp.Group_Details"
+    android:background="@color/tab_bck">
 
-<LinearLayout
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-    <EditText
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/titleid"
-        android:hint="contestation"/>
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/commentid"
-        android:hint="Optional comment"/>
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Contest"
-        android:id="@+id/buttonContest" />
-</LinearLayout>
+        android:theme="@style/AppTheme.AppBarOverlay">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/loginToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            design:layout_collapseMode="pin"
+            design:layout_scrollFlags="scroll|enterAlways"
+            design:popupTheme="@style/AppTheme"
+            design:subtitleTextColor="#FFFFFF"
+            design:title="Add a contestation"
+            design:titleTextColor="#FFFFFF" />
 
-</android.support.constraint.ConstraintLayout>
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            xmlns:design="http://schemas.android.com/apk/res-auto"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            tools:context="it.polito.mad17.viral.sliceapp.LoginActivity"
+            android:background="@color/tab_bck">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <!-- contestation title -->
+                    <android.support.design.widget.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        tools:textColorHint="@color/text"
+                        design:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+                        design:errorTextAppearance="@style/error_appearance"
+                        android:textColorHint="#000000">
+                        <AutoCompleteTextView
+                            android:id="@+id/titleid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:hint="Contestation"
+                            android:textColor="@color/text"
+                            android:maxLines="1"
+                            android:textSize="20sp"
+                            android:layout_gravity="center"
+                            android:backgroundTint="@color/text"
+                            android:textColorHint="@color/text"
+                            android:layout_marginLeft="5dp"/>
+                    </android.support.design.widget.TextInputLayout>
+
+                </LinearLayout>
+
+                <!-- comment -->
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:textColorHint="@color/crediti"
+                    design:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+                    design:errorTextAppearance="@style/error_appearance"
+                    android:textColorHint="#000000">
+                    <AutoCompleteTextView
+                        android:textSize="20sp"
+                        android:backgroundTint="@color/text"
+                        android:id="@+id/commentid"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Optional comment"
+                        android:textColor="@color/text"
+                        android:textColorHint="@color/text"
+                        android:inputType="textPassword"
+                        android:maxLines="1" />
+
+                </android.support.design.widget.TextInputLayout>
+
+                <Button
+                    android:id="@+id/buttonContest"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Add comment"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </LinearLayout>
+    </android.support.design.widget.AppBarLayout>
+</android.support.design.widget.CoordinatorLayout>

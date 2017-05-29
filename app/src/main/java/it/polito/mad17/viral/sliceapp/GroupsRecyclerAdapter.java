@@ -207,6 +207,14 @@ public class GroupsRecyclerAdapter extends FirebaseRecyclerAdapter<Dettagli_Grup
             }
 
         });
+
+        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                // info memberi gruppi
+                return false;
+            }
+        });
     }
 }
 
