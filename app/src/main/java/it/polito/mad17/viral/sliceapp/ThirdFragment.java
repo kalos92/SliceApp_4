@@ -86,9 +86,6 @@ public class ThirdFragment extends Fragment {
         mylist.addItemDecoration(verticalDecoration);
         mylist.setAdapter(adapter);
 
-
-
-
         // Inflate the layout for this fragment
         return v;
     }

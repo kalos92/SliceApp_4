@@ -43,6 +43,7 @@
         <activity android:name=".Group_balance"></activity>
         <activity android:name=".AddContestationActivity"></activity>
         <activity android:name=".CommentsActivity"></activity>
+        <activity android:name=".CommentsExpenseActivity"></activity>
 
     </application>
 

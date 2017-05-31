@@ -13,6 +13,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Environment;
+import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -73,6 +74,8 @@ public class ExpenseDetails extends AppCompatActivity {
     private Animator mCurrentAnimator;
     private boolean isRemoved=false;
     ValueEventListener listener;
+    private String contestationID;
+    private String contestator;
 
     private int mShortAnimationDuration;
 
@@ -334,13 +337,37 @@ listener =groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpens
                     i.putExtra("gruppo", s.getGruppo());
                     startActivity(i);
                 } else {
-                    Toast.makeText(getApplicationContext(), "The expense has been already contested!", Toast.LENGTH_SHORT).show();
+                    final Intent i = new Intent(ExpenseDetails.this,CommentsExpenseActivity.class);
+                    i.putExtra("groupID",s.getGruppo());
+                    i.putExtra("expenseID",s.getExpenseID());
+
+                    FirebaseDatabase contestDB = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+                    DatabaseReference contestRef = contestDB.getReference().child("groups_prova").child(s.getGruppo())
+                                                                            .child("spese").child(s.getExpenseID())
+                                                                            .child("contestazioni");
+
+                    contestRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+
+                            DataSnapshot d = dataSnapshot.getChildren().iterator().next();
+                            contestationID = d.getKey();
+                            contestator = (String)d.child("phoneNumber").getValue();
+                            i.putExtra("contestator",contestator);
+                            i.putExtra("contestationID",contestationID);
+                            startActivity(i);
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+
+                   // Toast.makeText(getApplicationContext(), "The expense has been already contested!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
-
-
-
 
         }
 
