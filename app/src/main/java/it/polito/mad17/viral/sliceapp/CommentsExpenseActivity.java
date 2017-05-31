@@ -119,6 +119,51 @@ public class CommentsExpenseActivity extends AppCompatActivity {
             }
         });
 
+        FloatingActionButton resolveContestationButton = (FloatingActionButton) findViewById(R.id.resolveButton);
+        resolveContestationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Eliminiamo la contestazione
+                FirebaseDatabase dbContest = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+                DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese")
+                        .child(expenseID).child("contestazioni")
+                        .child(contestationID);
+                if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
+                    dbContestRef.removeValue();
+                    final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
+
+                    dbUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                            while(iterator.hasNext()){
+                                DataSnapshot user = iterator.next();
+                                if(user.child("contestazioni").hasChild(contestationID)){
+                                    String keyUser = (String)user.getKey();
+                                    dbUserRef.child(keyUser).child("contestazioni").child(contestationID).removeValue();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                    Log.d("ContestSuccess","I'm here");
+                    Toast.makeText(getApplicationContext(),"You succesfully delete your contestation",Toast.LENGTH_SHORT).show();
+
+                    Intent i = new Intent(CommentsExpenseActivity.this,List_Pager_Act.class);
+                    i.putExtra("three",2);
+                    startActivity(i);
+
+                }else{
+                    Log.d("ContestFailure","I'm here");
+                    Toast.makeText(getApplicationContext(),"You can't delete the contestation!",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     public static class CommentHolder extends RecyclerView.ViewHolder{
@@ -133,63 +178,6 @@ public class CommentsExpenseActivity extends AppCompatActivity {
     }
 
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.comments_menu, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        int id = item.getItemId();
-
-        if(id == R.id.remove_contestation){
-            //Eliminiamo la contestazione
-            FirebaseDatabase dbContest = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-            DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese")
-                    .child(expenseID).child("contestazioni")
-                    .child(contestationID);
-            if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
-                dbContestRef.removeValue();
-                final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
-
-                dbUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                        while(iterator.hasNext()){
-                            DataSnapshot user = iterator.next();
-                            if(user.child("contestazioni").hasChild(contestationID)){
-                                String keyUser = (String)user.getKey();
-                                dbUserRef.child(keyUser).child("contestazioni").child(contestationID).removeValue();
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-                Log.d("ContestSuccess","I'm here");
-                Toast.makeText(this,"You succesfully delete your contestation",Toast.LENGTH_SHORT).show();
-
-                Intent i = new Intent(CommentsExpenseActivity.this,List_Pager_Act.class);
-                i.putExtra("three",2);
-                startActivity(i);
-
-            }else{
-                Log.d("ContestFailure","I'm here");
-                Toast.makeText(this,"You can't delete the contestation!",Toast.LENGTH_SHORT).show();
-
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 }
 
 
