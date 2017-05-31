@@ -305,6 +305,7 @@ public class FirebaseBackgroundService extends Service {
                                         public void onDataChange(DataSnapshot ds) {
                                             if(ds.hasChild(userTelephone)){
                                                 if((Boolean) dataSnapshot.child("haPagato").getValue() == true) {
+
                                                     Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
                                                     PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                                             PendingIntent.FLAG_UPDATE_CURRENT);

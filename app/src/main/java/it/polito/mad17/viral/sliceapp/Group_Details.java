@@ -233,16 +233,31 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
                     g.setGroupID(groupID);
                     g.setUser(SliceAppDB.getUser());
 
+                    // setto il flag contested a false online
+
 
 
                     Gson gson = new Gson();
                     Gruppo g1 = gson.fromJson(gson.toJson(g),Gruppo.class);
 
                     groups_prova.child(g1.getGroupID()).setValue(g1);
+                    groups_prova.child(groupID).child("contested").setValue(false);
 
-                    for(Persona p: tmpList){
-                        Persona p1 = gson.fromJson(gson.toJson(p),Persona.class);
-                        users_prova.child(p1.getTelephone()).setValue(p1);
+                    for (Persona p : tmpList) {
+                        Persona p1 = gson.fromJson(gson.toJson(p), Persona.class);
+
+                        for(Persona altri: g1.obtainPartecipanti().values()) {
+                            if(!p.getTelephone().equals(altri.getTelephone())){
+
+                                users_prova.child(p.getTelephone()).child("amici").child(altri.getTelephone() + ";" + g1.getCurr().getChoosencurr()).child("ncname").setValue(altri.getName() + " " + altri.getSurname());
+                                users_prova.child(p.getTelephone()).child("amici").child(altri.getTelephone() + ";" + g1.getCurr().getChoosencurr()).child("symbol").setValue(g1.getCurr().getSymbol());
+                                users_prova.child(p.getTelephone()).child("amici").child(altri.getTelephone() + ";" + g1.getCurr().getChoosencurr()).child("digits").setValue(g1.getCurr().getDigits());
+                                users_prova.child(p.getTelephone()).child("amici").child(altri.getTelephone() + ";" + g1.getCurr().getChoosencurr()).child("cc").setValue(g1.getCurr().getChoosencurr());
+                            }}
+
+                        users_prova.child(p1.getTelephone()).child("gruppi_partecipo").child(g1.getGroupID()).setValue(p1.getGruppi_partecipo().get(groupID));
+                        users_prova.child(p1.getTelephone()).child("posizione_gruppi").child(g1.getGroupID()).setValue(p1.getPosizione(g1));
+                        users_prova.child(p1.getTelephone()).child("dove_ho_debito").child(g1.getGroupID()).setValue(p1.getDove_ho_debito().get(groupID));
                     }
 
 
@@ -263,7 +278,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
                 Gruppo g1 = gson.fromJson(gson.toJson(g), Gruppo.class);
 
                 groups_prova.child(g1.getGroupID()).setValue(g1);
-
+                groups_prova.child(groupID).child("contested").setValue(false);
                 for (Persona p : tmpList) {
                     Persona p1 = gson.fromJson(gson.toJson(p), Persona.class);
 

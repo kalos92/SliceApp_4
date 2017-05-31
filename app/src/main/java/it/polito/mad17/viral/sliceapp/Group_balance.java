@@ -22,6 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.io.DataOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -81,39 +82,59 @@ public class Group_balance extends AppCompatActivity {
                     public void onClick(View v) {
 
                         SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
-                        String userTelephone = sharedPref.getString("telefono", null);
+                        final String userTelephone = sharedPref.getString("telefono", null);
 
-                        for(Spesa s: gruppo.getSpese().values()){
-                            if(s.getPagante().getTelephone().equals(userTelephone))
-                                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("divisioni").child(model.getTel()).child("haPagato").setValue(true);
-                            else if(s.getPagante().getTelephone().equals(model.getTel()))
-                                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("divisioni").child(userTelephone).child("haPagato").setValue(true);
+                        groups_ref.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                if(dataSnapshot.child(gruppo.getGroupID()).child("contested").getValue(Boolean.class) == false){
+                                    for(Spesa s: gruppo.getSpese().values() ){
+                                        if(!s.getRemoved()) {
+                                            if (s.getPagante().getTelephone().equals(userTelephone))
+                                                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("divisioni").child(model.getTel()).child("haPagato").setValue(true);
+                                            else if (s.getPagante().getTelephone().equals(model.getTel()))
+                                                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("divisioni").child(userTelephone).child("haPagato").setValue(true);
 
-                            groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("fullypayed").child(model.getTel()).setValue(1);
+                                            groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("fullypayed").child(model.getTel()).setValue(1);
+                                        }
+                                    }
+
+                                    String key_es= groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").push().getKey();
+                                    if(model.calculate()!=0){
+
+                                        if(model.calculate()<0) {
+
+                                            //vado nel mio bilancio e gli butto un *-1
+                                            //Lui vede un - quindi a lui metto il prezzo giusto
+                                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").child(key_es).setValue((model.calculate()));
+                                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(userTelephone).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
+                                            user_ref.child(userTelephone).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
+                                            user_ref.child(model.getTel()).child("amici").child(userTelephone+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
+                                        }
+                                        else {
+                                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").child(key_es).setValue((model.calculate()));
+                                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(userTelephone).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
+                                            user_ref.child(userTelephone).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
+                                            user_ref.child(model.getTel()).child("amici").child(userTelephone+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
+                                        }
+
+
+                                    }
+                                } else {
+                                    System.out.println("you cannot balance");
+                                    Toast.makeText(getApplicationContext(),
+                                            "A group has as least one contested expense. You cannot balance",
+                                            Toast.LENGTH_SHORT)
+                                            .show();
+                                }
+                                // bisogna mettere "contested" a false, quando l'ultima spesa non è più contestata
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {}
+                        });
 
                         }
-
-                        String key_es= groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").push().getKey();
-                        if(model.calculate()!=0){
-
-                        if(model.calculate()<0) {
-
-                            //vado nel mio bilancio e gli butto un *-1
-                            //Lui vede un - quindi a lui metto il prezzo giusto
-                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").child(key_es).setValue((model.calculate()));
-                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(userTelephone).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
-                            user_ref.child(userTelephone).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
-                            user_ref.child(model.getTel()).child("amici").child(userTelephone+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
-                        }
-                        else {
-                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").child(key_es).setValue((model.calculate()));
-                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(userTelephone).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
-                            user_ref.child(userTelephone).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
-                            user_ref.child(model.getTel()).child("amici").child(userTelephone+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
-                        }
-
-
-                        }}
                 });
 
 

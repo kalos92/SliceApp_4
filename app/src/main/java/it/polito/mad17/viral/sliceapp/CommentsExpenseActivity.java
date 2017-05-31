@@ -11,13 +11,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,15 +43,15 @@ import static java.security.AccessController.getContext;
 
 public class CommentsExpenseActivity extends AppCompatActivity {
 
-    private String groupID,expenseID,contestationID,contestatorID;
-    private SharedPreferences sharedPref;
+    private String groupID;
+    private String expenseID;
+    private String contestationID;
+    private String contestatorID;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-
-       // Toolbar toolbar = (Toolbar) findViewById(R.id.contestationToolbar);
-       // setSupportActionBar(toolbar);
 
         final DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
         Bundle extras = getIntent().getExtras();
@@ -59,31 +62,73 @@ public class CommentsExpenseActivity extends AppCompatActivity {
 
         RecyclerView mylist = (RecyclerView) findViewById(R.id.listViewComments);
 
-       // sharedPref= getSharedPreferences("data",MODE_PRIVATE);
-        //final String userTelephone = sharedPref.getString("telefono", null);
 
         Query commentsRef = databaseRef.child("users_prova").child(contestatorID).child("contestazioni").child(contestationID).child("commenti");
-        FirebaseRecyclerAdapter<Commento, CommentHolder> adapter = new FirebaseRecyclerAdapter<Commento, CommentHolder>(Commento.class, R.layout.comment_row, CommentHolder.class, commentsRef) {
+        FirebaseRecyclerAdapter<Commento, RecyclerView.ViewHolder> adapter = new FirebaseRecyclerAdapter<Commento, RecyclerView.ViewHolder>(Commento.class, R.layout.comment_row, RecyclerView.ViewHolder.class, commentsRef) {
+
             @Override
-            protected void populateViewHolder(CommentHolder viewHolder, Commento model, int position) {
-                viewHolder.userName.setText("User: " + model.getUserName());
-                viewHolder.comment.setText("Comment: " + model.getCommento());
+            protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, Commento model, int position) {
+
+                if(model.getUserID().equals(SliceAppDB.getUser().getTelephone()))
+                    populateMe((CommentsActivity.CommentHolder) viewHolder, model, position);
+                else
+                    populateOther((CommentsActivity.CommentHolder2) viewHolder, model, position);
+
+
+
+            }
+
+            @Override
+            public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+                switch (viewType) {
+                    case 0:
+                        View userType1 = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.comment_row, parent, false);
+                        return new CommentsActivity.CommentHolder2(userType1);
+                    case 1:
+                        View userType2 = LayoutInflater.from(parent.getContext())
+                                .inflate(R.layout.comment_row_out, parent, false);
+                        return new CommentsActivity.CommentHolder(userType2);
+
+                }
+                return super.onCreateViewHolder(parent, viewType);
+            }
+
+
+            @Override
+            public int getItemViewType(int position) {
+                Commento model = getItem(position);
+                if(model.getUserID().equals(SliceAppDB.getUser().getTelephone()))
+                    return 1;
+                else
+                    return 0;
+
+            }
+
+            void  populateMe(CommentsActivity.CommentHolder viewHolder, Commento model, int position){
+
+                viewHolder.userName.setText("You");
+                viewHolder.comment.setText(model.getCommento());
+            }
+
+            void  populateOther(CommentsActivity.CommentHolder2 viewHolder, Commento model, int position){
+
+                viewHolder.userName.setText(model.getUserName());
+                viewHolder.comment.setText(model.getCommento());
             }
         };
+
 
         LinearLayoutManager llm = new LinearLayoutManager(getApplicationContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mylist.setLayoutManager(llm);
-        DividerItemDecoration verticalDecoration = new DividerItemDecoration(mylist.getContext(), DividerItemDecoration.VERTICAL);
-        Drawable verticalDivider = getApplicationContext().getDrawable(R.drawable.horizontal_divider);
-        verticalDecoration.setDrawable(verticalDivider);
-        mylist.addItemDecoration(verticalDecoration);
 
         mylist.setAdapter(adapter);
 
         final EditText comment = (EditText)findViewById(R.id.addComment);
 
         FloatingActionButton commentButton = (FloatingActionButton) findViewById(R.id.commentButton);
+
         commentButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -119,8 +164,15 @@ public class CommentsExpenseActivity extends AppCompatActivity {
             }
         });
 
-        FloatingActionButton resolveContestationButton = (FloatingActionButton) findViewById(R.id.resolveButton);
-        resolveContestationButton.setOnClickListener(new View.OnClickListener() {
+
+        FloatingActionButton resolveButton = ( FloatingActionButton) findViewById(R.id.resolveButton);
+        if(!contestatorID.equals(SliceAppDB.getUser().getTelephone())){
+            resolveButton.setVisibility(View.GONE);
+            RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) comment.getLayoutParams();
+            p.addRule(RelativeLayout.LEFT_OF,R.id.commentButton);
+            comment.setLayoutParams(p);
+            resolveButton.setClickable(false);}
+        resolveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //Eliminiamo la contestazione
@@ -177,6 +229,16 @@ public class CommentsExpenseActivity extends AppCompatActivity {
         }
     }
 
+    public static class CommentHolder2 extends RecyclerView.ViewHolder{
+        TextView userName;// colui che ha commentato
+        TextView comment;// commento
+
+        public CommentHolder2(View itemView) {
+            super(itemView);
+            userName = (TextView) itemView.findViewById(R.id.userNameComment);
+            comment = (TextView) itemView.findViewById(R.id.comment);
+        }
+    }
 
 }
 

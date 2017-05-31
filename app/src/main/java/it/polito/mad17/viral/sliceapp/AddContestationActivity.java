@@ -72,6 +72,9 @@ public class AddContestationActivity extends AppCompatActivity {
                         DatabaseReference contestationIDref = contestRef.push();
                         contest.setContestID(contestationIDref.getKey());
 
+                        //metto il flag "contested" del gruppo a true
+                        databaseRef.child("groups_prova").child(groupID).child("contested").setValue(true);
+
                         // metto il flag "contested" della spesa a true
                         databaseRef.child("groups_prova").child(groupID).child("spese").child(expenseID).child("contested").setValue(true);
 

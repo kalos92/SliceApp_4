@@ -91,7 +91,7 @@ public class ExpenseDetails extends AppCompatActivity {
             gruppo = (Gruppo) extra.get("Gruppo");
         }
 
-listener =groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).addValueEventListener(new ValueEventListener() {
+listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Spesa s2;
@@ -270,20 +270,28 @@ listener =groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpens
 
             @Override
             public void onClick(View v) {
+                isRemoved=true;
+                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeEventListener(listener);
+
+                //groups_ref.child(gruppo.getGroupID()).child("removed_exp");
                 if (s.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())) {
                     groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeValue();
                     for(final Persona p: gruppo.obtainPartecipanti().values()){
 
                             String key =user_ref.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
-                            if(!p.getTelephone().equals(s.getPagante().getTelephone()))
-                                user_ref.child(p.getTelephone()).child("amici").child(s.getPagante().getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto());
+                            if(!p.getTelephone().equals(s.getPagante().getTelephone())) {
+                                user_ref.child(p.getTelephone()).child("amici").child(s.getPagante().getTelephone() + ";" + gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto());
+                                groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s.getPagante().getTelephone()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto());
+                                //altri con +
+                                //me con il meno
+                            }
                             else
                             {
                                 for(Persona altri : gruppo.obtainPartecipanti().values()){
-                                    if(!altri.getTelephone().equals(s.getPagante().getTelephone()))
+                                    if(!altri.getTelephone().equals(s.getPagante().getTelephone())){
                                         user_ref.child(s.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto()*-1);
-
-                                }
+                                    groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto()*-1);
+                                }}
                             }
 
                         String key_s =  groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s.getPagante().getTelephone()).child("importo").push().getKey();
@@ -304,7 +312,7 @@ listener =groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpens
                     Intent i = new Intent(getBaseContext(),ExpensesActivity.class);
                     i.putExtra("Gruppo",gruppo);
                     startActivity(i);
-                    groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeEventListener(listener);
+
                     finish();
                         } else {
                         Toast.makeText(getBaseContext(), "Only who bought the item can delete this expense", Toast.LENGTH_LONG).show();

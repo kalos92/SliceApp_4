@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
@@ -137,7 +138,7 @@ public class CommentsActivity extends AppCompatActivity {
                 comment.getText().clear();
 
                 // aggiungere il commento anche sotto la spesa
-                DatabaseReference expenseComments = databaseRef.child("groups_prova").child("spese").child(expenseID).child("contestazioni").child(contestationID).child("commenti");
+                DatabaseReference expenseComments = databaseRef.child("groups_prova").child(groupID).child("spese").child(expenseID).child("contestazioni").child(contestationID).child("commenti");
                 expenseComments.setValue(commento);
 
                 databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -170,7 +171,44 @@ public class CommentsActivity extends AppCompatActivity {
         resolveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO Risolvi la contestazione solo il contestatore può farlo
+                //Eliminiamo la contestazione
+                FirebaseDatabase dbContest = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+                DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese")
+                        .child(expenseID).child("contestazioni")
+                        .child(contestationID);
+                if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
+                    dbContestRef.removeValue();
+                    final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
+
+                    dbUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                            while(iterator.hasNext()){
+                                DataSnapshot user = iterator.next();
+                                if(user.child("contestazioni").hasChild(contestationID)){
+                                    String keyUser = (String)user.getKey();
+                                    dbUserRef.child(keyUser).child("contestazioni").child(contestationID).removeValue();
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+
+                        }
+                    });
+                    Log.d("ContestSuccess","I'm here");
+                    Toast.makeText(getApplicationContext(),"You succesfully delete your contestation",Toast.LENGTH_SHORT).show();
+
+                    Intent i = new Intent(CommentsActivity.this,List_Pager_Act.class);
+                    i.putExtra("three",2);
+                    startActivity(i);
+
+                }else{
+                    Log.d("ContestFailure","I'm here");
+                    Toast.makeText(getApplicationContext(),"You can't delete the contestation!",Toast.LENGTH_SHORT).show();
+                }
 
 
             }
