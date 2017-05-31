@@ -62,16 +62,16 @@ public class downloadPDF extends AsyncTask<String, Integer, Void> {
             String fileName=params[1]+"-PDF";
             String fileExtension=".pdf";
 
-//           download pdf file.
+//download pdf file.
 
             URL url = new URL(params[0]);
             HttpURLConnection c = (HttpURLConnection) url.openConnection();
-            c.setRequestMethod("GET");
-            c.setDoOutput(true);
+
             c.connect();
             String PATH = Environment.getExternalStoragePublicDirectory( Environment.DIRECTORY_DOWNLOADS+ "/SliceAppPDF/").toString();
             File file = new File(PATH);
             file.mkdirs();
+            int totalSize = c.getContentLength();
             outputFile = new File(file, fileName+fileExtension);
             FileOutputStream fos = new FileOutputStream(outputFile);
             InputStream is = c.getInputStream();
@@ -111,23 +111,35 @@ public class downloadPDF extends AsyncTask<String, Integer, Void> {
         Notification.Builder builder=null;
         //Build the notification using Notification.Builder
         if(!finish && !success) {
-             builder= new Notification.Builder(mContext).setSmallIcon(android.R.drawable.stat_sys_download).setAutoCancel(true).setContentTitle(contentTitle).setContentText(contentText);
-            mNotification = builder.getNotification();
 
-            //Show the notification
-            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+
+            Notification noti = new NotificationCompat.Builder(mContext).setContentTitle(contentText).setSmallIcon(android.R.drawable.stat_sys_download).build();
+
+            noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+            NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(0, noti);
         }
-        else if(finish && !success) {
-            builder = new Notification.Builder(mContext).setSmallIcon(android.R.drawable.stat_sys_download_done).setAutoCancel(true).setContentTitle(contentTitle).setContentText(contentText);
-            //Get current notification
-            mNotification = builder.getNotification();
 
-            //Show the notification
-            mNotificationManager.notify(NOTIFICATION_ID, mNotification);
+        else if(finish && !success) {
+            Notification noti = new NotificationCompat.Builder(mContext).setContentTitle(contentText).setSmallIcon(android.R.drawable.stat_notify_error).build();
+
+            noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+            NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+            notificationManager.notify(0, noti);
+
         }else if(success && finish){
             Intent intent = new Intent();
             intent.setAction(android.content.Intent.ACTION_VIEW);
 
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N){
+                String url = Uri.fromFile(outputFile).toString();
+                String url2 = url.replace("file://","content://");
+                Uri url3= Uri.parse(url2);
+                intent.setDataAndType(url3, "application/pdf");
+            }
+        else
             intent.setDataAndType(Uri.fromFile(outputFile), "application/pdf");
 
             PendingIntent pIntent = PendingIntent.getActivity(mContext, 0, intent, 0);

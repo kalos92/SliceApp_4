@@ -38,16 +38,14 @@
             tools:context="it.polito.mad17.viral.sliceapp.LoginActivity"
             android:background="@color/tab_bck">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-                <LinearLayout
 
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="You are now going to CONTEST this expense.\nWith this action group's balance can't be drew\nmore over only you can delete this contestation.\nContest with attention"
+    android:textColor="@color/text"
+    android:textSize="23sp"
+    android:textAlignment="center"/>
                     <!-- contestation title -->
                     <android.support.design.widget.TextInputLayout
                         android:layout_width="match_parent"
@@ -67,10 +65,10 @@
                             android:layout_gravity="center"
                             android:backgroundTint="@color/text"
                             android:textColorHint="@color/text"
-                            android:layout_marginLeft="5dp"/>
+                         />
                     </android.support.design.widget.TextInputLayout>
 
-                </LinearLayout>
+
 
                 <!-- comment -->
                 <android.support.design.widget.TextInputLayout
@@ -86,7 +84,7 @@
                         android:id="@+id/commentid"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Optional comment"
+                        android:hint="First comment"
                         android:textColor="@color/text"
                         android:textColorHint="@color/text"
                         android:inputType="textPassword"
@@ -99,10 +97,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:text="Add comment"
+                    android:text="Start Contestation"
                     android:textStyle="bold" />
 
-            </LinearLayout>
-        </LinearLayout>
+         </LinearLayout>
     </android.support.design.widget.AppBarLayout>
 </android.support.design.widget.CoordinatorLayout>

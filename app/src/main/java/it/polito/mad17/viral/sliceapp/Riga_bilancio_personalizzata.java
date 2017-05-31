@@ -1,6 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import java.io.Serializable;
+import java.util.HashMap;
 
 /**
  * Created by Kalos on 27/05/2017.
@@ -8,40 +9,54 @@ import java.io.Serializable;
 
 public class Riga_bilancio_personalizzata implements Serializable {
 
-
-    public String getIDspesa() {
-        return IDspesa;
-    }
-
-    public void setIDspesa(String IDspesa) {
-        this.IDspesa = IDspesa;
-    }
-
-    public String getTel_pagante() {
-        return tel_pagante;
-    }
-
-    public void setTel_pagante(String tel_pagante) {
-        this.tel_pagante = tel_pagante;
-    }
-
-    public Double getImporto() {
+    public HashMap<String,Double> getImporto() {
         return importo;
     }
 
-    public void setImporto(Double importo) {
+    public void setImporto(HashMap<String,Double> importo) {
         this.importo = importo;
     }
 
-    String IDspesa;
-    String tel_pagante;
-    Double importo;
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    String nome;
+
+    public String getTel() {
+        return tel;
+    }
+
+    public void setTel(String tel) {
+        this.tel = tel;
+    }
+
+    String tel;
+    HashMap<String,Double> importo;
 
    public Riga_bilancio_personalizzata(){}
 
-    public  Riga_bilancio_personalizzata(String IDspesa, String tel_pagante, Double importo){
-        this.IDspesa=IDspesa;
-        this.tel_pagante=tel_pagante;
+    public  Riga_bilancio_personalizzata(String nome,HashMap<String,Double> importo,String tel){
+
+        this.tel=tel;
+        this.nome=nome;
         this.importo=importo;
+    }
+
+    public Double calculate(){
+
+        Double f=0d;
+
+        for(Double d:importo.values())
+        {
+            f+=d;
+        }
+
+        return f;
+
     }
 }

@@ -57,7 +57,7 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
     @Override
     protected void populateViewHolder(ExpensesActivity.ExpenseHolder viewHolder, final Spesa model, int position) {
 
-    if(model.getRemoved()==true){
+        if(model.getRemoved()==true){
         Picasso.with(context).load(R.drawable.img_removed).into(viewHolder.expIcon);
         viewHolder.expCurrency.setText(model.getValuta());
         viewHolder.buyer.setText(model.getRemover());
@@ -66,8 +66,9 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
         viewHolder.expPrice.setText(""+str);
 
 
-    }
-            else if(model.getRemoved()!=true){
+        }
+
+        else if(model.getRemoved()!=true){
 
             Picasso.with(context).load(model.getCat().getImg()).into(viewHolder.expIcon);
             viewHolder.expCurrency.setText(model.getValuta());
@@ -77,7 +78,9 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
             viewHolder.expPrice.setText(""+str);
 
 
-           if(!model.getDivisioni().get(SliceAppDB.getUser().getTelephone()).getHaPagato()){
+            if(!model.getContested()){
+
+           if(!model.getDivisioni().get(SliceAppDB.getUser().getTelephone()).getHaPagato() ){
 
                viewHolder.expCurrency.setTextColor(Color.rgb(242,38,19));
                viewHolder.buyer.setTextColor(Color.rgb(242,38,19));
@@ -166,5 +169,31 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
             }
         });
 
-    }}
+    }else{
+
+                Picasso.with(context).load(R.drawable.status_1_bigger).into(viewHolder.expIcon);
+                viewHolder.expCurrency.setTextColor(Color.rgb(248,148,6));
+                viewHolder.buyer.setTextColor(Color.rgb(248,148,6));
+                viewHolder.expName.setTextColor(Color.rgb(248,148,6));
+                viewHolder.expPrice.setTextColor(Color.rgb(248,148,6));
+
+                viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(v.getContext(), ExpenseDetails.class);
+                        i.putExtra("Spesa", model);
+                        i.putExtra("Gruppo",gruppo);
+                        v.getContext().startActivity(i);
+                    }
+                });
+
+
+
+            }
+
+
+        }
+
+
+    }
 }

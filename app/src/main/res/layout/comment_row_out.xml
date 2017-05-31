@@ -3,14 +3,14 @@
     android:orientation="vertical"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/incoming"
+    android:background="@drawable/outcoming"
     android:layout_margin="5dp"
 
     >
 
 
     <TextView
-        android:layout_marginLeft="22dp"
+        android:layout_marginLeft="8dp"
         android:id="@+id/userNameComment"
         android:text="CALOGERO"
         android:layout_width="wrap_content"
@@ -19,19 +19,20 @@
         android:textStyle="italic"
         android:textSize="18sp"
 
-       />
+        />
 
     <TextView
         android:layout_below="@id/userNameComment"
         android:text="BELLA"
-        android:layout_marginLeft="22dp"
-        android:layout_marginRight="10dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="22dp"
         android:id="@+id/comment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/text"
         android:textSize="22sp"
         android:textStyle="italic"
-        android:layout_marginBottom="5dp"/>
+        android:layout_marginBottom="5dp"
+        />
 
 </RelativeLayout>

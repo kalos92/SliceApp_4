@@ -1,16 +1,24 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
@@ -20,11 +28,17 @@ public class Group_balance extends AppCompatActivity {
 
     Gruppo gruppo;
     Persona user = SliceAppDB.getUser();
+    private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+    private DatabaseReference rootRef = database.getReference();
+    private DatabaseReference groups_ref = rootRef.child("groups_prova");
+    private DatabaseReference user_ref = rootRef.child("users_prova");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.group_balance);
+
+        final RecyclerView mylist = (RecyclerView) findViewById(R.id.balance_list);
 
         Bundle extra = getIntent().getExtras();
         if (extra != null) {
@@ -37,60 +51,99 @@ public class Group_balance extends AppCompatActivity {
 
         Double f = 0d;
         for (Spesa s : gruppo.getSpese().values()) {
+            if(s.getImporto()>=0)
             f += s.getImporto();
 
         }
 
         String str = String.format("%." + gruppo.getCurr().getDigits() + "f", f);
 
-        total.setText(str);
+        total.setText(str+" "+gruppo.getCurr().getSymbol());
 
+        Query ref = groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(SliceAppDB.getUser().getTelephone()).child("bilancio_relativo");
 
-
-
-
-    final Button balance_all = (Button) findViewById(R.id.button_bal);
-
-        balance_all.setOnClickListener(new View.OnClickListener() {
+        FirebaseRecyclerAdapter<Riga_bilancio_personalizzata,BilancioHolder> adapter= new FirebaseRecyclerAdapter<Riga_bilancio_personalizzata, BilancioHolder>(Riga_bilancio_personalizzata.class, R.layout.group_balance_row, BilancioHolder.class, ref) {
             @Override
-            public void onClick(View v) {
-                final HashMap<String,HashMap<String,Riga_bilancio_personalizzata>> balance_map = new HashMap<>();
+            protected void populateViewHolder(BilancioHolder viewHolder, final Riga_bilancio_personalizzata model, int position) {
 
-                final FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                final DatabaseReference groups_prova_2 = database.getReference().child("groups_prova");
 
-                groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(user.getTelephone()).child("bilancio_relativo").addListenerForSingleValueEvent(new ValueEventListener() {
+                viewHolder.namep.setText(model.getNome());
+                String str = String.format("%."+gruppo.getCurr().getDigits()+"f",model.calculate());
+                viewHolder.money.setText(str+" "+gruppo.getCurr().getSymbol());
+                if(model.calculate().compareTo(0d)<0)
+                    viewHolder.money.setTextColor(getResources().getColor(R.color.debiti));
+                else
+                    viewHolder.money.setTextColor(getResources().getColor(R.color.colorPrimary));
+
+                viewHolder.balance.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
+                    public void onClick(View v) {
 
-                        balance_map.putAll((Map<String,HashMap<String, Riga_bilancio_personalizzata>>) dataSnapshot.getValue());
+                        for(Spesa s: gruppo.getSpese().values()){
+                            if(s.getPagante().getTelephone().equals(user.getTelephone()))
+                                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("divisioni").child(model.getTel()).child("haPagato").setValue(true);
+                            else if(s.getPagante().getTelephone().equals(model.getTel()))
+                                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("divisioni").child(user.getTelephone()).child("haPagato").setValue(true);
 
-                        Log.d("E guardala sta mappa", balance_map.toString());
-
-                        for(String persona : balance_map.keySet()){
-
-                            Double f=0d;
-
-                            for(Riga_bilancio_personalizzata rbp: balance_map.get(persona).values()){
-                                f+=rbp.getImporto();
-                            }
-
-                        String key = groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(user.getTelephone()).toString();//TODO
+                            groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("fullypayed").child(model.getTel()).setValue(1);
 
                         }
 
+                        String key_es= groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(user.getTelephone()).child("importo").push().getKey();
+                        if(model.calculate()!=0){
 
-                    }
+                        if(model.calculate()<0) {
 
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
+                            //vado nel mio bilancio e gli butto un *-1
+                            //Lui vede un - quindi a lui metto il prezzo giusto
+                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(user.getTelephone()).child("importo").child(key_es).setValue((model.calculate()));
+                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(user.getTelephone()).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
+                            user_ref.child(user.getTelephone()).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
+                            user_ref.child(model.getTel()).child("amici").child(user.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
+                        }
+                        else {
+                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(user.getTelephone()).child("importo").child(key_es).setValue((model.calculate()));
+                            groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(user.getTelephone()).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
+                            user_ref.child(user.getTelephone()).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
+                            user_ref.child(model.getTel()).child("amici").child(user.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
+                        }
 
-                    }
+
+                        }}
                 });
 
 
+
             }
-        });
+
+        };
+
+        LinearLayoutManager llm = new LinearLayoutManager(getBaseContext());
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        mylist.setLayoutManager(llm);
+        DividerItemDecoration verticalDecoration = new DividerItemDecoration(mylist.getContext(), DividerItemDecoration.VERTICAL);
+        Drawable verticalDivider = getBaseContext().getDrawable(R.drawable.horizontal_divider);
+        verticalDecoration.setDrawable(verticalDivider);
+        mylist.addItemDecoration(verticalDecoration);
+        mylist.setAdapter(adapter);
+
+
 
 }
+
+    public static class BilancioHolder extends RecyclerView.ViewHolder {
+
+        TextView namep;
+        TextView money;
+        Button balance;
+
+        public BilancioHolder(View itemView) {
+            super(itemView);
+            namep = (TextView) itemView.findViewById(R.id.name_person);
+            money = (TextView) itemView.findViewById(R.id.money_balance);
+            balance = (Button) itemView.findViewById(R.id.button2);
+
+
+        }
+    }
 }

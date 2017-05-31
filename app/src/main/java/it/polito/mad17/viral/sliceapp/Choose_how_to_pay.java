@@ -285,25 +285,14 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
 
                                 //ORA devo aggiornare tutti i bilanci relativi e gli ID spesa e importo, tel pagante;
-                                for(Persona altri : partecipanti){
-                                    if(!altri.getTelephone().equals(p.getTelephone()) && !altri.getTelephone().equals(s1.getPagante().getTelephone())) {
-                                        String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).push().getKey();
-
-                                        if(p.getTelephone().equals(s1.getPagante().getTelephone())){
-                                            Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto());
-                                            Gson gson_2 = new Gson();
-                                            Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
-                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child(key_g).setValue(rbp_pojo);
-                                        }
-                                        else
-                                        {
-                                            Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto()*-1);
-                                            Gson gson_2 = new Gson();
-                                            Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
-                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(altri.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child(key_g).setValue(rbp_pojo);
-                                        }
-                                    }
+                                if(!p.getTelephone().equals(s1.getPagante().getTelephone())) {
+                                    //Io sono una persona che non É il pagante quindi mi devo mettere il mio bilancio con una spesa -
+                                    String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
+                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child("importo").child(key_g).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto() * -1);
+                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("bilancio_relativo").child(p.getTelephone()).child("importo").child(key_g).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto());
                                 }
+                                    users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("time").setValue(gruppo.getC()*-1);
+
 
                             }//for
 
@@ -427,26 +416,13 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
 
                                 //ORA devo aggiornare tutti i bilanci relativi e gli ID spesa e importo, tel pagante;
-                                for(Persona altri : partecipanti){
-                                    if(!altri.getTelephone().equals(p.getTelephone()) && !altri.getTelephone().equals(s1.getPagante().getTelephone())) {
-                                        String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).push().getKey();
-
-                                        if(p.getTelephone().equals(s1.getPagante().getTelephone())){
-                                            Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto());
-                                            Gson gson_2 = new Gson();
-                                            Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
-                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child(key_g).setValue(rbp_pojo);
-                                        }
-                                        else
-                                        {
-                                            Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto()*-1);
-                                            Gson gson_2 = new Gson();
-                                            Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
-                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(altri.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child(key_g).setValue(rbp_pojo);
-                                        }
-                                    }
+                                if(!p.getTelephone().equals(s1.getPagante().getTelephone())) {
+                                    //Io sono una persona che non É il pagante quindi mi devo mettere il mio bilancio con una spesa -
+                                    String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
+                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child("importo").child(key_g).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto() * -1);
+                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("bilancio_relativo").child(p.getTelephone()).child("importo").child(key_g).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto());
                                 }
-
+                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("time").setValue(gruppo.getC()*-1);
                             }//for
 
                             String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
@@ -540,9 +516,11 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     });
                     //Aggiornamento di amici che posso fare senza transaction
                     String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
-                    if(!p.getTelephone().equals(s1.getPagante().getTelephone()))
-                        users_prova.child(p.getTelephone()).child("amici").child(s1.getPagante().getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto()*-1);
-                    else
+                    if(!p.getTelephone().equals(s1.getPagante().getTelephone())) {
+
+                        users_prova.child(p.getTelephone()).child("amici").child(s1.getPagante().getTelephone() + ";" + gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto() * -1);
+                    }
+                        else
                     {
                         for(Persona altri : partecipanti){
                             if(!altri.getTelephone().equals(s1.getPagante().getTelephone()))
@@ -552,27 +530,15 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     }
 
 
-                    //ORA devo aggiornare tutti i bilanci relativi e gli ID spesa e importo, tel pagante;
-                    for(Persona altri : partecipanti){
-                        if(!altri.getTelephone().equals(p.getTelephone()) && !altri.getTelephone().equals(s1.getPagante().getTelephone())) {
-                            String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).push().getKey();
-
-                            if(p.getTelephone().equals(s1.getPagante().getTelephone())){
-                                Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto());
-                                Gson gson_2 = new Gson();
-                                Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
-                                groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child(key_g).setValue(rbp_pojo);
-                            }
-                            else
-                            {
-                                Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s1.getExpenseID(),p.getTelephone(),s1.getDivisioni().get(altri.getTelephone()).getImporto()*-1);
-                                Gson gson_2 = new Gson();
-                                Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
-                                groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(altri.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child(key_g).setValue(rbp_pojo);
-                            }
+                        if(!p.getTelephone().equals(s1.getPagante().getTelephone())) {
+                            //Io sono una persona che non É il pagante quindi mi devo mettere il mio bilancio con una spesa -
+                            String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
+                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child("importo").child(key_g).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto() * -1);
+                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("bilancio_relativo").child(p.getTelephone()).child("importo").child(key_g).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto());
                         }
-                    }
 
+
+                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("time").setValue(gruppo.getC()*-1);
                 }//for
 
                     String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
@@ -704,26 +670,13 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
 
                                         //ORA devo aggiornare tutti i bilanci relativi e gli ID spesa e importo, tel pagante;
-                                        for(Persona altri : partecipanti){
-                                            if(!altri.getTelephone().equals(p.getTelephone()) && !altri.getTelephone().equals(s2.getPagante().getTelephone())) {
-                                                String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).push().getKey();
-
-                                                if(p.getTelephone().equals(s2.getPagante().getTelephone())){
-                                                    Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s2.getExpenseID(),p.getTelephone(),s2.getDivisioni().get(altri.getTelephone()).getImporto());
-                                                    Gson gson_2 = new Gson();
-                                                    Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
-                                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child(key_g).setValue(rbp_pojo);
-                                                }
-                                                else
-                                                {
-                                                    Riga_bilancio_personalizzata rbp = new Riga_bilancio_personalizzata(s2.getExpenseID(),p.getTelephone(),s2.getDivisioni().get(altri.getTelephone()).getImporto()*-1);
-                                                    Gson gson_2 = new Gson();
-                                                    Riga_bilancio_personalizzata rbp_pojo = gson.fromJson(gson_2.toJson(rbp),Riga_bilancio_personalizzata.class);
-                                                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(altri.getTelephone()).child("bilancio_relativo").child(s2.getPagante().getTelephone()).child(key_g).setValue(rbp_pojo);
-                                                }
-                                            }
+                                        if(!p.getTelephone().equals(s2.getPagante().getTelephone())) {
+                                            //Io sono una persona che non É il pagante quindi mi devo mettere il mio bilancio con una spesa -
+                                            String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s2.getPagante().getTelephone()).child("importo").push().getKey();
+                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s2.getPagante().getTelephone()).child("importo").child(key_g).setValue(s2.getDivisioni().get(p.getTelephone()).getImporto() * -1);
+                                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s2.getPagante().getTelephone()).child("bilancio_relativo").child(p.getTelephone()).child("importo").child(key_g).setValue(s2.getDivisioni().get(p.getTelephone()).getImporto());
                                         }
-
+                                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("time").setValue(gruppo.getC()*-1);
                                     }//for
 
                                     String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s2.getPagante().getTelephone()).child("importo").push().getKey();

@@ -58,15 +58,15 @@ public class Riga_bilancio_Gruppo implements Serializable {
 
     String tel;
 
-    public HashMap<String, HashMap<String, Riga_bilancio_personalizzata>> getBilancio_relativo() {
+    public HashMap<String, Riga_bilancio_personalizzata> getBilancio_relativo() {
         return bilancio_relativo;
     }
 
-    public void setBilancio_relativo(HashMap<String, HashMap<String, Riga_bilancio_personalizzata>> bilancio_relativo) {
+    public void setBilancio_relativo(HashMap<String, Riga_bilancio_personalizzata> bilancio_relativo) {
         this.bilancio_relativo = bilancio_relativo;
     }
 
-    private HashMap<String,HashMap<String,Riga_bilancio_personalizzata>> bilancio_relativo = new HashMap<>();
+    private HashMap<String,Riga_bilancio_personalizzata> bilancio_relativo = new HashMap<>();
 
 
 
@@ -83,8 +83,9 @@ public class Riga_bilancio_Gruppo implements Serializable {
 
         for(Persona p:altri){
             if(!p.getTelephone().equals(tel)){
-                HashMap<String,Riga_bilancio_personalizzata> fakeMap = new HashMap<>();
-                fakeMap.put("STARTING POINT", new Riga_bilancio_personalizzata("null_$","null_$",0d));
+                HashMap<String,Double> importi = new HashMap<>();
+                importi.put("STARTING POINT", 0d);
+                Riga_bilancio_personalizzata fakeMap = new Riga_bilancio_personalizzata(p.getName()+" "+p.getSurname(),importi,p.getTelephone());
                 bilancio_relativo.put(p.getTelephone(),fakeMap);
             }
 

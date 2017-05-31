@@ -6,6 +6,7 @@ import android.net.Uri;
 
 import java.io.Serializable;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 
@@ -59,11 +60,11 @@ public class Spesa implements Serializable {
     private String removed_msg;
 
 
-    public boolean getFullypayed() {
+    public HashMap<String,Integer> getFullypayed() {
         return fullypayed;
     }
 
-    public void setFullypayed(boolean fullypayed) {
+    public void setFullypayed(HashMap<String,Integer> fullypayed) {
         this.fullypayed = fullypayed;
     }
 
@@ -75,7 +76,7 @@ public class Spesa implements Serializable {
         this.contested = contested;
     }
 
-    private boolean fullypayed;
+    private HashMap<String,Integer> fullypayed=new HashMap<String,Integer>();
     private boolean contested;
 
     public boolean getMethod() {
@@ -136,7 +137,6 @@ public class Spesa implements Serializable {
         this.data=data;
         this.nome_spesa=nome_spesa;
         c= Calendar.getInstance().getTimeInMillis();
-        this.fullypayed=false;
         this.contested=false;
         this.removed=false;
     }

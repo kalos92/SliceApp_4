@@ -55,7 +55,7 @@ public class Dettagli_Gruppo implements Serializable {
     }
 
     public long getTime() {
-        return time;
+        return time*-1;
     }
 
     public void setTime(long time) {

@@ -180,7 +180,7 @@ public class Persona implements Serializable {
         else{ //se non c'è lo aggiungo alla mappa
             HashMap<String,Double> map = new HashMap<>();
             map.put(importo_key,importo);
-            Riga_Bilancio balance = new Riga_Bilancio(amico.getName()+" "+amico.getSurname(), map,curr.getSymbol(),curr.getDigits());
+            Riga_Bilancio balance = new Riga_Bilancio(amico.getName()+" "+amico.getSurname(), map,curr.getSymbol(),curr.getDigits(),curr.getChoosencurr());
             amici.put(amico.getTelephone()+";"+curr.getChoosencurr(), balance);
         }
     }
@@ -192,7 +192,7 @@ public class Persona implements Serializable {
                 //se non c'è lo aggiungo alla mappa
                 HashMap<String, Double> map = new HashMap<>();
                 map.put("STARTING POINT", 0d);
-                Riga_Bilancio balance = new Riga_Bilancio(p.getName() + " " + p.getSurname(), map, curr.getSymbol(), curr.getDigits());
+                Riga_Bilancio balance = new Riga_Bilancio(p.getName() + " " + p.getSurname(), map, curr.getSymbol(), curr.getDigits(),curr.getChoosencurr());
                 amici.put(p.getTelephone() + ";" + curr.getChoosencurr(), balance);
             }
         }
@@ -208,7 +208,7 @@ public class Persona implements Serializable {
         else{ //se non c'è lo aggiungo alla mappa
             HashMap<String,Double> map = new HashMap<>();
             map.put(importo_key,importo);
-            Riga_Bilancio balance = new Riga_Bilancio(amico, map,curr.getSymbol(),curr.getDigits());
+            Riga_Bilancio balance = new Riga_Bilancio(amico, map,curr.getSymbol(),curr.getDigits(),curr.getChoosencurr());
             amici.put(amico, balance);
         }
     }

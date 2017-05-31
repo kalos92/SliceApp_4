@@ -189,6 +189,12 @@ public class List_Pager_Act extends AppCompatActivity {
     // temporaneo
     @Override
     public void onBackPressed(){
+
+        if(tabLayout.getSelectedTabPosition()!=0){
+            TabLayout.Tab tab= tabLayout.getTabAt(0);
+            tab.select();}
+        else{
+
         android.os.Process.killProcess(android.os.Process.myPid());
-    }
+    }}
 }

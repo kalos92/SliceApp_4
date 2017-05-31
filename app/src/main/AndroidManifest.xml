@@ -39,9 +39,7 @@
             android:name=".Group_Details"
             android:theme="@style/AppTheme" />
         <activity android:name=".ExpenseDetails" />
-
         <service android:name=".FirebaseBackgroundService"></service>
-
         <activity android:name=".Group_balance"></activity>
         <activity android:name=".AddContestationActivity"></activity>
         <activity android:name=".CommentsActivity"></activity>

@@ -111,7 +111,7 @@
         app:borderWidth="0dp"
         app:pressedTranslationZ="12dp"
         app:fabSize="normal"
-        android:src="@drawable/default_img" />
+        android:src="@drawable/statistics" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab1"

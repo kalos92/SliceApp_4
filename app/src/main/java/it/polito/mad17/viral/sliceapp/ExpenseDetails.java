@@ -71,7 +71,8 @@ public class ExpenseDetails extends AppCompatActivity {
     LinearLayoutManager mLayoutManager;
     final DatabaseReference user_ref = rootRef.child("users_prova");
     private Animator mCurrentAnimator;
-
+    private boolean isRemoved=false;
+    ValueEventListener listener;
 
     private int mShortAnimationDuration;
 
@@ -87,57 +88,52 @@ public class ExpenseDetails extends AppCompatActivity {
             gruppo = (Gruppo) extra.get("Gruppo");
         }
 
-        groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).addValueEventListener(new ValueEventListener() {
+listener =groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Spesa s2;
                 s2=dataSnapshot.getValue(Spesa.class);
+                if(!isRemoved) {
+                    if (s2.getContested() == true && s.getFullypayed().values().size()!=gruppo.getN_partecipanti()-1) {
+                        CardView cd = (CardView) findViewById(R.id.status_card);
+                        cd.setBackgroundColor(Color.argb(255, 248, 148, 6));
+                        ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+                        status_1.setImageResource(R.drawable.status_1);
+                        ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+                        status_2.setImageResource(R.drawable.status_1);
+                        TextView tx_status = (TextView) findViewById(R.id.status_txt);
+                        tx_status.setText("CONTESTED");
 
-                if(s2.getContested()==true && s2.getFullypayed()!=true){
-                    CardView cd = (CardView) findViewById(R.id.status_card);
-                    cd.setBackgroundColor(Color.argb(255,248,148,6));
-                    ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
-                    status_1.setImageResource(R.drawable.status_1);
-                    ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
-                    status_2.setImageResource(R.drawable.status_1);
-                    TextView tx_status = (TextView) findViewById(R.id.status_txt);
-                    tx_status.setText("CONTESTED");
+                    } else if (s2.getContested() != true && s.getFullypayed().values().size()!=gruppo.getN_partecipanti()-1) {
+                        CardView cd = (CardView) findViewById(R.id.status_card);
+                        cd.setBackgroundColor(Color.argb(255, 238, 90, 75));
+                        ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+                        status_1.setImageResource(R.drawable.status_2);
+                        ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+                        status_2.setImageResource(R.drawable.status_2);
+                        TextView tx_status = (TextView) findViewById(R.id.status_txt);
+                        tx_status.setText("NOT PAYED");
+                    } else if (s2.getContested() != true && s.getFullypayed().values().size()==gruppo.getN_partecipanti()-1) {
+                        CardView cd = (CardView) findViewById(R.id.status_card);
+                        cd.setBackgroundColor(Color.argb(255, 135, 211, 124));
+                        ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+                        status_1.setImageResource(R.drawable.status_3);
+                        ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+                        status_2.setImageResource(R.drawable.status_3);
+                        TextView tx_status = (TextView) findViewById(R.id.status_txt);
+                        tx_status.setText("FULL PAYED");
+                    } else if (s2.getContested() == true && s.getFullypayed().values().size()==gruppo.getN_partecipanti()-1) {
 
+                        CardView cd = (CardView) findViewById(R.id.status_card);
+                        cd.setBackgroundColor(Color.argb(255, 248, 148, 6));
+                        ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
+                        status_1.setImageResource(R.drawable.status_1);
+                        ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
+                        status_2.setImageResource(R.drawable.status_1);
+                        TextView tx_status = (TextView) findViewById(R.id.status_txt);
+                        tx_status.setText("CONTESTED");
+                    }
                 }
-                else if(s2.getContested()!=true && s2.getFullypayed()!=true){
-                    CardView cd = (CardView) findViewById(R.id.status_card);
-                    cd.setBackgroundColor(Color.argb(255,238,90,75));
-                    ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
-                    status_1.setImageResource(R.drawable.status_2);
-                    ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
-                    status_2.setImageResource(R.drawable.status_2);
-                    TextView tx_status = (TextView) findViewById(R.id.status_txt);
-                    tx_status.setText("NOT PAYED");
-                }
-
-                else if(s2.getContested()!=true && s2.getFullypayed()==true){
-                    CardView cd = (CardView) findViewById(R.id.status_card);
-                    cd.setBackgroundColor(Color.argb(255,135,211,124));
-                    ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
-                    status_1.setImageResource(R.drawable.status_3);
-                    ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
-                    status_2.setImageResource(R.drawable.status_3);
-                    TextView tx_status = (TextView) findViewById(R.id.status_txt);
-                    tx_status.setText("FULL PAYED");
-                }
-
-                else if(s2.getContested()==true && s2.getFullypayed()==true){
-
-                    CardView cd = (CardView) findViewById(R.id.status_card);
-                    cd.setBackgroundColor(Color.argb(255,248,148,6));
-                    ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
-                    status_1.setImageResource(R.drawable.status_1);
-                    ImageView status_2 = (ImageView) findViewById(R.id.status_pic2);
-                    status_2.setImageResource(R.drawable.status_1);
-                    TextView tx_status = (TextView) findViewById(R.id.status_txt);
-                    tx_status.setText("CONTESTED");
-                }
-
 
             }
 
@@ -173,7 +169,7 @@ public class ExpenseDetails extends AppCompatActivity {
         Toolbar t = (Toolbar) findViewById(R.id.expenseToolbar);
         t.setTitle(s.getNome());
 
-        if(s.getContested()==true && s.getFullypayed()!=true){
+        if(s.getContested()==true && s.getFullypayed().values().size()!=gruppo.getN_partecipanti()-1){
             CardView cd = (CardView) findViewById(R.id.status_card);
             cd.setBackgroundColor(Color.argb(255,248,148,6));
             ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
@@ -184,7 +180,7 @@ public class ExpenseDetails extends AppCompatActivity {
             tx_status.setText("CONTESTED");
 
         }
-        else if(s.getContested()!=true && s.getFullypayed()!=true){
+        else if(s.getContested()!=true && s.getFullypayed().values().size()!=gruppo.getN_partecipanti()-1){
             CardView cd = (CardView) findViewById(R.id.status_card);
             cd.setBackgroundColor(Color.argb(255,238,90,75));
             ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
@@ -195,7 +191,7 @@ public class ExpenseDetails extends AppCompatActivity {
             tx_status.setText("NOT PAYED");
         }
 
-        else if(s.getContested()!=true && s.getFullypayed()==true){
+        else if(s.getContested()!=true && s.getFullypayed().values().size()==gruppo.getN_partecipanti()-1){
             CardView cd = (CardView) findViewById(R.id.status_card);
             cd.setBackgroundColor(Color.argb(255,135,211,124));
             ImageView status_1 = (ImageView) findViewById(R.id.status_pic1);
@@ -206,7 +202,7 @@ public class ExpenseDetails extends AppCompatActivity {
             tx_status.setText("FULL PAYED");
         }
 
-        else if(s.getContested()==true && s.getFullypayed()==true){
+        else if(s.getContested()==true && s.getFullypayed().values().size()==gruppo.getN_partecipanti()-1){
 
             CardView cd = (CardView) findViewById(R.id.status_card);
             cd.setBackgroundColor(Color.argb(255,248,148,6));
@@ -305,6 +301,8 @@ public class ExpenseDetails extends AppCompatActivity {
                     Intent i = new Intent(getBaseContext(),ExpensesActivity.class);
                     i.putExtra("Gruppo",gruppo);
                     startActivity(i);
+                    groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeEventListener(listener);
+                    finish();
                         } else {
                         Toast.makeText(getBaseContext(), "Only who bought the item can delete this expense", Toast.LENGTH_LONG).show();
                         }

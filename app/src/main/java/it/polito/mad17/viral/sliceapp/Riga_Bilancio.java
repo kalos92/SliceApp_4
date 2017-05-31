@@ -13,14 +13,16 @@ public class Riga_Bilancio implements Serializable {
     private HashMap<String,Double> importo= new HashMap<>();
     private String symbol;
     private int digits;
+    private String cc;
 
     public Riga_Bilancio(){};
 
-    public Riga_Bilancio(String ncname,HashMap<String,Double> importo,String symbol, int digits){
+    public Riga_Bilancio(String ncname,HashMap<String,Double> importo,String symbol, int digits, String cc){
         this.ncname= ncname;
         this.importo=importo;
         this.symbol=symbol;
         this.digits=digits;
+        this.cc=cc;
     }
 
 
@@ -67,4 +69,13 @@ public class Riga_Bilancio implements Serializable {
         return f;
 
     }
+
+    public String getCc() {
+        return cc;
+    }
+
+    public void setCc(String cc) {
+        this.cc = cc;
+    }
+
 }

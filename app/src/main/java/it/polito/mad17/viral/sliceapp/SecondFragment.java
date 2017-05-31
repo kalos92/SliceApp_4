@@ -41,7 +41,7 @@ public class SecondFragment extends Fragment {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private DatabaseReference rootRef = database.getReference();
-    private DatabaseReference user_ref = rootRef.child("users_prova");
+
 
     public SecondFragment() {
         // Required empty public constructor
@@ -86,7 +86,7 @@ public class SecondFragment extends Fragment {
                     viewHolder.name_p.setText("You owe to "+ model.getNcname()+":");
                     viewHolder.money.setTextColor(getContext().getResources().getColor(R.color.debiti));
                     viewHolder.name_p.setTextColor(getContext().getResources().getColor(R.color.debiti));
-                    viewHolder.currency.setText(model.getSymbol());
+                    viewHolder.currency.setText(model.getSymbol()+" - "+ model.getCc());
                     viewHolder.currency.setTextColor(getContext().getResources().getColor(R.color.debiti));
                 }
                 else if (model.calculate().compareTo(0d)>0){
@@ -96,7 +96,7 @@ public class SecondFragment extends Fragment {
 
                     viewHolder.money.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
                     viewHolder.name_p.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
-                    viewHolder.currency.setText(model.getSymbol());
+                    viewHolder.currency.setText(model.getSymbol()+" - "+ model.getCc());
                     viewHolder.currency.setTextColor(getContext().getResources().getColor(R.color.colorPrimary));
                 }
                 else if (model.calculate().compareTo(0d)==0){
