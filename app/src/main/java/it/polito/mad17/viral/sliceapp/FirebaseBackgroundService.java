@@ -53,6 +53,7 @@ public class FirebaseBackgroundService extends Service {
 
         sharedPref= getSharedPreferences("data",MODE_PRIVATE);
         final String userTelephone = sharedPref.getString("telefono", null);
+
         DatabaseReference groupsRef = database.getReference().child("groups_prova");
 
         final DatabaseReference contestationsRef = database.getReference().child("users_prova").child(userTelephone).child("contestazioni");
@@ -72,7 +73,9 @@ public class FirebaseBackgroundService extends Service {
                     String contestTitle = (String) dataSnapshot.child("title").getValue();
 
                     // notification
-                    Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
+                    Intent notificationIntent = new Intent();
+                    //notificationIntent.putExtra("three", 2);
+
                     PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                             PendingIntent.FLAG_UPDATE_CURRENT);
                     android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
@@ -102,7 +105,7 @@ public class FirebaseBackgroundService extends Service {
                             String userName = (String) dataSnapshot.child("userName").getValue();
                             String commento = (String) dataSnapshot.child("commento").getValue();
                             // notification
-                            Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
+                            Intent notificationIntent = new Intent();
                             PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                     PendingIntent.FLAG_UPDATE_CURRENT);
                             android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
