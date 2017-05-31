@@ -156,9 +156,9 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
 
                 if(itemid == R.id.continue_reg){
 
-                    if(username.equals("") || username.equals(null) || username.length()>16 || username.length()<8 || username.isEmpty()){
+                    if(username.equals("") || username.equals(null) || username.length()>16 || username.length()<5 || username.isEmpty()){
                         username_edt.requestFocus();
-                        username_edt.setError("You do not insert a valid username. Username must be between 8 and 16 characters");
+                        username_edt.setError("You do not insert a valid username. Username must be between 5 and 16 characters");
                         return false;
                     }
 
@@ -193,7 +193,7 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                         uploadTask.addOnFailureListener(new OnFailureListener() {
                             @Override
                             public void onFailure(@NonNull Exception exception) {
-                                Log.d("Error_mio",exception.getMessage());
+
                                 progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
                                 final DatabaseReference users2 = database.getReference("users_prova");
                                 final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix,null );

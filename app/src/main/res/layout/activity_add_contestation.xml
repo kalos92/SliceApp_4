@@ -87,7 +87,7 @@
                         android:hint="First comment"
                         android:textColor="@color/text"
                         android:textColorHint="@color/text"
-                        android:inputType="textPassword"
+                        android:inputType="text"
                         android:maxLines="1" />
 
                 </android.support.design.widget.TextInputLayout>
