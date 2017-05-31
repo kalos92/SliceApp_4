@@ -130,7 +130,6 @@ public class List_Pager_Act extends AppCompatActivity {
             return mFragmentTitleList.get(position);
         }
     }
-
     private void setupTabIcons() {
 
         TextView tabOne = (TextView) LayoutInflater.from(this).inflate(R.layout.custom_tab, null);
