@@ -136,6 +136,10 @@ public class CommentsActivity extends AppCompatActivity {
                 commentRef.setValue(commento);
                 comment.getText().clear();
 
+                // aggiungere il commento anche sotto la spesa
+                DatabaseReference expenseComments = databaseRef.child("groups_prova").child("spese").child(expenseID).child("contestazioni").child(contestationID).child("commenti");
+                expenseComments.setValue(commento);
+
                 databaseRef.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {

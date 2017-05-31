@@ -33,13 +33,14 @@ public class FirebaseBackgroundService extends Service {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private ChildEventListener groupsListener;
-    private Long lastTimestampGroup = System.currentTimeMillis();
-    private Long lastTimestampExpense = System.currentTimeMillis();
     private Map<String, List<String>> groupsExpenses = new HashMap<String, List<String>>();
     private ArrayList <String> groupsID = new ArrayList<String>();
     private SharedPreferences sharedPref;
-    private Long lastTimestampComment = System.currentTimeMillis();
-    private Long lastTimestampContestation = System.currentTimeMillis();
+    private SharedPreferences.Editor prefEditor;
+    private Long lastTimestampGroup; //= System.currentTimeMillis();
+    private Long lastTimestampExpense;// = System.currentTimeMillis();
+    private Long lastTimestampContestation;// = System.currentTimeMillis();
+    private Long lastTimestampComment;// = System.currentTimeMillis();
 
     @Nullable
     @Override
@@ -52,6 +53,39 @@ public class FirebaseBackgroundService extends Service {
         super.onCreate();
 
         sharedPref= getSharedPreferences("data",MODE_PRIVATE);
+
+
+        lastTimestampGroup = sharedPref.getLong("lastTimestampGroup", 0);
+        System.out.println("lastTimestampGroup" + lastTimestampGroup);
+        if(lastTimestampGroup == 0) {
+            lastTimestampGroup = System.currentTimeMillis();
+            prefEditor = sharedPref.edit();
+            prefEditor.putLong("lastTimestampGroup", lastTimestampGroup);
+            prefEditor.commit();
+        }
+        lastTimestampExpense = sharedPref.getLong("lastTimestampExpense", 0);
+        if(lastTimestampExpense == 0){
+            lastTimestampExpense = System.currentTimeMillis();
+            prefEditor = sharedPref.edit();
+            prefEditor.putLong("lastTimestampExpense", lastTimestampExpense);
+            prefEditor.commit();
+        }
+        lastTimestampContestation = sharedPref.getLong("lastTimestampContestation", 0);
+        if(lastTimestampContestation == 0){
+            lastTimestampContestation = System.currentTimeMillis();
+            prefEditor = sharedPref.edit();
+            prefEditor.putLong("lastTimestampContestation", lastTimestampContestation);
+            prefEditor.commit();
+        }
+
+        lastTimestampComment = sharedPref.getLong("lastTimestampComment", 0);
+        if(lastTimestampComment == 0){
+            lastTimestampComment = System.currentTimeMillis();
+            prefEditor = sharedPref.edit();
+            prefEditor.putLong("lastTimestampComment", lastTimestampComment);
+            prefEditor.commit();
+        }
+
         final String userTelephone = sharedPref.getString("telefono", null);
 
         DatabaseReference groupsRef = database.getReference().child("groups_prova");
@@ -64,32 +98,32 @@ public class FirebaseBackgroundService extends Service {
                 long contestationTimestamp = (long) dataSnapshot.child("timestamp").getValue();
 
                 if(contestationTimestamp > lastTimestampContestation) {
+                    if(!dataSnapshot.child("phoneNumber").getValue(String.class).equals(userTelephone)){
 
-                    lastTimestampContestation = contestationTimestamp;
-                    // get data to show in the notification
-                    String userName = (String) dataSnapshot.child("userName").getValue();
-                    String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
-                    String groupName = (String) dataSnapshot.child("groupName").getValue();
-                    String contestTitle = (String) dataSnapshot.child("title").getValue();
+                        lastTimestampContestation = contestationTimestamp;
+                        // get data to show in the notification
+                        String userName = (String) dataSnapshot.child("userName").getValue();
+                        String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
+                        String groupName = (String) dataSnapshot.child("groupName").getValue();
+                        String contestTitle = (String) dataSnapshot.child("title").getValue();
 
-                    // notification
-                    Intent notificationIntent = new Intent();
-                    //notificationIntent.putExtra("three", 2);
+                        // notification
+                        Intent notificationIntent = new Intent();
+                        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT);
+                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                .setSmallIcon(R.drawable.added_contestation)
+                                .setContentTitle(userName + " has contested expense " + expenseName + " of group " + groupName)
+                                .setContentText(contestTitle)
+                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                .setContentIntent(contentIntent);
+                        Notification noti = builder.build();
+                        noti.flags = Notification.FLAG_AUTO_CANCEL;
+                        // Add notification
+                        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                        manager.notify((int) System.currentTimeMillis(), noti);
+                    }
 
-                    PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT);
-                    android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                            .setSmallIcon(R.drawable.added_contestation)
-                            .setContentTitle(userName + " has contested expense " + expenseName + " of group " + groupName)
-                            .setContentText(contestTitle)
-                            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                            //.setPriority(NotificationCompat.PRIORITY_HIGH)
-                            .setContentIntent(contentIntent);
-                    Notification noti = builder.build();
-                    noti.flags = Notification.FLAG_AUTO_CANCEL;
-                    // Add notification
-                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    manager.notify((int) System.currentTimeMillis(), noti);
                 }
 
                 // add listener for comment
@@ -100,26 +134,30 @@ public class FirebaseBackgroundService extends Service {
                         long commentTimestamp = (long) dataSnapshot.child("timestamp").getValue();
 
                         if(commentTimestamp > lastTimestampComment) {
+                            if(!dataSnapshot.child("userID").getValue(String.class).equals(userTelephone)){
 
-                            lastTimestampComment = commentTimestamp;
-                            String userName = (String) dataSnapshot.child("userName").getValue();
-                            String commento = (String) dataSnapshot.child("commento").getValue();
-                            // notification
-                            Intent notificationIntent = new Intent();
-                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                    PendingIntent.FLAG_UPDATE_CURRENT);
-                            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                    .setSmallIcon(R.drawable.added_comment)
-                                    .setContentTitle(userName + " has commented a contestation over an expense") // mi servirebbe il nome della spesa :(
-                                    .setContentText(commento)
-                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                    //.setPriority(NotificationCompat.PRIORITY_HIGH)
-                                    .setContentIntent(contentIntent);
-                            Notification noti = builder.build();
-                            noti.flags = Notification.FLAG_AUTO_CANCEL;
-                            // Add notification
-                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                            manager.notify((int) System.currentTimeMillis(), noti);
+                                lastTimestampComment = commentTimestamp;
+                                String userName = (String) dataSnapshot.child("userName").getValue();
+                                String commento = (String) dataSnapshot.child("commento").getValue();
+
+                                // notification
+                                Intent notificationIntent = new Intent();
+                                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                        PendingIntent.FLAG_UPDATE_CURRENT);
+                                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                        .setSmallIcon(R.drawable.added_comment)
+                                        .setContentTitle(userName + " has commented a contestation over an expense") // mi servirebbe il nome della spesa :(
+                                        .setContentText(commento)
+                                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                        .setContentIntent(contentIntent);
+                                Notification noti = builder.build();
+                                noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                // Add notification
+                                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                manager.notify((int) System.currentTimeMillis(), noti);
+                            }
+
+
                         }
                     }
 
