@@ -256,7 +256,7 @@ public class FirebaseBackgroundService extends Service {
                                 String groupCreatorTelephone = (String) dataSnapshot.child("groupCreator").getValue();
                                 if(!groupCreatorTelephone.equals(userTelephone)){
                                     Intent notificationIntent = new Intent(getApplicationContext(), ExpensesActivity.class);
-                                    notificationIntent.putExtra("Gruppo",g);
+                                    notificationIntent.putExtra("Gruppo",g);//ciao
 
                                     PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                             PendingIntent.FLAG_UPDATE_CURRENT);
