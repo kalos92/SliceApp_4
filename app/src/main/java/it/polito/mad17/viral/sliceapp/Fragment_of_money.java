@@ -70,8 +70,8 @@ public class Fragment_of_money extends Fragment {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 gruppo = dataSnapshot.getValue(Gruppo.class);
                 gruppo.setUser(SliceAppDB.getUser());
-                Double credit=gruppo.getAllCredits();
-                Double debt=gruppo.getAllDebts();
+                Double credit=gruppo.obtainAllCredits();
+                Double debt=gruppo.obtainAllDebts();
                 if(debt.compareTo(credit)>0){
                     debt-=credit;
                     debt=debt*(-1);
@@ -105,8 +105,8 @@ public class Fragment_of_money extends Fragment {
 
         debts =(TextView) v.findViewById(R.id.debts_number);
         credits = (TextView) v.findViewById(R.id.credits_number);
-        Double credit=gruppo.getAllCredits();
-                Double debt=gruppo.getAllDebts();
+        Double credit=gruppo.obtainAllCredits();
+                Double debt=gruppo.obtainAllDebts();
    if(debt.compareTo(credit)>0){
         debt-=credit;
         debt=debt*(-1);
