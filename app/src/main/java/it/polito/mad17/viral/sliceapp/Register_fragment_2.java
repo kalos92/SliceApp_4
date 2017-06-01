@@ -142,6 +142,7 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
+                progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
                 int itemid = item.getItemId();
                 EditText username_edt= (EditText) v.findViewById(R.id.username_edt);
                 username = username_edt.getText().toString();
@@ -159,24 +160,28 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                     if(username.equals("") || username.equals(null) || username.length()>16 || username.length()<5 || username.isEmpty()){
                         username_edt.requestFocus();
                         username_edt.setError("You do not insert a valid username. Username must be between 5 and 16 characters");
+                        progressDialog.dismiss();
                         return false;
                     }
 
                     if(name.equals("") || name.equals(null) || name.length()>20 || name.isEmpty()){
                         name_edt.requestFocus();
                         name_edt.setError("You do not insert your name, or your name is longer than 20 characters");
+                        progressDialog.dismiss();
                         return false;
                     }
 
                     if(surname.equals("") || surname.equals(null) || surname.length()>20 || surname.isEmpty()){
                         surname_edt.requestFocus();
                         surname_edt.setError("You do not insert your surname, or your surname is longer than 20 characters");
+                        progressDialog.dismiss();
                         return false;
                     }
 
 
 
                     if(data.equals("null_$")) {
+                        progressDialog.dismiss();
                         Toast.makeText(getContext(),"You do not select your BirthDate", Toast.LENGTH_LONG).show();
                     return false;
                     }
@@ -194,7 +199,7 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                             @Override
                             public void onFailure(@NonNull Exception exception) {
 
-                                progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
+
                                 final DatabaseReference users2 = database.getReference("users_prova");
                                 final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix,null );
 
@@ -205,10 +210,10 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                                 users2.child(p1.getTelephone()).setValue(p1);
                                 DatabaseReference userRef = database.getReference().push().child(p1.getTelephone());
                                 userRef.child("contestazioni").setValue("");
-
-                                SliceAppDB.setUser(p1);
                                 progressDialog.dismiss();
-                                Toast.makeText(getContext(),"Registation successed!", Toast.LENGTH_SHORT).show();
+                                SliceAppDB.setUser(p1);
+
+                                Toast.makeText(getContext(),"Registation successed! Your Image was not saved, Sorry", Toast.LENGTH_SHORT).show();
 
                                 SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
                                 SharedPreferences.Editor prefEditor = sharedPref.edit();
@@ -227,7 +232,7 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                                 // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
                                 @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
-                                progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
+
                                 final DatabaseReference users2 = database.getReference("users_prova");
                                 final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix,downloadUrl);
 
@@ -257,7 +262,7 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
                         });}
 
                     else{
-                        progressDialog = ProgressDialog.show(getContext(), "", "In seconds you will be an user of SliceApp, have fun!");
+
                         final DatabaseReference users = database.getReference("users");
                         final DatabaseReference users2 = database.getReference("users_prova");
                         final Persona p = new Persona(name,surname,username, data, phonenum_good, password,1,prefix,null );
@@ -326,11 +331,10 @@ public class Register_fragment_2 extends Fragment implements DatePickerFragment.
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-
-
         outState.putSerializable("Data", data);
         outState.putSerializable("Password", password);
         outState.putParcelable("Propic",b);
+
 
     }
 

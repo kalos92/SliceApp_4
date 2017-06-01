@@ -157,11 +157,6 @@ public class Spesa implements Serializable {
         return data;
     }
 
-    public String getNome() {
-
-        return nome_spesa;
-    }
-
     public Double getImporto() {
 
         return importo;

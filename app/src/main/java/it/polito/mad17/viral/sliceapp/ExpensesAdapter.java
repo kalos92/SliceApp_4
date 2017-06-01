@@ -57,7 +57,7 @@ public class ExpensesAdapter extends ArrayAdapter<Spesa>  {
             holder = new GroupHolder();
             holder.imgIcon = (ImageView) row.findViewById(R.id.expIcon);
             TextView title = (TextView)row.findViewById(R.id.expName);
-            title.setText(data.get(position).getNome());
+            title.setText(data.get(position).getNome_spesa());
             holder.txtTitle = title;
             holder.imgIcon.setImageBitmap(b);
             TextView price = (TextView)row.findViewById(R.id.expPrice);
@@ -84,7 +84,7 @@ public class ExpensesAdapter extends ArrayAdapter<Spesa>  {
         }
 
         Spesa s1 = data.get(position);
-        holder.txtTitle.setText(s1.getNome());
+        holder.txtTitle.setText(s1.getNome_spesa());
         holder.imgIcon.setImageBitmap(b);
         holder.currency.setText("€");
         holder.price.setText(Double.toString(s1.getImporto()));

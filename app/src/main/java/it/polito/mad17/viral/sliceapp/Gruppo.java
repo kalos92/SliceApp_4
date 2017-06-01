@@ -109,24 +109,6 @@ public class Gruppo implements Serializable,Cloneable {
 
         public Spesa getSpesa(String expenseID){ return spese.get(expenseID); }
 
-        /*public Spesa AddSpesa_and_try_repay(String spesaId,Persona pagante,Policy policy,String nome_spesa, String data, Double importo){
-
-            Spesa spesa;
-            if(user.obtain_a_debt(getGroupID())==1){
-            Gestore gestore=new Gestore();
-            spesa= new Spesa(nome_spesa,data,policy,pagante,importo,this);
-            spesa.setExpenseID(spesaId);
-            spesa.setParti(gestore.Calculate_Credits_To_Buyer_With_Repaing(pagante,policy, spesa.getImporto(),partecipanti, partecipanti.size(),spese,user,this));
-                spesa.setDebiti_restituiti(gestore.getVecchi_dati_backup());
-            //metto il debito a tutti
-
-            spese.put(spesaId,spesa);
-
-            return spesa;}
-            else
-                return null;
-
-        }*/
 
 
     public Spesa AddSpesa(String spesaId,Persona pagante,Policy policy, String nome_spesa, String data, Double importo){
@@ -148,40 +130,9 @@ public class Gruppo implements Serializable,Cloneable {
     }
 
 
-    public void balance_one(String tel){
 
 
-
-       // for(String s : spese.keySet()){
-          //  if(spese.get)
-           // Spesa s2=spese.get(s);
-
-       //     s2.setFullypayed(true);
-
-         //   for(String num:partecipanti.keySet()) {
-           //     if(!num.equals(s2.getPagante().getTelephone())){
-             //       s2.getDivisioni().get(num).setHaPagato(true);
-
-
-               //     Double importo = dettaglio_bilancio.get(num).getImporto();
-
-                 //   partecipanti.get(s2.getPagante().getTelephone()).addTobalance_2(num+";"+getCurr().getChoosencurr(),(importo*-1),curr);
-                   // partecipanti.get(num).addTobalance_2(s2.getPagante().getTelephone()+";"+getCurr().getChoosencurr(),importo,curr);
-                //}}
-
-
-        //}
-    }
-
-    public void balance_all(){
-
-
-
-
-
-    }
-
-    public Double getAllDebts(){ //i debiti sono calcolati nelle spese che NON ho fatto io e devo ancora pagare
+    public Double obtainAllDebts(){ //i debiti sono calcolati nelle spese che NON ho fatto io e devo ancora pagare
         Double f= new Double(0);
         for(Spesa s: spese.values()){
             if(!s.getRemoved()){
@@ -194,7 +145,7 @@ public class Gruppo implements Serializable,Cloneable {
         return f;
     }
 
-    public Double getAllCredits(){  //i crediti sono calcolti nelle spese che HO fatto io e gli altri non mi hanno pagato
+    public Double obtainAllCredits(){  //i crediti sono calcolti nelle spese che HO fatto io e gli altri non mi hanno pagato
         Double f= new Double(0);
         for(Spesa s: spese.values()){
             if(!s.getRemoved()){

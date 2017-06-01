@@ -19,15 +19,17 @@ import java.util.List;
 public class LittleFragment3  extends Fragment {
 
     private View v;
-
     private Gruppo g;
     private ArrayList<Persona> persone = new ArrayList<>();
     private Policy p;
+    private NoBoxTextViewAdapter adapter;
 
-    GetPercentages_2 getPercentages2;
 
     public interface GetPercentages_2{
         public void getPercentages(Policy policy);
+    }
+    public interface getValues{
+        public void getValues(String[] values);
     }
 
     public LittleFragment3() {
@@ -39,6 +41,7 @@ public class LittleFragment3  extends Fragment {
         LittleFragment3 fragment = new LittleFragment3();
         Bundle args = new Bundle();
         args.putSerializable("Gruppo", persone);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,8 +49,16 @@ public class LittleFragment3  extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
         if(getArguments()!= null){
             this.persone= (ArrayList<Persona>) getArguments().getSerializable("Gruppo");
+
+        }
+        if (savedInstanceState != null) {
+            String[] values = savedInstanceState.getStringArray("myKey");
+            if (values != null) {
+                adapter = new NoBoxTextViewAdapter(v.getContext(), R.layout.all_the_same_row, persone,values);
+            }
         }
 
     }
@@ -56,18 +67,15 @@ public class LittleFragment3  extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v= inflater.inflate(R.layout.fragment_all_the_same, container, false);
-
+        setRetainInstance(true);
         final ListView list = (ListView) v.findViewById(R.id.all_the_same1);
 
         final GetPercentages_2 getPercentages= (GetPercentages_2) getActivity();
+        final getValues getValues=(LittleFragment3.getValues) getActivity();
 
-        final NoBoxTextViewAdapter adapter = new NoBoxTextViewAdapter(v.getContext(), R.layout.all_the_same_row, persone);
+        if(adapter==null)
+        adapter = new NoBoxTextViewAdapter(v.getContext(), R.layout.all_the_same_row, persone);
         list.setAdapter(adapter);
-
-
-
-
-
 
         Button b = (Button) v.findViewById(R.id.save3);
         b.setOnClickListener(new View.OnClickListener() {
@@ -77,11 +85,13 @@ public class LittleFragment3  extends Fragment {
                 v.setFocusableInTouchMode(true);
                 v.requestFocus();
 
+
+
                 if(adapter.getPercentages()!=null)
                     p = new Policy(adapter.getPercentages());
                 else {
                     p = null;
-                    Toast.makeText(getContext(),"You have insered an invad policy",Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(),"You have entered an invalid policy",Toast.LENGTH_LONG).show();
                     return;
                 }
                 if(getPercentages!=null && p!=null){
@@ -99,4 +109,11 @@ public class LittleFragment3  extends Fragment {
         return v;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        String[] values = adapter.getValues();
+        outState.putStringArray("myKey", values);
+
+    }
 }

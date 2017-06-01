@@ -12,6 +12,7 @@ import android.widget.EditText;
 
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class NoBoxTextViewAdapter extends ArrayAdapter<Persona> {
     private List<Persona> memberNames;
     private Context context;
     private HashMap<String,Double> percentages_map = new HashMap<String,Double>();
+    private String[] valori= null;
+    private String[] valori_2=null;
 
 
 
@@ -36,11 +39,32 @@ public class NoBoxTextViewAdapter extends ArrayAdapter<Persona> {
             percentages_map.put(p.getTelephone(),0d);
         }
 
+        valori = new String[memberNames.size()];
+        for(int i =0;i<memberNames.size();i++){
+            valori[i]=new String("0");
+        }
 
         this.context = context;
         this.layoutResourceId=layoutResourceId;
 
     }
+    public NoBoxTextViewAdapter(Context context, int layoutResourceId, List<Persona> memberNames,String[] valori) {
+        super(context,layoutResourceId,memberNames);
+        this.memberNames = memberNames;
+        for(Persona p: memberNames){
+            percentages_map.put(p.getTelephone(),0d);
+        }
+
+        valori = new String[memberNames.size()];
+        for(int i =0;i<memberNames.size();i++){
+            valori[i]=new String("0");
+        }
+        this.valori_2=valori;
+        this.context = context;
+        this.layoutResourceId=layoutResourceId;
+
+    }
+
 
 
 
@@ -68,7 +92,9 @@ public class NoBoxTextViewAdapter extends ArrayAdapter<Persona> {
         }
         else holder = (PayerHolder) row.getTag();
 
-
+        if(valori_2!=null){
+            holder.percentage.setText(valori_2[position]);
+        }
 
         final PayerHolder h = holder;
         final Persona p2 = p;
@@ -93,11 +119,13 @@ public class NoBoxTextViewAdapter extends ArrayAdapter<Persona> {
             @Override
             public void afterTextChanged(Editable s){
                 String st = h.percentage.getText().toString();
-                if(!st.equals(""))
+                if(!st.equals("")){
                     percentages_map.put(p2.getTelephone(),Double.parseDouble(st));
-                else
-                    percentages_map.put(p2.getTelephone(),0d);
-
+                    valori[position]=st;}
+                else {
+                    percentages_map.put(p2.getTelephone(), 0d);
+                    valori[position]=new String("0");
+                }
             }
         });
 
@@ -156,6 +184,10 @@ public class NoBoxTextViewAdapter extends ArrayAdapter<Persona> {
     public int getItemViewType(int position) {
 
         return position;
+    }
+
+    public String[] getValues(){
+        return valori;
     }
 
 }

@@ -19,27 +19,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
-import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-
 import dmax.dialog.SpotsDialog;
 
 import static android.content.Context.MODE_PRIVATE;
@@ -175,6 +164,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 final DatabaseReference groups_prova_2 = database.getReference().child("groups_prova");
 
 
+
                 if(b!=null && uri==null) {                                              //SOLO IMG
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
@@ -223,9 +213,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                             for(Persona p: partecipanti){
 
-                                if(!p.getTelephone().equals(user.getTelephone()))
-                                    p.plusOneUnread(gruppo.getGroupID());
-
                                 user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
                                 p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
                                 p.refreshTimeOfGroup(gruppo.getGroupID());
@@ -237,6 +224,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                             //Devo aggiornare il bilancio del gruppo e il bilancio totale su amici
 
+                            final Spesa s2=s1;
                             final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID()).child("spese").child(s1.getExpenseID());
                             Gson gson = new Gson();
                             Spesa g1 = gson.fromJson(gson.toJson(s1),Spesa.class);
@@ -244,32 +232,10 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                             final DatabaseReference users_prova = database.getReference().child("users_prova");
                             for(final Persona p: partecipanti) {
-                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
-                                    @Override
-                                    public Transaction.Result doTransaction(MutableData mutableData) {
+                                String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
+                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
+                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+"has bought"+s2.getNome_spesa());
 
-                                        Dettagli_Gruppo dg = mutableData.getValue(Dettagli_Gruppo.class);
-
-                                        if (dg == null) {
-
-                                            return Transaction.success(mutableData);
-                                        }
-                                        int i = dg.getUnread();
-                                        Gson gson = new Gson();
-                                        Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
-                                        i++;
-                                        p1.setUnread(i);
-                                        mutableData.setValue(p1);
-                                        SliceAppDB.setUser(user);
-
-                                        return Transaction.success(mutableData);
-                                    }
-
-                                    @Override
-                                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-                                    }
-                                });
                                 //Aggiornamento di amici che posso fare senza transaction
                                 String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
                                 if(!p.getTelephone().equals(s1.getPagante().getTelephone()))
@@ -352,8 +318,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                             for(Persona p: partecipanti){
 
-                                if(!p.getTelephone().equals(user.getTelephone()))
-                                    p.plusOneUnread(gruppo.getGroupID());
+
 
                                 user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
                                 p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
@@ -370,36 +335,13 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             Gson gson = new Gson();
                             Spesa g1 = gson.fromJson(gson.toJson(s1),Spesa.class);
                             groups_prova.setValue(g1);
-
+                            final Spesa s2=s1;
                             final DatabaseReference users_prova = database.getReference().child("users_prova");
 
                             for(final Persona p: partecipanti) {
-                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
-                                    @Override
-                                    public Transaction.Result doTransaction(MutableData mutableData) {
-
-                                        Dettagli_Gruppo dg = mutableData.getValue(Dettagli_Gruppo.class);
-
-                                        if (dg == null) {
-
-                                            return Transaction.success(mutableData);
-                                        }
-                                        int i = dg.getUnread();
-                                        Gson gson = new Gson();
-                                        Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
-                                        i++;
-                                        p1.setUnread(i);
-                                        mutableData.setValue(p1);
-                                        SliceAppDB.setUser(user);
-
-                                        return Transaction.success(mutableData);
-                                    }
-
-                                    @Override
-                                    public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-                                    }
-                                });
+                                String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
+                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
+                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+"has bought"+s2.getNome_spesa());
                                 //Aggiornamento di amici che posso fare senza transaction
                                 String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
                                 if(!p.getTelephone().equals(s1.getPagante().getTelephone()))
@@ -454,7 +396,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     data_s=day+"/"+month+"/"+year;
                 }
                 // aggiungo key della spesa
-                    Spesa s1 = gruppo.AddSpesa(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
+                    final Spesa s1 = gruppo.AddSpesa(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
                     s1.setValuta(gruppo.getCurr().getSymbol());
                     s1.setDigit(gruppo.getCurr().getDigits());
                     s1.setCat_string(cat);
@@ -465,8 +407,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                     for(Persona p: partecipanti){
 
-                        if(!p.getTelephone().equals(user.getTelephone()))
-                            p.plusOneUnread(gruppo.getGroupID());
+
 
                         user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
                         p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
@@ -487,32 +428,9 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     final DatabaseReference users_prova = database.getReference().child("users_prova");
 
                     for(final Persona p: partecipanti) {
-                    users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
-                        @Override
-                        public Transaction.Result doTransaction(MutableData mutableData) {
-
-                            Dettagli_Gruppo dg = mutableData.getValue(Dettagli_Gruppo.class);
-
-                            if (dg == null) {
-
-                                return Transaction.success(mutableData);
-                            }
-                            int i = dg.getUnread();
-                            Gson gson = new Gson();
-                            Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
-                            i++;
-                            p1.setUnread(i);
-                            mutableData.setValue(p1);
-                            SliceAppDB.setUser(user);
-
-                            return Transaction.success(mutableData);
-                        }
-
-                        @Override
-                        public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-                        }
-                    });
+                        String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
+                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
+                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+"has bought"+s1.getNome_spesa());
                     //Aggiornamento di amici che posso fare senza transaction
                     String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
                     if(!p.getTelephone().equals(s1.getPagante().getTelephone())) {
@@ -542,7 +460,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                     String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
                     groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").child(key_s).setValue(s1.getImporto());
-                   // dialog.dismiss();
+                    dialog.dismiss();
                     getActivity().startActivity(intent);
                     getActivity().finish();
                 }// FINE NIENTE
@@ -593,10 +511,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
                             for(Persona p: partecipanti){
-
-                                if(!p.getTelephone().equals(user.getTelephone()))
-                                    p.plusOneUnread(gruppo.getGroupID());
-
                                 user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
                                 p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
                                 p.refreshTimeOfGroup(gruppo.getGroupID());
@@ -628,32 +542,9 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                                     final DatabaseReference users_prova = database.getReference().child("users_prova");
 
                                     for(final Persona p: partecipanti) {
-                                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).runTransaction(new Transaction.Handler() {
-                                            @Override
-                                            public Transaction.Result doTransaction(MutableData mutableData) {
-
-                                                Dettagli_Gruppo dg = mutableData.getValue(Dettagli_Gruppo.class);
-
-                                                if (dg == null) {
-
-                                                    return Transaction.success(mutableData);
-                                                }
-                                                int i = dg.getUnread();
-                                                Gson gson = new Gson();
-                                                Dettagli_Gruppo p1 = gson.fromJson(gson.toJson(p.getGruppi_partecipo().get(groupID)), Dettagli_Gruppo.class);
-                                                i++;
-                                                p1.setUnread(i);
-                                                mutableData.setValue(p1);
-                                                SliceAppDB.setUser(user);
-
-                                                return Transaction.success(mutableData);
-                                            }
-
-                                            @Override
-                                            public void onComplete(DatabaseError databaseError, boolean b, DataSnapshot dataSnapshot) {
-
-                                            }
-                                        });
+                                        String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
+                                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
+                                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+"has bought"+s2.getNome_spesa());
                                         //Aggiornamento di amici che posso fare senza transaction
                                         String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
                                         if(!p.getTelephone().equals(s2.getPagante().getTelephone()))

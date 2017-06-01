@@ -36,7 +36,7 @@ public class SliceAppDB implements Serializable {
     // Setters
     public static void setUser(Persona p){
 
-        user_ref.child(p.getTelephone()).addValueEventListener(new ValueEventListener() {
+        user_ref.child(p.getTelephone()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 user = dataSnapshot.getValue(Persona.class);
@@ -61,13 +61,9 @@ public class SliceAppDB implements Serializable {
 
         referenze.put(group_ref.child(ID), group_ref.addValueEventListener(new ListenGroupID(ID)));
         listeners.put(ID,g);
-
-
-
-
     }
 
-    public static Gruppo  getGroup(String chiave) {
+    public static Gruppo getGroup(String chiave) {
         Gruppo g =listeners.get(chiave);
         if(g!=null)
             g.setUser(user);
@@ -79,11 +75,9 @@ public class SliceAppDB implements Serializable {
     public static class ListenGroupID implements ValueEventListener{
         String ID;
 
-
         public ListenGroupID(String ID){
             this.ID=ID;
         };
-
 
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {

@@ -171,7 +171,7 @@ listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpen
         });
         }
         Toolbar t = (Toolbar) findViewById(R.id.expenseToolbar);
-        t.setTitle(s.getNome());
+        t.setTitle(s.getNome_spesa());
 
         if(s.getContested()==true && s.getFullypayed().values().size()!=gruppo.getN_partecipanti()-1){
             CardView cd = (CardView) findViewById(R.id.status_card);
@@ -302,7 +302,7 @@ listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpen
                     }
                     String id_remove = s.getExpenseID();
                     Persona user = SliceAppDB.getUser();
-                    Spesa s_r =gruppo.addFake(id_remove,s.getNome(),s.getImporto(),user.getName()+" "+user.getSurname(),s.getDigit(),s.getValuta());
+                    Spesa s_r =gruppo.addFake(id_remove,s.getNome_spesa(),s.getImporto(),user.getName()+" "+user.getSurname(),s.getDigit(),s.getValuta());
 
 
                     Gson gson = new Gson();
@@ -330,7 +330,7 @@ listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpen
             public void onClick(View v) {
                 if(s.getUri()!=null){
 
-                    new downloadPDF(getBaseContext()).execute(s.getUri(),s.getNome());
+                    new downloadPDF(getBaseContext()).execute(s.getUri(),s.getNome_spesa());
                 }
                 else
                     Toast.makeText(getBaseContext(),"No PDF was uploaded", Toast.LENGTH_LONG).show();

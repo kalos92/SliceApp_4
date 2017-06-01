@@ -113,7 +113,9 @@ public class Persona implements Serializable {
 
 
     public void AddToGroup(Gruppo gruppo,int pos,int img){
-        gruppi_partecipo.put(gruppo.getGroupID(),new Dettagli_Gruppo(gruppo.getGroupName(),gruppo.getGroupID(),0,gruppo.getCurr().getSymbol()+" - "+gruppo.getCurr().getChoosencurr(), gruppo.getUri()));
+        HashMap<String,Integer> fakemap = new HashMap<String, Integer>();
+        fakemap.put("STARTING POINT",0);
+        gruppi_partecipo.put(gruppo.getGroupID(),new Dettagli_Gruppo(gruppo.getGroupName(),gruppo.getGroupID(),fakemap,gruppo.getCurr().getSymbol()+" - "+gruppo.getCurr().getChoosencurr(), gruppo.getUri()));
         posizione_gruppi.put(gruppo.getGroupID(), new Integer(pos));
         dove_ho_debito.put(gruppo.getGroupID(),new Integer(0));
     }
@@ -121,13 +123,6 @@ public class Persona implements Serializable {
     public void setDove_Ho_debito(Gruppo g , Integer i) {
         this.dove_ho_debito.put(g.getGroupID(),i);
     }
-
-    public Drawable getProPic(Context context){
-        Drawable d = context.getResources().getDrawable( R.drawable.clubbing);
-        return d;
-    }
-
-
 
 
     public HashMap<String, Integer> getPosizione_gruppi() {
@@ -228,15 +223,15 @@ public class Persona implements Serializable {
         gruppi_partecipo.put(groupID,dg);
     }
 
-    public void plusOneUnread(String groupID) {
+    public void plusOneUnread(String groupID,String key) {
         Dettagli_Gruppo dg = gruppi_partecipo.get(groupID);
-        dg.plus_unread();
+        dg.plus_unread(key);
         gruppi_partecipo.put(groupID,dg);
     }
 
-    public void resetUnread(String groupID) {
+    public void resetUnread(String groupID,String key) {
         Dettagli_Gruppo dg = gruppi_partecipo.get(groupID);
-        dg.reset_unread();
+        dg.reset_unread(key);
         gruppi_partecipo.put(groupID,dg);
     }
 

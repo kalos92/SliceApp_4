@@ -65,13 +65,13 @@ public class GroupsRecyclerAdapter extends FirebaseRecyclerAdapter<Dettagli_Grup
         else
             Picasso.with(context).load(R.drawable.img_gruppi).transform(new RoundedTransformation(100, 1)).into(viewHolder.img);
 
-        if (model.getUnread() <= 99 && model.getUnread() > 0) {
+        if (model.calculate() <= 99 && model.calculate() > 0) {
             viewHolder.unread.setVisibility(View.VISIBLE);
             viewHolder.unread.setText(String.valueOf(model.getUnread()));
-        } else if (model.getUnread() > 99) {
+        } else if (model.calculate() > 99) {
             viewHolder.unread.setVisibility(View.VISIBLE);
             viewHolder.unread.setText("+99");
-        } else if (model.getUnread() == 0) {
+        } else if (model.calculate() == 0) {
             viewHolder.unread.setVisibility(View.GONE);
         }
 

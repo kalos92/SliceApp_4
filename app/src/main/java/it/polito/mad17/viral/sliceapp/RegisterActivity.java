@@ -3,6 +3,8 @@ package it.polito.mad17.viral.sliceapp;
 import android.app.Activity;
 import android.app.ActivityManager;
 import java.util.GregorianCalendar;
+
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -86,6 +88,8 @@ public class RegisterActivity extends AppCompatActivity implements Register_frag
 
         else if(f instanceof Register_fragment_1) {
             super.onBackPressed();
+            Intent i = new Intent(this, LoginActivity.class);
+            startActivity(i);
             finish();
             return;
         }

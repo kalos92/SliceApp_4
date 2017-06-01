@@ -46,6 +46,7 @@ import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
@@ -64,6 +65,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     private Boolean isFabOpen = false;
     private FloatingActionButton fab,fab1,fab2;
     private Animation fab_open,fab_close,rotate_forward,rotate_backward;
+    private Dettagli_Gruppo unread = new Dettagli_Gruppo();
 
     //private TextView tv1,tv2,tv3;
 
@@ -82,9 +84,8 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         }
         user = SliceAppDB.getUser();
         ID=gruppo.getGroupID();
-        user.resetUnread(gruppo.getGroupID());
+
         SliceAppDB.setUser_1(user);
-        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
         fm= getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -114,10 +115,24 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
                 t.setNavigationOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        user.resetUnread(gruppo.getGroupID());
-                        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-                        groups_ref.child(gruppo.getGroupID()).child("partecipanti").child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-                        finish();
+
+                        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+                                unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
+                                Integer i = unread.calculate();
+                                String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
+                                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
+                                finish();
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+
+
                     }
                 });
                 if(gruppo_2.getUri()!=null) {
@@ -140,7 +155,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         t= (Toolbar)findViewById(R.id.expenseToolbar);
         ImageView img = (ImageView) findViewById(R.id.show_GroupIcon);
         img.setImageResource(R.drawable.default_img);
-       TextView tv1 = (TextView) findViewById(R.id.show_namegroup);
+        TextView tv1 = (TextView) findViewById(R.id.show_namegroup);
         TextView tv2 = (TextView) findViewById(R.id.show_welcome);
         tv1.setText(" "+gruppo.getGroupName());
         tv2.setText(" Welcome: "+user.getUsername());
@@ -160,10 +175,22 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         t.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                user.resetUnread(gruppo.getGroupID());
-                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-                groups_ref.child(gruppo.getGroupID()).child("partecipanti").child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-                finish();
+
+                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
+                        Integer i = unread.calculate();
+                        String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
+                        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
+                        finish();
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
         });
 
@@ -227,31 +254,30 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-
-        // What to do when user press the toolbar back button
-        Toolbar toolbar = (Toolbar) findViewById(R.id.expenseToolbar);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                user.resetUnread(gruppo.getGroupID());
-                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-                groups_ref.child(gruppo.getGroupID()).child("partecipanti").child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-                finish();
-            }
-        });
-
-
-
     }
 
     @Override
     public void onBackPressed()
     {
-        user.resetUnread(gruppo.getGroupID());
-        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-        groups_ref.child(gruppo.getGroupID()).child("partecipanti").child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).setValue(user.obtainDettaglio(gruppo.getGroupID()));
-        finish();
+        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
+                Integer i = unread.calculate();
+                String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
+                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
+                finish();
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
+
+
+
 
     public void animateFAB(){
 
