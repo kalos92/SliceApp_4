@@ -66,6 +66,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     private FloatingActionButton fab,fab1,fab2;
     private Animation fab_open,fab_close,rotate_forward,rotate_backward;
     private Dettagli_Gruppo unread = new Dettagli_Gruppo();
+    private  ValueEventListener listener;
 
     //private TextView tv1,tv2,tv3;
 
@@ -94,7 +95,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         ft.commit();
         t= (Toolbar)findViewById(R.id.expenseToolbar);
 
-        groups_ref.child(ID).addValueEventListener(new ValueEventListener() {
+        listener = groups_ref.child(ID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 gruppo_2 = dataSnapshot.getValue(Gruppo.class);
@@ -262,6 +263,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                groups_ref.child(ID).removeEventListener(listener);
                 unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
                 Integer i = unread.calculate();
                 String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
@@ -318,6 +320,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
                 animateFAB();
                 break;
             case R.id.fab1:
+                groups_ref.child(ID).removeEventListener(listener);
                 Intent appInfo= new Intent(ExpensesActivity.this, AddExpenseActivity.class);
                 appInfo.putExtra("Gruppo",gruppo);
                 ExpensesActivity.this.startActivity(appInfo);

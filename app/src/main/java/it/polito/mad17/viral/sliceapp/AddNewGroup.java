@@ -165,7 +165,7 @@ public class AddNewGroup extends AppCompatActivity {
                     Persona p = new Persona(name,null,null,null,phoneNumber,null,0,"+39",null);
                     if(!p.getTelephone().equals(SliceAppDB.getUser().getTelephone()))
                             contactsMap.put(phoneNumber,p);
-                    Log.d("Phone", phoneNumber);
+
                     //  Log.d("Name", name);
                 }
                 phones.close();
@@ -291,7 +291,11 @@ Collections.sort(listP, new Comparator<Persona>() {
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(this,List_Pager_Act.class);
+        startActivity(i);
+        finish();
+    }
 }

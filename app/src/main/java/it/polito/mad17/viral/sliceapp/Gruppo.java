@@ -20,50 +20,29 @@ import java.util.HashMap;
 
 public class Gruppo implements Serializable,Cloneable {
 
-    @Expose
+
     private String groupName;
-    @Expose
     private int n_partecipanti;
-    @Expose
     private HashMap<String, Persona> partecipanti = new HashMap<String,Persona>();
-    @Expose
     private HashMap<String,String> partecipanti_numero_cnome = new HashMap<String,String>();
-    @Expose
     private Persona user;
-    @Expose
     private HashMap<String, Spesa> spese = new HashMap <String, Spesa>();
-    @Expose
     private String groupID;
-    @Expose
     private Policy policy;
-    @Expose
     private int img;
-    @Expose
     private long c;
-    @Expose
     private String uri;
-    @Expose
-    private mCurrency curr;
-    @Expose
-    private String GroupCreator = SliceAppDB.getUser().getTelephone();
-
-    public HashMap<String, Riga_bilancio_Gruppo> getDettaglio_bilancio() {
-        return dettaglio_bilancio;
-    }
-
-    public void setDettaglio_bilancio(HashMap<String, Riga_bilancio_Gruppo> dettaglio_bilancio) {
-        this.dettaglio_bilancio = dettaglio_bilancio;
-    }
-
-    @Expose
     private HashMap<String,Riga_bilancio_Gruppo> dettaglio_bilancio = new HashMap<String,Riga_bilancio_Gruppo>();
+    private mCurrency curr;
+    private HashMap<String, Boolean> contested = new HashMap<>();
+    private String GroupCreator;
 
 
     public Gruppo(){
         // needed for FirebaseListAdapter
     }
 
-    public Gruppo(String groupID, String groupName, int n, final ArrayList<Persona> partecipanti_array, Policy policy, mCurrency curr2, Uri uri){
+    public Gruppo(String groupID, String groupName, int n, final ArrayList<Persona> partecipanti_array, Policy policy, mCurrency curr2, Uri uri,String groupCreator){
         this.groupID=groupID;
         this.groupName=groupName;
         this.n_partecipanti=n;
@@ -76,7 +55,7 @@ public class Gruppo implements Serializable,Cloneable {
         uri=null;
         img= R.drawable.default_img;
         setImg(img);
-
+        this.GroupCreator=groupCreator;
 
         for(final Persona p: partecipanti_array) {
             p.initiliazeBalance(partecipanti_array,curr,p);
@@ -89,6 +68,7 @@ public class Gruppo implements Serializable,Cloneable {
         }
 
         c = Calendar.getInstance().getTimeInMillis();
+        contested.put("STARTING POINT", false);
     }
 
 
@@ -130,8 +110,6 @@ public class Gruppo implements Serializable,Cloneable {
     }
 
 
-
-
     public Double obtainAllDebts(){ //i debiti sono calcolati nelle spese che NON ho fatto io e devo ancora pagare
         Double f= new Double(0);
         for(Spesa s: spese.values()){
@@ -166,9 +144,6 @@ public class Gruppo implements Serializable,Cloneable {
         ArrayList<Spesa> spese_arr = new ArrayList<Spesa>(spese.values());
         return spese_arr;
     }
-
-
-
 
     public String getGroupName() {
         return groupName;
@@ -272,9 +247,6 @@ public class Gruppo implements Serializable,Cloneable {
         GroupCreator = groupCreator;
     }
 
-    //public HashMap<String, Persona> getPartecipanti() {
-     //   return partecipanti;
-    //}
 
     public mCurrency getCurr() {
         return curr;
@@ -303,6 +275,23 @@ public class Gruppo implements Serializable,Cloneable {
 
     public Riga_bilancio_Gruppo obtainbalanceofuser(String telephone) {
         return dettaglio_bilancio.get(telephone);
+    }
+
+
+    public HashMap<String, Boolean> getContested() {
+        return contested;
+    }
+
+    public void setContested(HashMap<String, Boolean> contested) {
+        this.contested = contested;
+    }
+
+    public HashMap<String, Riga_bilancio_Gruppo> getDettaglio_bilancio() {
+        return dettaglio_bilancio;
+    }
+
+    public void setDettaglio_bilancio(HashMap<String, Riga_bilancio_Gruppo> dettaglio_bilancio) {
+        this.dettaglio_bilancio = dettaglio_bilancio;
     }
 }
 

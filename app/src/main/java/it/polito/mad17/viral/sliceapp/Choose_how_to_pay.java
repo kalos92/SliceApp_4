@@ -153,7 +153,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final SpotsDialog dialog = new SpotsDialog(getContext(),"Saving Expense");
+                final SpotsDialog dialog = new SpotsDialog(v.getContext(),R.style.Custom);
                 dialog.show();
 
 
@@ -211,13 +211,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                             final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
-                            for(Persona p: partecipanti){
 
-                                user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
-                                p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
-                                p.refreshTimeOfGroup(gruppo.getGroupID());
-
-                            }
 
 
                             //Fino a qui ho solo fatto roba in locale
@@ -234,7 +228,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             for(final Persona p: partecipanti) {
                                 String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
                                 users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
-                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+"has bought"+s2.getNome_spesa());
+                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+" has bought " +s2.getNome_spesa());
 
                                 //Aggiornamento di amici che posso fare senza transaction
                                 String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
@@ -316,17 +310,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                             final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
-                            for(Persona p: partecipanti){
-
-
-
-                                user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
-                                p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
-                                p.refreshTimeOfGroup(gruppo.getGroupID());
-
-                            }
-
-
                             //Fino a qui ho solo fatto roba in locale
 
                             //Devo aggiornare il bilancio del gruppo e il bilancio totale su amici
@@ -341,7 +324,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             for(final Persona p: partecipanti) {
                                 String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
                                 users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
-                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+"has bought"+s2.getNome_spesa());
+                                users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+" has bought "+s2.getNome_spesa());
                                 //Aggiornamento di amici che posso fare senza transaction
                                 String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
                                 if(!p.getTelephone().equals(s1.getPagante().getTelephone()))
@@ -405,18 +388,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                     final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
-                    for(Persona p: partecipanti){
 
-
-
-                        user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
-                        p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
-                        p.refreshTimeOfGroup(gruppo.getGroupID());
-
-            }
-
-
-            //Fino a qui ho solo fatto roba in locale
 
                     //Devo aggiornare il bilancio del gruppo e il bilancio totale su amici
 
@@ -430,7 +402,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     for(final Persona p: partecipanti) {
                         String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
                         users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
-                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+"has bought"+s1.getNome_spesa());
+                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+" has bought " +s1.getNome_spesa());
                     //Aggiornamento di amici che posso fare senza transaction
                     String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
                     if(!p.getTelephone().equals(s1.getPagante().getTelephone())) {
@@ -510,13 +482,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                             final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
-                            for(Persona p: partecipanti){
-                                user.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa()); //Why? non capisco ma funziona -> niente domande
-                                p.updateLast(gruppo.getGroupID(),buyer.getName(),s1.getNome_spesa());
-                                p.refreshTimeOfGroup(gruppo.getGroupID());
-
-                            }
-
 
                             StorageReference images_2 = storageReference.getReference().child(expenseID+"PDF");
                             UploadTask uploadTask = images_2.putFile(uri);
@@ -544,7 +509,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                                     for(final Persona p: partecipanti) {
                                         String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
                                         users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
-                                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+"has bought"+s2.getNome_spesa());
+                                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+" has bought "+s2.getNome_spesa());
                                         //Aggiornamento di amici che posso fare senza transaction
                                         String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
                                         if(!p.getTelephone().equals(s2.getPagante().getTelephone()))
@@ -590,7 +555,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                     });
                 }
-                dialog.dismiss();
+
                 getActivity().finish();
             }
         });

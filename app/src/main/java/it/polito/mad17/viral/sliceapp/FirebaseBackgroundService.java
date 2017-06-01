@@ -56,7 +56,7 @@ public class FirebaseBackgroundService extends Service {
 
 
         lastTimestampGroup = sharedPref.getLong("lastTimestampGroup", 0);
-        System.out.println("lastTimestampGroup" + lastTimestampGroup);
+
         if(lastTimestampGroup == 0) {
             lastTimestampGroup = System.currentTimeMillis();
             prefEditor = sharedPref.edit();
@@ -210,7 +210,7 @@ public class FirebaseBackgroundService extends Service {
         groupsListener = new ChildEventListener() {
             @Override
             public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildAdded " + dataSnapshot);
+
 
                 // riempio ed eventualmente sovrascrivo la hashMap
                 String groupID = dataSnapshot.getKey();
@@ -288,7 +288,7 @@ public class FirebaseBackgroundService extends Service {
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                System.out.println("onChildChanged " + dataSnapshot);
+
 
                 String groupId = dataSnapshot.getKey();
                 String gName = (String) dataSnapshot.child("groupName").getValue();

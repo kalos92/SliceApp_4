@@ -151,7 +151,7 @@ public class Register_fragment_1 extends Fragment {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 int id = item.getItemId();
-                Log.d("Menu", "ci sono io qui");
+
 
                 if (id == R.id.continue_reg) {
                     bundle_2 = new Bundle();

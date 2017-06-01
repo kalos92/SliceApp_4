@@ -179,9 +179,9 @@ public class CommentsActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Eliminiamo la contestazione
                 FirebaseDatabase dbContest = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese")
-                        .child(expenseID).child("contestazioni")
-                        .child(contestationID);
+                DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contestazioni").child(contestationID);
+                dbContest.getReference().child("groups_prova").child(groupID).child("contested").child(contestationID).setValue(false);
+                dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contested").setValue(false);
                 if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
                     dbContestRef.removeValue();
                     final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
@@ -204,8 +204,8 @@ public class CommentsActivity extends AppCompatActivity {
 
                         }
                     });
-                    Log.d("ContestSuccess","I'm here");
-                    Toast.makeText(getApplicationContext(),"You succesfully delete your contestation",Toast.LENGTH_SHORT).show();
+
+                    Toast.makeText(getApplicationContext(),"Contestation resolved!",Toast.LENGTH_SHORT).show();
 
                     Intent i = new Intent(CommentsActivity.this,List_Pager_Act.class);
                     i.putExtra("three",2);
@@ -213,7 +213,7 @@ public class CommentsActivity extends AppCompatActivity {
                     finish();
 
                 }else{
-                    Log.d("ContestFailure","I'm here");
+
                     Toast.makeText(getApplicationContext(),"You can't delete the contestation!",Toast.LENGTH_SHORT).show();
                 }
 

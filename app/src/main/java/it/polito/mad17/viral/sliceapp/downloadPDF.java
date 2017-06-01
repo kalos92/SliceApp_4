@@ -83,7 +83,7 @@ public class downloadPDF extends AsyncTask<String, Integer, Void> {
             fos.close();
             is.close();
 
-            System.out.println("--pdf downloaded--ok--"+PATH);
+
         } catch (Exception e) {
             e.printStackTrace();
             content = e.getMessage();

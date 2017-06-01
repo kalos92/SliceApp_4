@@ -61,14 +61,14 @@ public class ImagePicker {
             Intent targetedIntent = new Intent(intent);
             targetedIntent.setPackage(packageName);
             list.add(targetedIntent);
-            Log.d(TAG, "Intent: " + intent.getAction() + " package: " + packageName);
+
         }
         return list;
     }
 
 
     public static Bitmap getImageFromResult(Context context, int resultCode, Intent imageReturnedIntent) {
-        Log.d(TAG, "getImageFromResult, resultCode: " + resultCode);
+
         Bitmap bm = null;
         File imageFile = getTempFile(context);
         if (resultCode == Activity.RESULT_OK) {
@@ -81,7 +81,7 @@ public class ImagePicker {
             } else {            /** ALBUM **/
                 selectedImage = imageReturnedIntent.getData();
             }
-            Log.d(TAG, "selectedImage: " + selectedImage);
+
 
             bm = getImageResized(context, selectedImage);
             Bitmap bm3 = Bitmap.createScaledBitmap(bm, 400, 400, false);
@@ -112,8 +112,6 @@ public class ImagePicker {
         Bitmap actuallyUsableBitmap = BitmapFactory.decodeFileDescriptor(
                 fileDescriptor.getFileDescriptor(), null, options);
 
-        Log.d(TAG, options.inSampleSize + " sample method bitmap ... " +
-                actuallyUsableBitmap.getWidth() + " " + actuallyUsableBitmap.getHeight());
 
         return actuallyUsableBitmap;
     }
@@ -127,7 +125,7 @@ public class ImagePicker {
         int i = 0;
         do {
             bm = decodeBitmap(context, selectedImage, sampleSizes[i]);
-            Log.d(TAG, "resizer: new bitmap width = " + bm.getWidth());
+
             i++;
         } while (bm.getWidth() < minWidthQuality && i < sampleSizes.length);
 
@@ -142,7 +140,7 @@ public class ImagePicker {
         } else {
             rotation = getRotationFromGallery(context, imageUri);
         }
-        Log.d(TAG, "Image rotation: " + rotation);
+
         return rotation;
     }
 

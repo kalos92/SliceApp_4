@@ -69,11 +69,11 @@ public class ExpenseDetails extends AppCompatActivity {
     private DatabaseReference groups_ref = rootRef.child("groups_prova");
     private Spesa s;
     private Gruppo gruppo;
-    LinearLayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
     final DatabaseReference user_ref = rootRef.child("users_prova");
     private Animator mCurrentAnimator;
     private boolean isRemoved=false;
-    ValueEventListener listener;
+    private  ValueEventListener listener;
     private String contestationID;
     private String contestator;
 
@@ -91,7 +91,7 @@ public class ExpenseDetails extends AppCompatActivity {
             gruppo = (Gruppo) extra.get("Gruppo");
         }
 
-listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).addValueEventListener(new ValueEventListener() {
+        listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Spesa s2;

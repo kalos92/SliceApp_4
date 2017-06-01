@@ -41,6 +41,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import dmax.dialog.SpotsDialog;
+
 
 public class Group_Details extends AppCompatActivity implements LittleFragment3.GetPercentages_2{
 
@@ -194,7 +196,8 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
 
 
         if(id == R.id.action_continue){
-
+            final SpotsDialog dialog = new SpotsDialog(this,R.style.Custom);
+            dialog.show();
             final String groupID = groups_prova.push().getKey();
 
             if(RequestAllTheSame){
@@ -221,7 +224,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
                 uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    Log.d("Error_mio",exception.getMessage());
+
                     // Handle unsuccessful uploads
                 }
                 }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -231,7 +234,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
                     @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
 
                     mCurrency curr2 = new mCurrency(curr.getSelectedItem().toString());
-                    Gruppo g = new Gruppo(groupID,groupName.getText().toString(), tmpList.size(), tmpList, policy,curr2,downloadUrl);
+                    Gruppo g = new Gruppo(groupID,groupName.getText().toString(), tmpList.size(), tmpList, policy,curr2,downloadUrl,SliceAppDB.getUser().getTelephone());
                     g.setGroupID(groupID);
                     g.setUser(SliceAppDB.getUser());
 
@@ -262,7 +265,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
                         users_prova.child(p1.getTelephone()).child("dove_ho_debito").child(g1.getGroupID()).setValue(p1.getDove_ho_debito().get(groupID));
                     }
 
-
+                    dialog.dismiss();
                     Intent i = new Intent(Group_Details.this, List_Pager_Act.class);
                     startActivity(i);
                     finish();
@@ -272,7 +275,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
             });}
             else {
                 mCurrency curr2 = new mCurrency(curr.getSelectedItem().toString());
-                Gruppo g = new Gruppo(groupID, groupName.getText().toString(), tmpList.size(), tmpList, policy, curr2,null);
+                Gruppo g = new Gruppo(groupID, groupName.getText().toString(), tmpList.size(), tmpList, policy, curr2,null,SliceAppDB.getUser().getTelephone());
                 g.setGroupID(groupID);
                 g.setUser(SliceAppDB.getUser());
 
@@ -281,7 +284,6 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
                 Gruppo g1 = gson.fromJson(gson.toJson(g), Gruppo.class);
 
                 groups_prova.child(g1.getGroupID()).setValue(g1);
-                groups_prova.child(groupID).child("contested").setValue(false);
                 for (Persona p : tmpList) {
                     Persona p1 = gson.fromJson(gson.toJson(p), Persona.class);
 
@@ -299,8 +301,8 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
                     users_prova.child(p1.getTelephone()).child("dove_ho_debito").child(g1.getGroupID()).setValue(p1.getDove_ho_debito().get(groupID));
                 }
 
-
                 Intent i = new Intent(Group_Details.this, List_Pager_Act.class);
+                dialog.dismiss();
                 startActivity(i);
                 finish();
             }
@@ -386,4 +388,11 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = new Intent(this,AddNewGroup.class);
+        startActivity(i);
+        finish();
+    }
 }

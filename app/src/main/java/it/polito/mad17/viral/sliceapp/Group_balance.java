@@ -23,6 +23,7 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.DataOutputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -87,7 +88,16 @@ public class Group_balance extends AppCompatActivity {
                         groups_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
-                                if(dataSnapshot.child(gruppo.getGroupID()).child("contested").getValue(Boolean.class) == false){
+                                HashMap<String,Boolean> contested = new HashMap<String, Boolean>();
+                                contested = (HashMap<String, Boolean>) dataSnapshot.child(gruppo.getGroupID()).child("contested").getValue();
+                                Boolean atLeastOne=false;
+
+                                for(Boolean b: contested.values())
+                                        if(b==true){
+                                            atLeastOne=true;
+                                        }
+
+                                if(!atLeastOne){
                                     for(Spesa s: gruppo.getSpese().values() ){
                                         if(!s.getRemoved()) {
                                             if (s.getPagante().getTelephone().equals(userTelephone))
@@ -121,7 +131,7 @@ public class Group_balance extends AppCompatActivity {
 
                                     }
                                 } else {
-                                    System.out.println("you cannot balance");
+
                                     Toast.makeText(getApplicationContext(),
                                             "A group has as least one contested expense. You cannot balance",
                                             Toast.LENGTH_SHORT)

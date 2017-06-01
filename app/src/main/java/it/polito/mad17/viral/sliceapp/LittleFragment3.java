@@ -28,9 +28,7 @@ public class LittleFragment3  extends Fragment {
     public interface GetPercentages_2{
         public void getPercentages(Policy policy);
     }
-    public interface getValues{
-        public void getValues(String[] values);
-    }
+
 
     public LittleFragment3() {
         // Required empty public constructor
@@ -71,7 +69,7 @@ public class LittleFragment3  extends Fragment {
         final ListView list = (ListView) v.findViewById(R.id.all_the_same1);
 
         final GetPercentages_2 getPercentages= (GetPercentages_2) getActivity();
-        final getValues getValues=(LittleFragment3.getValues) getActivity();
+
 
         if(adapter==null)
         adapter = new NoBoxTextViewAdapter(v.getContext(), R.layout.all_the_same_row, persone);
