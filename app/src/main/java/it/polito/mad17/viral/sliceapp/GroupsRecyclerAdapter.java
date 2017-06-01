@@ -67,7 +67,7 @@ public class GroupsRecyclerAdapter extends FirebaseRecyclerAdapter<Dettagli_Grup
 
         if (model.calculate() <= 99 && model.calculate() > 0) {
             viewHolder.unread.setVisibility(View.VISIBLE);
-            viewHolder.unread.setText(String.valueOf(model.getUnread()));
+            viewHolder.unread.setText(String.valueOf(model.calculate()));
         } else if (model.calculate() > 99) {
             viewHolder.unread.setVisibility(View.VISIBLE);
             viewHolder.unread.setText("+99");
