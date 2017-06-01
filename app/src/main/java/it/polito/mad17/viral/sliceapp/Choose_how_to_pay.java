@@ -300,8 +300,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").child(key_s).setValue(s1.getImporto());
                             //dialog.dismiss();
                             getActivity().startActivity(intent);
-                            //
-                            //getActivity().finish();
+                            getActivity().finish();
                 }
 
                 });
@@ -429,7 +428,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                             groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").child(key_s).setValue(s1.getImporto());
                           //  dialog.dismiss();
                             getActivity().startActivity(intent);
-                           // getActivity().finish();
+                            getActivity().finish();
                         }
 
                     });
@@ -545,7 +544,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").child(key_s).setValue(s1.getImporto());
                    // dialog.dismiss();
                     getActivity().startActivity(intent);
-                   // getActivity().finish();
+                    getActivity().finish();
                 }// FINE NIENTE
 
                 if(b!=null && uri!=null) {
@@ -683,6 +682,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                                     groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s2.getPagante().getTelephone()).child("importo").child(key_s).setValue(s2.getImporto());
 
                                     getActivity().startActivity(intent);
+                                    getActivity().finish();
 
                                 }
 

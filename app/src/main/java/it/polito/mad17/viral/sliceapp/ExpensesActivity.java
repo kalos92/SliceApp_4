@@ -78,8 +78,9 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         if(extra!= null) {
 
             gruppo = (Gruppo) extra.get("Gruppo");
-            user = SliceAppDB.getUser();
+
         }
+        user = SliceAppDB.getUser();
         ID=gruppo.getGroupID();
         user.resetUnread(gruppo.getGroupID());
         SliceAppDB.setUser_1(user);
@@ -87,7 +88,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         fm= getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-        ft.replace(R.id.fragment, Fragment_of_money.newInstance(gruppo.getGroupID()));
+        ft.replace(R.id.fragment, Fragment_of_money.newInstance(gruppo));
         ft.addToBackStack(null);
         ft.commit();
         t= (Toolbar)findViewById(R.id.expenseToolbar);
@@ -301,6 +302,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
                 Intent i =  new Intent (this,Group_balance.class);
                 i.putExtra("Gruppo",gruppo);
                 startActivity(i);
+                finish();
                 break;
 
 
