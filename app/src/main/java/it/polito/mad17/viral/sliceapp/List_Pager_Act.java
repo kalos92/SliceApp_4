@@ -193,7 +193,7 @@ public class List_Pager_Act extends AppCompatActivity {
             TabLayout.Tab tab= tabLayout.getTabAt(0);
             tab.select();}
         else{
-
+        finish();
         android.os.Process.killProcess(android.os.Process.myPid());
     }}
 }

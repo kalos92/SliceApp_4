@@ -208,6 +208,7 @@ public class CommentsExpenseActivity extends AppCompatActivity {
                     Intent i = new Intent(CommentsExpenseActivity.this,List_Pager_Act.class);
                     i.putExtra("three",2);
                     startActivity(i);
+                    finish();
 
                 }else{
                     Log.d("ContestFailure","I'm here");

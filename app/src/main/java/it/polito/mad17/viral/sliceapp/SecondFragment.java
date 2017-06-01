@@ -1,5 +1,6 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -33,6 +34,8 @@ import java.util.StringTokenizer;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import static android.content.Context.MODE_PRIVATE;
 
 
 public class SecondFragment extends Fragment {
@@ -71,8 +74,10 @@ public class SecondFragment extends Fragment {
         final View v = inflater.inflate(R.layout.slide_balance, container, false);
         final RecyclerView mylist = (RecyclerView) v.findViewById(R.id.listView1);
 
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
+        String userTelephone = sharedPref.getString("telefono", null);
 
-        Query ref = rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("amici");
+        Query ref = rootRef.child("users_prova").child(userTelephone).child("amici");
 
         FirebaseRecyclerAdapter<Riga_Bilancio,BalanceHolder> adapter= new  FirebaseRecyclerAdapter<Riga_Bilancio,BalanceHolder>(Riga_Bilancio.class, R.layout.listview_balance_row, BalanceHolder.class,ref) {
             @Override

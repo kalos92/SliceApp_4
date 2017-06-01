@@ -41,10 +41,10 @@ public class Fragment_of_money extends Fragment {
 
 
 
-    public static Fragment_of_money newInstance(String ID) {
+    public static Fragment_of_money newInstance(Gruppo gruppo) {
         Fragment_of_money fragment = new Fragment_of_money();
         Bundle args = new Bundle();
-        args.putSerializable("Gruppo", ID);
+        args.putSerializable("Gruppo", gruppo);
         fragment.setArguments(args);
         return fragment;
     }
@@ -53,17 +53,19 @@ public class Fragment_of_money extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-           ID = (String) getArguments().getSerializable("Gruppo");
+           gruppo = (Gruppo) getArguments().getSerializable("Gruppo");
 
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        gruppo = SliceAppDB.getGroup(ID);
+        if(SliceAppDB.getGroup(gruppo.getGroupID())!=null)
+               gruppo = SliceAppDB.getGroup(gruppo.getGroupID());
+
         gruppo.setUser(SliceAppDB.getUser());
 
-        groups_ref.child(ID).addValueEventListener(new ValueEventListener() {
+        groups_ref.child(gruppo.getGroupID()).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 gruppo = dataSnapshot.getValue(Gruppo.class);
@@ -138,7 +140,7 @@ public class Fragment_of_money extends Fragment {
                 Intent i =  new Intent (getActivity(),Group_balance.class);
                 i.putExtra("Gruppo",gruppo);
                 startActivity(i);
-
+                getActivity().finish();
 
             }
         });

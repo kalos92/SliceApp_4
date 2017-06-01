@@ -97,6 +97,7 @@ public class AddContestationActivity extends AppCompatActivity {
                          Intent i = new Intent(AddContestationActivity.this,List_Pager_Act.class);
                          i.putExtra("three",2);
                          startActivity(i);
+                         finish();
                     }
 
                     @Override

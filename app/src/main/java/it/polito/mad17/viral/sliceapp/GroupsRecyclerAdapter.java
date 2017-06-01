@@ -116,7 +116,7 @@ public class GroupsRecyclerAdapter extends FirebaseRecyclerAdapter<Dettagli_Grup
                             Intent i = new Intent(v2.getContext(), ExpensesActivity.class);
 
                             i.putExtra("Gruppo", g);
-                            i.putExtra("User", SliceAppDB.getUser());
+                            //i.putExtra("User", SliceAppDB.getUser());
                             SliceAppDB.createListenerOnGroupID(g.getGroupID(), g);
                             v2.getContext().startActivity(i);
 

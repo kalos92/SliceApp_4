@@ -37,10 +37,10 @@ public class FirebaseBackgroundService extends Service {
     private ArrayList <String> groupsID = new ArrayList<String>();
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor prefEditor;
-    private Long lastTimestampGroup; //= System.currentTimeMillis();
-    private Long lastTimestampExpense;// = System.currentTimeMillis();
-    private Long lastTimestampContestation;// = System.currentTimeMillis();
-    private Long lastTimestampComment;// = System.currentTimeMillis();
+    private Long lastTimestampGroup = System.currentTimeMillis();
+    private Long lastTimestampExpense  = System.currentTimeMillis();
+    private Long lastTimestampContestation = System.currentTimeMillis();
+    private Long lastTimestampComment  = System.currentTimeMillis();
 
     @Nullable
     @Override
@@ -95,37 +95,51 @@ public class FirebaseBackgroundService extends Service {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+              //  Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+            //    while(iterator.hasNext()) {
+                  //  DataSnapshot contest = iterator.next();
                 long contestationTimestamp = (long) dataSnapshot.child("timestamp").getValue();
+                final String contestator,expenseID,groupID,contestationID;
+                expenseID = (String) dataSnapshot.child("expenseID").getValue();
+                groupID = (String) dataSnapshot.child("groupID").getValue();
+                contestationID = (String) dataSnapshot.child("contestID").getValue();
+                contestator = (String) dataSnapshot.child("userName").getValue();//contestator
 
-                if(contestationTimestamp > lastTimestampContestation) {
-                    if(!dataSnapshot.child("phoneNumber").getValue(String.class).equals(userTelephone)){
+                if (contestationTimestamp > lastTimestampContestation) {
+                        if (!dataSnapshot.child("phoneNumber").getValue(String.class).equals(userTelephone)) {
 
-                        lastTimestampContestation = contestationTimestamp;
-                        // get data to show in the notification
-                        String userName = (String) dataSnapshot.child("userName").getValue();
-                        String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
-                        String groupName = (String) dataSnapshot.child("groupName").getValue();
-                        String contestTitle = (String) dataSnapshot.child("title").getValue();
+                            lastTimestampContestation = contestationTimestamp;
+                            prefEditor = sharedPref.edit();
+                            prefEditor.putLong("lastTimestampContestation", lastTimestampContestation);
+                            prefEditor.commit();
+                            // get data to show in the notification
+                            String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
+                            String groupName = (String) dataSnapshot.child("groupName").getValue();
+                            String contestTitle = (String) dataSnapshot.child("title").getValue();
+                            // notification
+                            Intent notificationIntent = new Intent(getApplicationContext(), CommentsActivity.class);
+                            notificationIntent.putExtra("contestator", contestator);
+                            notificationIntent.putExtra("groupID", groupID);
+                            notificationIntent.putExtra("expenseID", expenseID);
+                            notificationIntent.putExtra("contestationID", contestationID);
 
-                        // notification
-                        Intent notificationIntent = new Intent();
-                        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT);
-                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                .setSmallIcon(R.drawable.added_contestation)
-                                .setContentTitle(userName + " has contested expense " + expenseName + " of group " + groupName)
-                                .setContentText(contestTitle)
-                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                .setContentIntent(contentIntent);
-                        Notification noti = builder.build();
-                        noti.flags = Notification.FLAG_AUTO_CANCEL;
-                        // Add notification
-                        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        manager.notify((int) System.currentTimeMillis(), noti);
+                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT);
+                            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                    .setSmallIcon(R.drawable.added_contestation)
+                                    .setContentTitle(contestator + " has contested expense " + expenseName + " of group " + groupName)
+                                    .setContentText(contestTitle)
+                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    .setContentIntent(contentIntent);
+                            Notification noti = builder.build();
+                            noti.flags = Notification.FLAG_AUTO_CANCEL;
+                            // Add notification
+                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            manager.notify((int) System.currentTimeMillis(), noti);
+                        }
+
                     }
-
-                }
-
+              //  }
                 // add listener for comment
                 contestationsRef.child(dataSnapshot.getKey()).child("commenti").addChildEventListener(new ChildEventListener() {
                     @Override
@@ -137,11 +151,20 @@ public class FirebaseBackgroundService extends Service {
                             if(!dataSnapshot.child("userID").getValue(String.class).equals(userTelephone)){
 
                                 lastTimestampComment = commentTimestamp;
+                                prefEditor = sharedPref.edit();
+                                prefEditor.putLong("lastTimestampComment", lastTimestampComment);
+                                prefEditor.commit();
                                 String userName = (String) dataSnapshot.child("userName").getValue();
                                 String commento = (String) dataSnapshot.child("commento").getValue();
 
+
                                 // notification
-                                Intent notificationIntent = new Intent();
+                                Intent notificationIntent = new Intent(getApplicationContext(),CommentsActivity.class);
+                                notificationIntent.putExtra("contestator", contestator);
+                                notificationIntent.putExtra("groupID", groupID);
+                                notificationIntent.putExtra("expenseID", expenseID);
+                                notificationIntent.putExtra("contestationID", contestationID);
+
                                 PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                         PendingIntent.FLAG_UPDATE_CURRENT);
                                 android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
@@ -156,7 +179,6 @@ public class FirebaseBackgroundService extends Service {
                                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 manager.notify((int) System.currentTimeMillis(), noti);
                             }
-
 
                         }
                     }
@@ -187,7 +209,7 @@ public class FirebaseBackgroundService extends Service {
 
         groupsListener = new ChildEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+            public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
                 System.out.println("onChildAdded " + dataSnapshot);
 
                 // riempio ed eventualmente sovrascrivo la hashMap
@@ -195,37 +217,73 @@ public class FirebaseBackgroundService extends Service {
                 if(!groupsExpenses.containsKey(groupID)){//ho creato un nuovo gruppo
                     groupsID.add(groupID);//gruppi appena creati aventi 0 spese.
                 }
+                final long groupTimestamp = (long) dataSnapshot.child("c").getValue();
+                final Gruppo g = dataSnapshot.getValue(Gruppo.class);
+                final ArrayList<String> numbers = new ArrayList<String>();
+                final HashMap<String, Persona> partecipanti = new HashMap<String, Persona>();
 
-                long groupTimestamp = (long) dataSnapshot.child("c").getValue();
+                numbers.addAll(g.getPartecipanti_numero_cnome().keySet());
+                DatabaseReference users_prova = database.getReference().child("users_prova");
 
-                // Mando la notifica solo se l'utente da parte del gruppo
-                if(dataSnapshot.child("partecipanti_numero_cnome").hasChild(userTelephone)){
-                    if(groupTimestamp > lastTimestampGroup){
-                        lastTimestampGroup = groupTimestamp;
-                        String groupName = (String) dataSnapshot.child("groupName").getValue();
+                users_prova.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot2) {
+                        Iterator<DataSnapshot> it = dataSnapshot2.getChildren().iterator();
 
-                        // creation of the notification
-                        // la notifica non deve arrivare al creatore del gruppo
-                        String groupCreatorTelephone = (String) dataSnapshot.child("groupCreator").getValue();
-                        if(!groupCreatorTelephone.equals(userTelephone)){
-                            Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
-                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                    PendingIntent.FLAG_UPDATE_CURRENT);
-                            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                    .setSmallIcon(R.drawable.added_to_group)
-                                    .setContentTitle("You have been added to a new group!")
-                                    .setContentText(groupName)
-                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                    //.setPriority(NotificationCompat.PRIORITY_HIGH)
-                                    .setContentIntent(contentIntent);
-                            Notification noti = builder.build();
-                            noti.flags = Notification.FLAG_AUTO_CANCEL;
-                            // Add notification
-                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                            manager.notify((int) System.currentTimeMillis(), noti);
+                        while (it.hasNext()) {
+                            DataSnapshot ds = it.next();
+                            if (numbers.contains(ds.getKey())) {
+                                Persona p = ds.getValue(Persona.class);
+                                partecipanti.put(p.getTelephone(), p);
+                            }
                         }
+                        g.setPartecipanti_3(partecipanti);
+                        g.setUser(SliceAppDB.getUser());
+
+
+
+                        // Mando la notifica solo se l'utente da parte del gruppo
+                        if(dataSnapshot.child("partecipanti_numero_cnome").hasChild(userTelephone)){
+                            if(groupTimestamp > lastTimestampGroup){
+                                lastTimestampGroup = groupTimestamp;
+                                prefEditor = sharedPref.edit();
+                                prefEditor.putLong("lastTimestampGroup", lastTimestampGroup);
+                                prefEditor.commit();
+                                String groupName = (String) dataSnapshot.child("groupName").getValue();
+
+                                // creation of the notification
+                                // la notifica non deve arrivare al creatore del gruppo
+                                String groupCreatorTelephone = (String) dataSnapshot.child("groupCreator").getValue();
+                                if(!groupCreatorTelephone.equals(userTelephone)){
+                                    Intent notificationIntent = new Intent(getApplicationContext(), ExpensesActivity.class);
+                                    notificationIntent.putExtra("Gruppo",g);
+
+                                    PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                            PendingIntent.FLAG_UPDATE_CURRENT);
+                                    android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                            .setSmallIcon(R.drawable.added_to_group)
+                                            .setContentTitle("You have been added to a new group!")
+                                            .setContentText(groupName)
+                                            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                            //.setPriority(NotificationCompat.PRIORITY_HIGH)
+                                            .setContentIntent(contentIntent);
+                                    Notification noti = builder.build();
+                                    noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                    // Add notification
+                                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    manager.notify((int) System.currentTimeMillis(), noti);
+                                }
+                            }
+                        }
+
+
                     }
-                }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+
+                    }
+                });
             }
 
             @Override
@@ -290,6 +348,9 @@ public class FirebaseBackgroundService extends Service {
 
                         if (expenseTimestamp > lastTimestampExpense) {
                             lastTimestampExpense = expenseTimestamp;
+                            prefEditor = sharedPref.edit();
+                            prefEditor.putLong("lastTimestampExpense", lastTimestampExpense);
+                            prefEditor.commit();
                             // attacco un listener per ogni divisione
                             final DatabaseReference divisioniRef = currentExpense.child("divisioni").getRef();
                             divisioniRef.addChildEventListener(new ChildEventListener() {

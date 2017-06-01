@@ -1,6 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -49,9 +50,14 @@ public class CommentsActivity extends AppCompatActivity {
         final String groupID = extras.getString("groupID");
         final String contestatorID = extras.getString("contestator");
 
+       // SharedPreferences.Editor prefEditor;
+
         RecyclerView mylist = (RecyclerView) findViewById(R.id.listViewComments);
 
-        Query commentsRef = databaseRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni").child(contestationID).child("commenti");
+        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        String userTelephone = sharedPref.getString("telefono", null);
+
+        Query commentsRef = databaseRef.child("users_prova").child(userTelephone).child("contestazioni").child(contestationID).child("commenti");
         FirebaseRecyclerAdapter<Commento, RecyclerView.ViewHolder> adapter = new FirebaseRecyclerAdapter<Commento, RecyclerView.ViewHolder>(Commento.class, R.layout.comment_row, RecyclerView.ViewHolder.class, commentsRef) {
 
 
@@ -204,6 +210,7 @@ public class CommentsActivity extends AppCompatActivity {
                     Intent i = new Intent(CommentsActivity.this,List_Pager_Act.class);
                     i.putExtra("three",2);
                     startActivity(i);
+                    finish();
 
                 }else{
                     Log.d("ContestFailure","I'm here");

@@ -1,6 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import static android.content.Context.MODE_PRIVATE;
 
 
 /**
@@ -68,16 +70,15 @@ public class FirstFragment extends Fragment{
             public void onClick(View v) {
                 Intent i = new Intent(getContext(), AddNewGroup.class);
                 startActivity(i);
-
+                getActivity().finish();
             }
         });
 
 
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
+        String userTelephone = sharedPref.getString("telefono", null);
 
-
-
-       // DatabaseReference user_ref= rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("gruppi_partecipo");
-        Query ref = rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("gruppi_partecipo").orderByChild("time");
+        Query ref = rootRef.child("users_prova").child(userTelephone).child("gruppi_partecipo").orderByChild("time");
 
         GroupsRecyclerAdapter adapter= new GroupsRecyclerAdapter(Dettagli_Gruppo.class,R.layout.listview_group_row, FirstFragment.GroupHolder.class,ref,getContext(),numbers,g,partecipanti);
 

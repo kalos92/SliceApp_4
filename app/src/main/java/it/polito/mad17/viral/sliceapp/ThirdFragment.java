@@ -2,6 +2,7 @@ package it.polito.mad17.viral.sliceapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -18,6 +19,8 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
+
+import static android.content.Context.MODE_PRIVATE;
 
 public class ThirdFragment extends Fragment {
 
@@ -49,7 +52,10 @@ public class ThirdFragment extends Fragment {
         final View v = inflater.inflate(R.layout.slide_balance, container, false);
         final RecyclerView mylist = (RecyclerView) v.findViewById(R.id.listView1);
 
-        Query ref = rootRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni");
+        SharedPreferences sharedPref = getActivity().getSharedPreferences("data",MODE_PRIVATE);
+        String userTelephone = sharedPref.getString("telefono", null);
+
+        Query ref = rootRef.child("users_prova").child(userTelephone).child("contestazioni");
         final FirebaseRecyclerAdapter<Contestazione,ContestationHolder> adapter = new FirebaseRecyclerAdapter<Contestazione, ContestationHolder>(Contestazione.class,R.layout.listview_contestation_row,ContestationHolder.class,ref) {
             @Override
             protected void populateViewHolder(ContestationHolder viewHolder, final Contestazione model, int position) {
@@ -70,6 +76,7 @@ public class ThirdFragment extends Fragment {
                         i.putExtra("groupID", model.getGroupID());
                         i.putExtra("contestator",model.getPhoneNumber());
                         startActivity(i);
+                        getActivity().finish();
                     }
                 });
 

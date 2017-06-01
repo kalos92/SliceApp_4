@@ -159,6 +159,7 @@ listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpen
                 }
             });}
         else {
+
             Picasso.with(getBaseContext()).load(s.getCat().getImg()).into(thumbview);
             thumbview.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -312,6 +313,7 @@ listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpen
                     Intent i = new Intent(getBaseContext(),ExpensesActivity.class);
                     i.putExtra("Gruppo",gruppo);
                     startActivity(i);
+                    finish();
 
                     finish();
                         } else {
@@ -344,6 +346,7 @@ listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpen
                     i.putExtra("spesa", s.getExpenseID());
                     i.putExtra("gruppo", s.getGruppo());
                     startActivity(i);
+                    finish();
                 } else {
                     final Intent i = new Intent(ExpenseDetails.this,CommentsExpenseActivity.class);
                     i.putExtra("groupID",s.getGruppo());
@@ -364,6 +367,7 @@ listener = groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpen
                             i.putExtra("contestator",contestator);
                             i.putExtra("contestationID",contestationID);
                             startActivity(i);
+                            finish();
                         }
 
                         @Override

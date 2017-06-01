@@ -73,13 +73,15 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
 
         if(savedInstanceState!=null){
 
-            b=savedInstanceState.getParcelable("bitmap");
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            datas = baos.toByteArray();
-            photoAttack= (ImageButton) findViewById(R.id.add_groupicon);
-            photoAttack.setImageBitmap(b);
 
+            if(savedInstanceState.getParcelable("bitmap")!=null) {
+                b=savedInstanceState.getParcelable("bitmap");
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+                datas = baos.toByteArray();
+                photoAttack = (ImageButton) findViewById(R.id.add_groupicon);
+                photoAttack.setImageBitmap(b);
+            }
         }
 
         Bundle extra =getIntent().getExtras();
@@ -263,6 +265,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
 
                     Intent i = new Intent(Group_Details.this, List_Pager_Act.class);
                     startActivity(i);
+                    finish();
 
 
                 }
@@ -299,6 +302,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
 
                 Intent i = new Intent(Group_Details.this, List_Pager_Act.class);
                 startActivity(i);
+                finish();
             }
 
                 }

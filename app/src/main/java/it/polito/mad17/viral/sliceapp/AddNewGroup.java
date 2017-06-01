@@ -274,9 +274,11 @@ Collections.sort(listP, new Comparator<Persona>() {
         if(id == R.id.action_continue && adapter!=null){
             listPersone.addAll(adapter.getGroupMembers().values());
             if(listPersone.size()!=0){
-            Intent i = new Intent(AddNewGroup.this,Group_Details.class);
-            i.putExtra("ListaPersone",listPersone);
-            startActivity(i);}
+                Intent i = new Intent(AddNewGroup.this,Group_Details.class);
+                i.putExtra("ListaPersone",listPersone);
+                startActivity(i);
+                finish();
+            }
             else{
                 Toast.makeText(getBaseContext(),"You have to select at least one contact", Toast.LENGTH_LONG).show();
                 return false;}
