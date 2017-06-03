@@ -160,7 +160,7 @@ public class Group_balance extends AppCompatActivity {
         Drawable verticalDivider = getBaseContext().getDrawable(R.drawable.horizontal_divider);
         verticalDecoration.setDrawable(verticalDivider);
         mylist.addItemDecoration(verticalDecoration);
-        mylist.setAdapter(adapter);
+        mylist.setAdapter(adapter);//bb
 
 
 
