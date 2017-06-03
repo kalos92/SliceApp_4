@@ -181,4 +181,10 @@ public class Group_balance extends AppCompatActivity {
 
         }
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 }

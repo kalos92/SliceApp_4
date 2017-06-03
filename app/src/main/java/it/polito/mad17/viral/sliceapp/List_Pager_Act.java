@@ -44,10 +44,8 @@ import static com.facebook.FacebookSdk.getApplicationContext;
 
 public class List_Pager_Act extends AppCompatActivity {
 
-    private Toolbar toolbar;
     private TabLayout tabLayout;
     private int[]  tabIcons = {R.drawable.img_contestation, R.drawable.img_gruppi , R.drawable.img_bilancio};
-    private ViewPager vpPager;
 
 
     private DataSnapshot users;
@@ -63,7 +61,7 @@ public class List_Pager_Act extends AppCompatActivity {
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
 
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.slider_tab));
 
         AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
@@ -71,7 +69,7 @@ public class List_Pager_Act extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        vpPager = (ViewPager) findViewById(R.id.viewpager);
+        ViewPager vpPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(vpPager);
 
         tabLayout = (TabLayout) findViewById(R.id.tabs);
@@ -196,4 +194,6 @@ public class List_Pager_Act extends AppCompatActivity {
         finish();
         android.os.Process.killProcess(android.os.Process.myPid());
     }}
+
+
 }

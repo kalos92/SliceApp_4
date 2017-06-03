@@ -6,8 +6,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_INTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
-
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -39,12 +38,17 @@
             android:name=".Group_Details"
             android:theme="@style/AppTheme" />
         <activity android:name=".ExpenseDetails" />
-        <service android:name=".FirebaseBackgroundService"></service>
-        <activity android:name=".Group_balance"></activity>
-        <activity android:name=".AddContestationActivity"></activity>
-        <activity android:name=".CommentsActivity"></activity>
-        <activity android:name=".CommentsExpenseActivity"></activity>
 
+        <service android:name=".FirebaseBackgroundService" />
+
+        <activity android:name=".Group_balance" />
+        <activity android:name=".AddContestationActivity" />
+        <activity android:name=".CommentsActivity" />
+        <activity android:name=".CommentsExpenseActivity" />
+        <activity
+            android:name=".Partecipant_Group"
+            android:label="@string/title_activity_partecipant__group"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

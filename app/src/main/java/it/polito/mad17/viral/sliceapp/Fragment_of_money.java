@@ -140,7 +140,7 @@ public class Fragment_of_money extends Fragment {
                 Intent i =  new Intent (getActivity(),Group_balance.class);
                 i.putExtra("Gruppo",gruppo);
                 startActivity(i);
-                getActivity().finish();
+
 
             }
         });
@@ -148,22 +148,5 @@ public class Fragment_of_money extends Fragment {
         return v;
 
     }
-
-
-
-
-
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
 
 }

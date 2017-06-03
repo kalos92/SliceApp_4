@@ -2,6 +2,7 @@ package it.polito.mad17.viral.sliceapp;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.graphics.Bitmap;
 import java.util.GregorianCalendar;
@@ -12,20 +13,24 @@ import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 
 public class AddExpenseActivity extends FragmentActivity implements DatePickerFragment.TheListener, AddExpenseFragment.ReturnSelection, Little_fragment_1.GetPercentages, Little_fragment_2.AlltheSame, Select_Policy_Fragment.ReturnSelection_2 {
 
     private Gruppo gruppo;
     private Persona user;
-    private String ID;
     private FragmentManager fm;
     private AddExpenseFragment mContent;
     private Select_Policy_Fragment mContent2;
     private Choose_how_to_pay mContent3;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_add_expense);
 
 

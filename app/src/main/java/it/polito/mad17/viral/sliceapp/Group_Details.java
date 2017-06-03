@@ -246,7 +246,7 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
                     Gruppo g1 = gson.fromJson(gson.toJson(g),Gruppo.class);
 
                     groups_prova.child(g1.getGroupID()).setValue(g1);
-                    groups_prova.child(groupID).child("contested").setValue(false);
+
 
                     for (Persona p : tmpList) {
                         Persona p1 = gson.fromJson(gson.toJson(p), Persona.class);

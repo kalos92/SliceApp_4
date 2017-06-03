@@ -1,5 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.app.Activity;
+import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
@@ -52,7 +54,8 @@ public class CommentsExpenseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-
+        ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
+        ((Activity)this).setTaskDescription(taskDescription);
         final DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
         Bundle extras = getIntent().getExtras();
         contestationID = extras.getString("contestationID");

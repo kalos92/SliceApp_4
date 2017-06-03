@@ -40,7 +40,7 @@ public class FirstFragment extends Fragment{
 
    private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private DatabaseReference rootRef = database.getReference();
-    private DatabaseReference groups_ref = rootRef.child("groups_prova");
+
     private ArrayList<String> numbers = new ArrayList<String>();
     private HashMap<String, Persona> partecipanti = new HashMap<String,Persona>();
     private Gruppo g;

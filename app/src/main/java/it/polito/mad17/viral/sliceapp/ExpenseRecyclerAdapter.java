@@ -114,60 +114,6 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
             }
         });
 
-        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(final View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setTitle("Deleting expense");
-                builder.setMessage("Are you sure you want to delete this expense?");
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        boolean allHasPaid = true; //tutti hanno pagato
-                        if (!model.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())) {
-                            Toast.makeText(v.getContext(), "you can not remove this expense because you are not the payer", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        // controllo se c'è qualcuno che non ha pagato...
-                        for (Soldo s : model.getDivisioni().values()) {
-                            if (!s.getHaPagato()) {
-                                allHasPaid = false; // c'è almeno un user che non ha pagato.
-                                break;
-                            }
-                        }
-                        //... se almeno un membro non ha pagato, la spesa non si può rimuovere
-                        if(!allHasPaid){
-                            Toast.makeText(v.getContext(),
-                                           "You can't delete this expense because someone has not paid its part yet",
-                                           Toast.LENGTH_SHORT)
-                                    .show();
-                            return;
-                        }
-                        // ...altrimenti rimuovo la spesa da firebase perché tutti l'hanno pagata
-                        if (allHasPaid) {
-                            final String expenseID = model.getExpenseID();
-                            final String groupID = model.getGruppo(); // non so se mi dà il groupID della spesa
-                            final DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
-                            final DatabaseReference expenseRef = databaseRef.child("groups_prova").child(groupID).child("spese").child(expenseID);
-                            expenseRef.removeValue();
-                            // devo trovare un modo per capire se una spesa è stata eliminata
-                            //Intent i = new Intent(v.getContext(), SplashScreen.class); // forse conviene mandarlo d qualche altra parte
-                            //v.getContext().startActivity(i);
-                            //((Activity)v.getContext()).finish();
-                        }
-
-                    }
-                });
-                builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        //dialog.cancel();
-                    }
-                });
-
-                AlertDialog alert = builder.create();
-                alert.show();
-                return true;
-            }
-        });
 
     }else{
 

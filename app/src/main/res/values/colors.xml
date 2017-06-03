@@ -5,7 +5,7 @@
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="windowBackground">#E3E2CD</color>
     <color name="navigationBarColor">#6DC4E3</color>
-    <color name="colorAccent">#F9690E</color>
+    <color name="colorAccent">@android:color/holo_blue_dark</color>
     <color name="slider_tab">#FFFFFF</color>
     <color name="tab_bck">#CFD9D1</color>
     <color name="debiti">#F22613</color>

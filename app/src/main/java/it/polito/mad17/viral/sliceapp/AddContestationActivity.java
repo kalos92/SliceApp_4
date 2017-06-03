@@ -1,8 +1,10 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.content.Intent;
+import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,6 +26,14 @@ public class AddContestationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contestation);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.contestToolbar);
+        setSupportActionBar(toolbar);
+        AppBarLayout.LayoutParams params = (AppBarLayout.LayoutParams) toolbar.getLayoutParams();
+        params.setScrollFlags(0);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();

@@ -71,12 +71,12 @@ public class ExpenseDetails extends AppCompatActivity {
     private Gruppo gruppo;
     private LinearLayoutManager mLayoutManager;
     final DatabaseReference user_ref = rootRef.child("users_prova");
-    private Animator mCurrentAnimator;
+
     private boolean isRemoved=false;
     private  ValueEventListener listener;
     private String contestationID;
     private String contestator;
-
+    private Animator mCurrentAnimator;
     private int mShortAnimationDuration;
 
 
@@ -382,6 +382,12 @@ public class ExpenseDetails extends AppCompatActivity {
         });
 
         }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
 
     private void zoomImageFromThumb(final View thumbView, Drawable imageResId) {
         // If there's an animation in progress, cancel it

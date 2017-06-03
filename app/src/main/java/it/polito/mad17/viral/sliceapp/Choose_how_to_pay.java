@@ -2,6 +2,7 @@ package it.polito.mad17.viral.sliceapp;
 
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -27,6 +28,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
+import com.squareup.leakcanary.RefWatcher;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import dmax.dialog.SpotsDialog;
@@ -51,7 +54,12 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     private FirebaseStorage storageReference = FirebaseStorage.getInstance("gs://sliceapp-a55d6.appspot.com/");
     private StorageReference images;
     private int tipo_policy;
-
+    private Context context;
+    private FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+    private DatabaseReference expensesRef = database.getReference().child("expenses");
+    private DatabaseReference expense = expensesRef.push();
+    private String expenseID = expense.getKey();
+    private DatabaseReference groups_prova_2 = database.getReference().child("groups_prova");
 
     public static Choose_how_to_pay newInstance(Gruppo g) {
         Choose_how_to_pay fragment = new Choose_how_to_pay();
@@ -71,6 +79,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_choose_how_to_pay, container, false);
+        context=getContext();
         setRetainInstance(true);
         if(savedInstanceState!=null){
             if(savedInstanceState.getParcelable("Uri")!=null)
@@ -154,16 +163,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
             @Override
             public void onClick(View v) {
                 final SpotsDialog dialog = new SpotsDialog(v.getContext(),R.style.Custom);
-                dialog.show();
-
-
-                final FirebaseDatabase database =FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                final DatabaseReference expensesRef = database.getReference().child("expenses");
-                final DatabaseReference expense = expensesRef.push();
-                final String expenseID = expense.getKey();
-                final DatabaseReference groups_prova_2 = database.getReference().child("groups_prova");
-
-
+              //  dialog.show();
 
                 if(b!=null && uri==null) {                                              //SOLO IMG
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -361,83 +361,12 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
                 else if(b==null && uri==null) {  //TODO QUESTO é QUELLO CHE é FUNZIONA ORA DEVO ADATTARE A TUTTO
 
-                final Intent intent = new Intent(getActivity(), ExpensesActivity.class);
-                String data_s;
-                intent.putExtra("Gruppo", gruppo);
-                intent.putExtra("User", user);
-
-                if(data!=null){
-                    int month = data.get(Calendar.MONTH);
-                    month++;
-                    data_s = data.get(Calendar.DAY_OF_MONTH)+"/"+month+"/"+data.get(Calendar.YEAR);}
-                else {
-                    final Calendar c = Calendar.getInstance();
-                    int year = c.get(Calendar.YEAR);
-                    int month = c.get(Calendar.MONTH);
-                    month++;
-                    int day = c.get(Calendar.DAY_OF_MONTH);
-                    data_s=day+"/"+month+"/"+year;
-                }
-                // aggiungo key della spesa
-                    final Spesa s1 = gruppo.AddSpesa(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
-                    s1.setValuta(gruppo.getCurr().getSymbol());
-                    s1.setDigit(gruppo.getCurr().getDigits());
-                    s1.setCat_string(cat);
-
-                    gruppo.refreshC();
-
-                    final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
-
-
-
-                    //Devo aggiornare il bilancio del gruppo e il bilancio totale su amici
-
-                final DatabaseReference groups_prova = database.getReference().child("groups_prova").child(gruppo.getGroupID()).child("spese").child(s1.getExpenseID());
-                Gson gson = new Gson();
-                Spesa g1 = gson.fromJson(gson.toJson(s1),Spesa.class);
-                groups_prova.setValue(g1);
-
-                    final DatabaseReference users_prova = database.getReference().child("users_prova");
-
-                    for(final Persona p: partecipanti) {
-                        String key_upd= users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").push().getKey();
-                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("unread").child(key_upd).setValue(1);
-                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(groupID).child("last").setValue(buyer.getName()+" has bought " +s1.getNome_spesa());
-                    //Aggiornamento di amici che posso fare senza transaction
-                    String key =users_prova.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
-                    if(!p.getTelephone().equals(s1.getPagante().getTelephone())) {
-
-                        users_prova.child(p.getTelephone()).child("amici").child(s1.getPagante().getTelephone() + ";" + gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto() * -1);
-                    }
-                        else
-                    {
-                        for(Persona altri : partecipanti){
-                            if(!altri.getTelephone().equals(s1.getPagante().getTelephone()))
-                            users_prova.child(s1.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto());
-
-                        }
-                    }
-
-
-                        if(!p.getTelephone().equals(s1.getPagante().getTelephone())) {
-                            //Io sono una persona che non É il pagante quindi mi devo mettere il mio bilancio con una spesa -
-                            String key_g = groups_prova.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
-                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s1.getPagante().getTelephone()).child("importo").child(key_g).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto() * -1);
-                            groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("bilancio_relativo").child(p.getTelephone()).child("importo").child(key_g).setValue(s1.getDivisioni().get(p.getTelephone()).getImporto());
-                        }
-
-
-                        users_prova.child(p.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("time").setValue(gruppo.getC()*-1);
-                }//for
-
-                    String key_s =  groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").push().getKey();
-                    groups_prova_2.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s1.getPagante().getTelephone()).child("importo").child(key_s).setValue(s1.getImporto());
-                    dialog.dismiss();
-                    getActivity().startActivity(intent);
-                    getActivity().finish();
+                    Upload_expense up = new Upload_expense(data,gruppo,buyer,nome,price,cat,policy,user,context,getActivity());
+                    up.execute();
+                    //dialog.dismiss();
                 }// FINE NIENTE
 
-                if(b!=null && uri!=null) {
+                else if(b!=null && uri!=null) {
                     ByteArrayOutputStream baos = new ByteArrayOutputStream();
                     b.compress(Bitmap.CompressFormat.JPEG, 100, baos);
                     datas = baos.toByteArray();
@@ -556,7 +485,7 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                     });
                 }
 
-                getActivity().finish();
+                //getActivity().finish();
             }
         });
         return v;
@@ -604,4 +533,6 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
                 tipo_policy= savedInstanceState.getInt("Tipo");
         }
     }
+
+
 }

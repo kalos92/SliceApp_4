@@ -43,6 +43,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.leakcanary.LeakCanary;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
@@ -54,7 +55,6 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
 
     String ID;
     Gruppo gruppo;
-    Gruppo gruppo_2;
     Persona user;
     FragmentManager fm;
     Toolbar t;
@@ -66,27 +66,25 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     private FloatingActionButton fab,fab1,fab2;
     private Animation fab_open,fab_close,rotate_forward,rotate_backward;
     private Dettagli_Gruppo unread = new Dettagli_Gruppo();
-    private  ValueEventListener listener;
-
-    //private TextView tv1,tv2,tv3;
+    private  ExpenseRecyclerAdapter adapter;
+    ValueEventListener listener;
+    ValueEventListener listener_2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_expenses);
+
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
 
         Bundle extra =getIntent().getExtras();
         if(extra!= null) {
-
             gruppo = (Gruppo) extra.get("Gruppo");
-
         }
         user = SliceAppDB.getUser();
         ID=gruppo.getGroupID();
 
-        SliceAppDB.setUser_1(user);
         fm= getSupportFragmentManager();
 
         FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -94,53 +92,43 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         ft.addToBackStack(null);
         ft.commit();
         t= (Toolbar)findViewById(R.id.expenseToolbar);
+        t.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(getBaseContext(), Partecipant_Group.class);
+                i.putExtra("Gruppo",gruppo);
+                startActivity(i);
 
-        listener = groups_ref.child(ID).addValueEventListener(new ValueEventListener() {
+            }
+        });
+
+        final ImageView img = (ImageView) findViewById(R.id.show_GroupIcon);
+
+        listener = groups_ref.child(gruppo.getGroupID()).child("uri").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                gruppo_2 = dataSnapshot.getValue(Gruppo.class);
-                gruppo_2.setUser(SliceAppDB.getUser());
-                t= (Toolbar)findViewById(R.id.expenseToolbar);
-                ImageView img = (ImageView) findViewById(R.id.show_GroupIcon);
+                String uri = (String) dataSnapshot.getValue();
+                Picasso.with(getBaseContext()).load(uri).placeholder(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
+            }
 
-                TextView tv1 = (TextView) findViewById(R.id.show_namegroup);
-                TextView tv2 = (TextView) findViewById(R.id.show_welcome);
-                tv1.setText(" "+gruppo_2.getGroupName());
-                tv2.setText(" Welcome: "+user.getUsername());
-                t.setTitle(" "+gruppo_2.getGroupName());
-                t.setSubtitle(" Welcome: "+user.getUsername());
-                setSupportActionBar(t);
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
 
-                getSupportActionBar().setDisplayUseLogoEnabled(false);
-                getSupportActionBar().setDisplayShowCustomEnabled(true);
-                t.setNavigationOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+            }
+        });
+        RecyclerView mylist = (RecyclerView) findViewById(R.id.listView2);
 
-                        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(DataSnapshot dataSnapshot) {
-                                unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
-                                Integer i = unread.calculate();
-                                String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
-                                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
-                                finish();
-                            }
+        t= (Toolbar)findViewById(R.id.expenseToolbar);
 
-                            @Override
-                            public void onCancelled(DatabaseError databaseError) {
+        final TextView tv1 = (TextView) findViewById(R.id.show_namegroup);
+        TextView tv2 = (TextView) findViewById(R.id.show_welcome);
+        tv1.setText(" "+gruppo.getGroupName());
 
-                            }
-                        });
-
-
-                    }
-                });
-                if(gruppo_2.getUri()!=null) {
-                    Picasso.with(getBaseContext()).load(gruppo_2.getUri()).placeholder(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
-                }else
-                    Picasso.with(getBaseContext()).load(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
-
+        listener_2 = groups_ref.child(gruppo.getGroupID()).child("groupName").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+              String str = (String) dataSnapshot.getValue();
+                tv1.setText(str);
             }
 
             @Override
@@ -149,21 +137,12 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
             }
         });
 
-
-
-        final RecyclerView mylist = (RecyclerView) findViewById(R.id.listView2);
-
-        t= (Toolbar)findViewById(R.id.expenseToolbar);
-        ImageView img = (ImageView) findViewById(R.id.show_GroupIcon);
-        img.setImageResource(R.drawable.default_img);
-        TextView tv1 = (TextView) findViewById(R.id.show_namegroup);
-        TextView tv2 = (TextView) findViewById(R.id.show_welcome);
-        tv1.setText(" "+gruppo.getGroupName());
-        tv2.setText(" Welcome: "+user.getUsername());
+        tv2.setText("Touch for group Info");
         setSupportActionBar(t);
         getSupportActionBar().setDisplayUseLogoEnabled(false);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setDisplayShowCustomEnabled(true);
+
         if(gruppo.getUri()!=null) {
             Picasso.with(getBaseContext()).load(gruppo.getUri()).placeholder(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
             t.setTitle(" "+gruppo.getGroupName());
@@ -184,7 +163,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
                         Integer i = unread.calculate();
                         String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
                         users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
-                        finish();
+
                     }
 
                     @Override
@@ -196,7 +175,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         });
 
         Query ref = groups_ref.child(gruppo.getGroupID()).child("spese");
-        ExpenseRecyclerAdapter adapter= new ExpenseRecyclerAdapter(Spesa.class,R.layout.listview_expense_row, ExpensesActivity.ExpenseHolder.class,ref,getBaseContext(),gruppo);
+        adapter= new ExpenseRecyclerAdapter(Spesa.class,R.layout.listview_expense_row, ExpensesActivity.ExpenseHolder.class,ref,getBaseContext(),gruppo);
 
 
 
@@ -260,10 +239,11 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onBackPressed()
     {
+
         users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                groups_ref.child(ID).removeEventListener(listener);
+
                 unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
                 Integer i = unread.calculate();
                 String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
@@ -289,7 +269,6 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
             fab1.startAnimation(fab_close);
             fab2.startAnimation(fab_close);
 
-
             fab1.setClickable(false);
             fab2.setClickable(false);
 
@@ -301,7 +280,6 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
             fab.startAnimation(rotate_forward);
             fab1.startAnimation(fab_open);
             fab2.startAnimation(fab_open);
-
 
             fab1.setClickable(true);
             fab2.setClickable(true);
@@ -320,18 +298,19 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
                 animateFAB();
                 break;
             case R.id.fab1:
-                groups_ref.child(ID).removeEventListener(listener);
+                //groups_ref.child(gruppo.getGroupID()).child("uri").removeEventListener(listener);
                 Intent appInfo= new Intent(ExpensesActivity.this, AddExpenseActivity.class);
                 appInfo.putExtra("Gruppo",gruppo);
                 ExpensesActivity.this.startActivity(appInfo);
-                finish();
+
 
                 break;
             case R.id.fab2:
+               //groups_ref.child(gruppo.getGroupID()).child("uri").removeEventListener(listener);
                 Intent i =  new Intent (this,Group_balance.class);
                 i.putExtra("Gruppo",gruppo);
                 startActivity(i);
-                finish();
+
                 break;
 
 
@@ -362,4 +341,6 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
 
         }
     }
+
+
 }
