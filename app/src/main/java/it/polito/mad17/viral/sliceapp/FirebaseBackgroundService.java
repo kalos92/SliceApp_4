@@ -37,10 +37,12 @@ public class FirebaseBackgroundService extends Service {
     private ArrayList <String> groupsID = new ArrayList<String>();
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor prefEditor;
-    private Long lastTimestampGroup = System.currentTimeMillis();
-    private Long lastTimestampExpense  = System.currentTimeMillis();
-    private Long lastTimestampContestation = System.currentTimeMillis();
-    private Long lastTimestampComment  = System.currentTimeMillis();
+    private Long lastTimestampGroup;
+    private Long lastTimestampExpense;
+    private Long lastTimestampContestation;
+    private Long lastTimestampComment;
+    private Long lastTimestampDeletedExpense;
+    private ArrayList<String> removedExpenses = new ArrayList<String>();
 
     @Nullable
     @Override
@@ -86,6 +88,15 @@ public class FirebaseBackgroundService extends Service {
             prefEditor.commit();
         }
 
+        lastTimestampDeletedExpense = sharedPref.getLong("lastTimestampDeletedExpense", 0);
+        if(lastTimestampDeletedExpense == 0){
+            lastTimestampDeletedExpense = System.currentTimeMillis();
+            prefEditor = sharedPref.edit();
+            prefEditor.putLong("lastTimestampDeletedExpense", lastTimestampDeletedExpense);
+            prefEditor.commit();
+        }
+
+
         final String userTelephone = sharedPref.getString("telefono", null);
 
         DatabaseReference groupsRef = database.getReference().child("groups_prova");
@@ -95,9 +106,6 @@ public class FirebaseBackgroundService extends Service {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
-              //  Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-            //    while(iterator.hasNext()) {
-                  //  DataSnapshot contest = iterator.next();
                 long contestationTimestamp = (long) dataSnapshot.child("timestamp").getValue();
                 final String contestator,expenseID,groupID,contestationID;
                 expenseID = (String) dataSnapshot.child("expenseID").getValue();
@@ -139,7 +147,6 @@ public class FirebaseBackgroundService extends Service {
                         }
 
                     }
-              //  }
                 // add listener for comment
                 contestationsRef.child(dataSnapshot.getKey()).child("commenti").addChildEventListener(new ChildEventListener() {
                     @Override
@@ -154,10 +161,9 @@ public class FirebaseBackgroundService extends Service {
                                 prefEditor = sharedPref.edit();
                                 prefEditor.putLong("lastTimestampComment", lastTimestampComment);
                                 prefEditor.commit();
+
                                 String userName = (String) dataSnapshot.child("userName").getValue();
                                 String commento = (String) dataSnapshot.child("commento").getValue();
-
-
                                 // notification
                                 Intent notificationIntent = new Intent(getApplicationContext(),CommentsActivity.class);
                                 notificationIntent.putExtra("contestator", contestator);
@@ -179,7 +185,6 @@ public class FirebaseBackgroundService extends Service {
                                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 manager.notify((int) System.currentTimeMillis(), noti);
                             }
-
                         }
                     }
 
@@ -212,12 +217,135 @@ public class FirebaseBackgroundService extends Service {
             public void onChildAdded(final DataSnapshot dataSnapshot, String s) {
 
 
-                // riempio ed eventualmente sovrascrivo la hashMap
-                String groupID = dataSnapshot.getKey();
-                if(!groupsExpenses.containsKey(groupID)){//ho creato un nuovo gruppo
-                    groupsID.add(groupID);//gruppi appena creati aventi 0 spese.
-                }
-                final long groupTimestamp = (long) dataSnapshot.child("c").getValue();
+                // Collego un listener sotto la voce "spese" per rilevare l'eventuale rimozione di una spesa da questo gruppo in futuro
+                DatabaseReference groupExpenses = (DatabaseReference) database.getReference().child("groups_prova").child(dataSnapshot.getKey()).child("spese");
+                groupExpenses.addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(final DataSnapshot dataSnapshots, String s) {
+                        // Il codice relativo alla notifica dell'aggiunta di una spesa puo' essere spostato quì
+                        System.out.println("groupdExpenses aggiunta spesa " + dataSnapshots);
+                        // rilevo la rimozione della spesa dal fatto che alcune voci, tra cui "contestazioni" viene eliminata
+                        if(!dataSnapshots.hasChild("cat")) {
+                            Long deletedExpenseTimestamp = dataSnapshots.child("c").getValue(Long.class);
+                            if(deletedExpenseTimestamp > lastTimestampDeletedExpense){
+                                lastTimestampDeletedExpense = deletedExpenseTimestamp;
+                                prefEditor = sharedPref.edit();
+                                prefEditor.putLong("lastTimestampDeletedExpense", lastTimestampDeletedExpense);
+                                prefEditor.commit();
+
+                                Intent notificationIntent = new Intent(getApplicationContext(), ExpensesActivity.class);
+                                Gruppo g = dataSnapshot.getValue(Gruppo.class);
+                                notificationIntent.putExtra("Gruppo", g);
+                                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                        PendingIntent.FLAG_UPDATE_CURRENT);
+                                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                        .setSmallIcon(R.drawable.img_removed)
+                                        .setContentTitle("expense " + dataSnapshots.child("removed_msg").getValue(String.class) + " from group " + dataSnapshot.child("groupName").getValue(String.class))
+                                        .setContentText("remover: " + dataSnapshots.child("remover").getValue(String.class))
+                                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                        .setContentIntent(contentIntent);
+                                Notification noti = builder.build();
+                                noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                // Add notification
+                                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                manager.notify((int) System.currentTimeMillis(), noti);
+                            }
+                        }
+                        // è stata aggiunta una nuova spesa
+                        else {
+                            long expenseTimestamp = (long) dataSnapshots.child("c").getValue();
+                            final String expenseName = (String) dataSnapshots.child("nome_spesa").getValue();
+                            final String groupName = (String) dataSnapshot.child("groupName").getValue();
+                            String usernamePagante = (String) dataSnapshots.child("pagante").child("username").getValue();
+                            String telephonePagante = (String) dataSnapshots.child("pagante").child("telephone").getValue();
+
+                            if (expenseTimestamp > lastTimestampExpense) {
+                                lastTimestampExpense = expenseTimestamp;
+                                prefEditor = sharedPref.edit();
+                                prefEditor.putLong("lastTimestampExpense", lastTimestampExpense);
+                                prefEditor.commit();
+                                // notifico aggiunta della spesa
+                                if(!telephonePagante.equals(userTelephone)){
+                                    Intent notificationIntent = new Intent(getApplicationContext(), ExpenseDetails.class);
+                                    Spesa spesa = dataSnapshots.getValue(Spesa.class);
+                                    Gruppo g = dataSnapshot.getValue(Gruppo.class);
+                                    notificationIntent.putExtra("Spesa", spesa);
+                                    notificationIntent.putExtra("Gruppo", g);
+                                    PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                            PendingIntent.FLAG_UPDATE_CURRENT);
+                                    android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                            .setSmallIcon(R.drawable.added_expense)
+                                            .setContentTitle("Expense " + expenseName + " has been added to the group " + groupName)
+                                            .setContentText("Payer is " + usernamePagante)
+                                            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                            .setContentIntent(contentIntent);
+                                    Notification noti = builder.build();
+                                    noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                    // Add notification
+                                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                    manager.notify((int) System.currentTimeMillis(), noti);
+                                }
+
+                                // attacco un listener per ogni divisione
+                                final DatabaseReference divisioniRef = dataSnapshots.child("divisioni").getRef();
+                                divisioniRef.addChildEventListener(new ChildEventListener() {
+                                    @Override
+                                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                                        System.out.println("division added" + dataSnapshot);
+                                    }
+                                    @Override
+                                    public void onChildChanged(final DataSnapshot dataSnapshotd, String s) {
+                                        System.out.println("division changed" + dataSnapshotd);
+                                        // La notifica arriva a coloro che fanno parte del gruppo
+                                        final String user2 = (String) dataSnapshotd.child("persona").child("username").getValue();
+                                        final double importo = dataSnapshotd.child("importo").getValue(Double.class);
+
+                                        if(dataSnapshots.child("divisioni").hasChild(userTelephone)){
+                                            if(dataSnapshotd.child("haPagato").getValue(Boolean.class)) {
+                                                Intent notificationIntent = new Intent(getApplicationContext(), Group_balance.class);
+                                                //Spesa spesa = dataSnapshots.getValue(Spesa.class);
+                                                Gruppo g = dataSnapshot.getValue(Gruppo.class);
+                                                //notificationIntent.putExtra("Spesa", spesa);
+                                                notificationIntent.putExtra("Gruppo", g);
+                                                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                                        PendingIntent.FLAG_UPDATE_CURRENT);
+                                                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                                        .setSmallIcon(R.drawable.expense_paid)
+                                                        .setContentTitle("The user " + user2 + " has paid his part (" + importo + ")")
+                                                        .setContentText("expense " + expenseName + " - group " + groupName)
+                                                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                                        .setContentIntent(contentIntent);
+
+                                                Notification noti = builder.build();
+                                                noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                                // Add notification
+                                                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                                manager.notify((int) System.currentTimeMillis(), noti);
+                                            }
+                                        }
+                                    }
+                                    @Override
+                                    public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                                    @Override
+                                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {}
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshote, String s) {}
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {}
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {}
+                });
+
+                // riempio i partecipanti del gruppo per poter fare l'intent all'activit giusta
                 final Gruppo g = dataSnapshot.getValue(Gruppo.class);
                 final ArrayList<String> numbers = new ArrayList<String>();
                 final HashMap<String, Persona> partecipanti = new HashMap<String, Persona>();
@@ -240,9 +368,8 @@ public class FirebaseBackgroundService extends Service {
                         g.setPartecipanti_3(partecipanti);
                         g.setUser(SliceAppDB.getUser());
 
-
-
                         // Mando la notifica solo se l'utente da parte del gruppo
+                        final long groupTimestamp = (long) dataSnapshot.child("c").getValue();
                         if(dataSnapshot.child("partecipanti_numero_cnome").hasChild(userTelephone)){
                             if(groupTimestamp > lastTimestampGroup){
                                 lastTimestampGroup = groupTimestamp;
@@ -256,7 +383,7 @@ public class FirebaseBackgroundService extends Service {
                                 String groupCreatorTelephone = (String) dataSnapshot.child("groupCreator").getValue();
                                 if(!groupCreatorTelephone.equals(userTelephone)){
                                     Intent notificationIntent = new Intent(getApplicationContext(), ExpensesActivity.class);
-                                    notificationIntent.putExtra("Gruppo",g);//ciao
+                                    notificationIntent.putExtra("Gruppo",g);
 
                                     PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                             PendingIntent.FLAG_UPDATE_CURRENT);
@@ -275,63 +402,22 @@ public class FirebaseBackgroundService extends Service {
                                 }
                             }
                         }
-
-
                     }
 
                     @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
+                    public void onCancelled(DatabaseError databaseError) {}
                 });
             }
 
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-
-                String groupId = dataSnapshot.getKey();
-                String gName = (String) dataSnapshot.child("groupName").getValue();
-
-                ///////////////////////// Caso: rimozione spesa /////////////////////////////////////////
-                long numSpeseRemote = dataSnapshot.child("spese").getChildrenCount(); // dovrebbe essere diminuito
-                DataSnapshot speseRemote = dataSnapshot.child("spese");
-
-                List<String> listSpese = groupsExpenses.get(groupId);
-                if(listSpese != null){
-                    int numSpeseLocali = listSpese.size();
-                    if(numSpeseRemote < numSpeseLocali){ // la spesa eliminata viene notificata anche all pagante
-                        String expenseName = null;
-                        for(String spesaIdPlusName : listSpese){
-                            String[] t = spesaIdPlusName.split(" ");
-                            String spesaId = t[0];
-                            if(!speseRemote.hasChild(spesaId)) {
-                                groupsExpenses.get(groupId).remove(spesaIdPlusName);
-                                expenseName = t[1];
-                            }
-                        }
-
-                        Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
-                        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                PendingIntent.FLAG_UPDATE_CURRENT);
-                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                .setSmallIcon(R.drawable.deleted_expense)
-                                .setContentTitle("An expense has been removed from ")
-                                .setContentText( expenseName + " - group " + gName) // non riusciamo a ricavare il nome della spesa
-                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                //.setPriority(NotificationCompat.PRIORITY_HIGH)
-                                .setContentIntent(contentIntent);
-                        Notification noti = builder.build();
-                        noti.flags = Notification.FLAG_AUTO_CANCEL;
-                        // Add notification
-                        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                        manager.notify((int) System.currentTimeMillis(), noti);
-
-                    }
-                }
+                // Questo modo di cancellare la spesa non funziona più perché la spesa non viene eleminata dal database
+                // L'idea è aggiungere un listener quando viene creato un gruppo, alla voce "spese" sotto ogni "groupID" e lavorare su onChildChanged
 
                 /////////////////////// Caso aggiunta spesa /////////////////////////////
                 // invio la notifica solo a chi appartiene a gruppo
+                /*
                 if(dataSnapshot.child("partecipanti_numero_cnome").hasChild(userTelephone)) {
                     Iterator<DataSnapshot> expenses = dataSnapshot.child("spese").getChildren().iterator();
                     //Individuo la spesa che è stata aggiunta
@@ -366,7 +452,6 @@ public class FirebaseBackgroundService extends Service {
                                         public void onDataChange(DataSnapshot ds) {
                                             if(ds.hasChild(userTelephone)){
                                                 if((Boolean) dataSnapshot.child("haPagato").getValue() == true) {
-
                                                     Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
                                                     PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                                             PendingIntent.FLAG_UPDATE_CURRENT);
@@ -390,9 +475,6 @@ public class FirebaseBackgroundService extends Service {
                                         @Override
                                         public void onCancelled(DatabaseError databaseError) {}
                                     });
-
-
-
                                 }
                                 @Override
                                 public void onChildRemoved(DataSnapshot dataSnapshot) {}
@@ -433,14 +515,13 @@ public class FirebaseBackgroundService extends Service {
                         }
                     }
                 }
+                */
             }
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {}
-
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-
             @Override
             public void onCancelled(DatabaseError databaseError) {}
         };
