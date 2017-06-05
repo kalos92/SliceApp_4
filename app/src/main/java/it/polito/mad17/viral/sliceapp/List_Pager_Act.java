@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -172,9 +173,14 @@ public class List_Pager_Act extends AppCompatActivity {
             SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
             SharedPreferences.Editor prefEditor = sharedPref.edit();
             prefEditor.putInt("isLogged", 0);
+            prefEditor.clear();
             prefEditor.commit();
-            // pulire lista gruppi e lista spese, altrimenti la visualizzazione è doppia
 
+            // pulire lista gruppi e lista spese, altrimenti la visualizzazione è doppia
+            SliceAppDB.listeners.clear();
+            for(DatabaseReference dr: SliceAppDB.referenze.keySet()){
+                dr.removeEventListener(SliceAppDB.referenze.get(dr));
+            }
             Intent i = new Intent(List_Pager_Act.this,  LoginActivity.class);
             startActivity(i);
             finish();

@@ -40,6 +40,7 @@ import static java.security.AccessController.getContext;
 
 public class CommentsActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,13 +54,16 @@ public class CommentsActivity extends AppCompatActivity {
         final String expenseID = extras.getString("expenseID");
         final String groupID = extras.getString("groupID");
         final String contestatorID = extras.getString("contestator");
-
        // SharedPreferences.Editor prefEditor;
 
         RecyclerView mylist = (RecyclerView) findViewById(R.id.listViewComments);
 
         SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
         String userTelephone = sharedPref.getString("telefono", null);
+        SharedPreferences.Editor prefEditor;
+        prefEditor = sharedPref.edit();
+        prefEditor.putString("activity", "commentsActivity");
+        prefEditor.commit();
 
         Query commentsRef = databaseRef.child("users_prova").child(userTelephone).child("contestazioni").child(contestationID).child("commenti");
         FirebaseRecyclerAdapter<Commento, RecyclerView.ViewHolder> adapter = new FirebaseRecyclerAdapter<Commento, RecyclerView.ViewHolder>(Commento.class, R.layout.comment_row, RecyclerView.ViewHolder.class, commentsRef) {
@@ -247,6 +251,18 @@ public class CommentsActivity extends AppCompatActivity {
             userName = (TextView) itemView.findViewById(R.id.userNameComment);
             comment = (TextView) itemView.findViewById(R.id.comment);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor;
+        prefEditor = sharedPref.edit();
+        prefEditor.putString("activity", "null");
+        prefEditor.commit();
+
+        finish();
     }
 }
 

@@ -386,6 +386,7 @@ public class ExpenseDetails extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeEventListener(listener);
         finish();
     }
 

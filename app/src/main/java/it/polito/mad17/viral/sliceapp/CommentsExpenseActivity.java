@@ -50,10 +50,20 @@ public class CommentsExpenseActivity extends AppCompatActivity {
     private String contestationID;
     private String contestatorID;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
+        SharedPreferences sharedPref=getSharedPreferences("data",MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor;
+
+        prefEditor = sharedPref.edit();
+        prefEditor.putString("activity", "commentsActivity");
+        prefEditor.commit();
+
+
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
         final DatabaseReference databaseRef = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/").getReference();
@@ -245,6 +255,19 @@ public class CommentsExpenseActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        SharedPreferences sharedPref=getSharedPreferences("data",MODE_PRIVATE);
+        SharedPreferences.Editor prefEditor;
+        prefEditor = sharedPref.edit();
+        prefEditor = sharedPref.edit();
+        prefEditor.putString("activity", "null");
+        prefEditor.commit();
+
+        finish();
+    }
 }
 
 
