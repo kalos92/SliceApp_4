@@ -13,7 +13,7 @@
         android:layout_marginLeft="8dp"
         android:id="@+id/userNameComment"
         android:text="CALOGERO"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#6C7A89"
         android:textStyle="italic"

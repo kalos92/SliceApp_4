@@ -132,14 +132,12 @@ public class Upload_expense extends AsyncTask<Void, Integer, Void> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        dialog = new SpotsDialog(context,"Saving your expense");
-        dialog.show();
+
     }
 
     @Override
     protected void onPostExecute(Void aVoid) {
         super.onPostExecute(aVoid);
-        dialog.dismiss();
         fa.finish();
 
     }

@@ -11,6 +11,8 @@ import android.media.RingtoneManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
+import android.util.Log;
+import android.util.LongSparseArray;
 import android.widget.Toast;
 
 import com.google.firebase.database.ChildEventListener;
@@ -42,6 +44,7 @@ public class FirebaseBackgroundService extends Service {
     private Long lastTimestampContestation;
     private Long lastTimestampComment;
     private Long lastTimestampDeletedExpense;
+    private Long lastTimestampBalance;
     private ArrayList<String> removedExpenses = new ArrayList<String>();
 
     @Nullable
@@ -95,7 +98,13 @@ public class FirebaseBackgroundService extends Service {
             prefEditor.putLong("lastTimestampDeletedExpense", lastTimestampDeletedExpense);
             prefEditor.commit();
         }
-
+        lastTimestampBalance = sharedPref.getLong("lastTimestampBalance", 0);
+        if(lastTimestampBalance==0){
+            lastTimestampBalance = System.currentTimeMillis();
+            prefEditor = sharedPref.edit();
+            prefEditor.putLong("lastTimestampBalance",lastTimestampBalance);
+            prefEditor.commit();
+        }
 
         final String userTelephone = sharedPref.getString("telefono", null);
 
@@ -121,31 +130,69 @@ public class FirebaseBackgroundService extends Service {
                             prefEditor.putLong("lastTimestampContestation", lastTimestampContestation);
                             prefEditor.commit();
                             // get data to show in the notification
-                            String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
-                            String groupName = (String) dataSnapshot.child("groupName").getValue();
-                            String contestTitle = (String) dataSnapshot.child("title").getValue();
+                            final String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
+                            final String groupName = (String) dataSnapshot.child("groupName").getValue();
+                            final String contestTitle = (String) dataSnapshot.child("title").getValue();
                             // notification
-                            Intent notificationIntent = new Intent(getApplicationContext(), CommentsActivity.class);
-                            notificationIntent.putExtra("contestator", contestator);
-                            notificationIntent.putExtra("groupID", groupID);
-                            notificationIntent.putExtra("expenseID", expenseID);
-                            notificationIntent.putExtra("contestationID", contestationID);
 
-                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                    PendingIntent.FLAG_UPDATE_CURRENT);
-                            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                    .setSmallIcon(R.drawable.added_contestation)
-                                    .setContentTitle(contestator + " has contested expense " + expenseName + " of group " + groupName)
-                                    .setContentText(contestTitle)
-                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                    .setContentIntent(contentIntent);
-                            Notification noti = builder.build();
-                            noti.flags = Notification.FLAG_AUTO_CANCEL;
-                            // Add notification
-                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                            manager.notify((int) System.currentTimeMillis(), noti);
+                            if(SliceAppDB.getUser()==null){
+                                DatabaseReference user_ref = database.getReference().child("users_prova");
+                                user_ref.child(userTelephone).addListenerForSingleValueEvent(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                        Persona user = dataSnapshot.getValue(Persona.class);
+                                        SliceAppDB.setUser_1(user);
+                                        SliceAppDB.setUser(user);
+                                        Intent notificationIntent = new Intent(getApplicationContext(), CommentsActivity.class);
+                                        notificationIntent.putExtra("contestator", contestator);
+                                        notificationIntent.putExtra("groupID", groupID);
+                                        notificationIntent.putExtra("expenseID", expenseID);
+                                        notificationIntent.putExtra("contestationID", contestationID);
+
+                                        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                                PendingIntent.FLAG_UPDATE_CURRENT);
+                                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                                .setSmallIcon(R.drawable.added_contestation)
+                                                .setContentTitle(contestator + " has contested expense " + expenseName + " of group " + groupName)
+                                                .setContentText(contestTitle)
+                                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                                .setContentIntent(contentIntent);
+                                        Notification noti = builder.build();
+                                        noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                        // Add notification
+                                        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                        manager.notify((int) System.currentTimeMillis(), noti);
+                                    }
+
+                                    @Override
+                                    public void onCancelled(DatabaseError databaseError) {
+
+                                    }
+                                });
+                            }else{
+
+                                Intent notificationIntent = new Intent(getApplicationContext(), CommentsActivity.class);
+                                notificationIntent.putExtra("contestator", contestator);
+                                notificationIntent.putExtra("groupID", groupID);
+                                notificationIntent.putExtra("expenseID", expenseID);
+                                notificationIntent.putExtra("contestationID", contestationID);
+
+                                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                        PendingIntent.FLAG_UPDATE_CURRENT);
+                                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                        .setSmallIcon(R.drawable.added_contestation)
+                                        .setContentTitle(contestator + " has contested expense " + expenseName + " of group " + groupName)
+                                        .setContentText(contestTitle)
+                                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                        .setContentIntent(contentIntent);
+                                Notification noti = builder.build();
+                                noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                // Add notification
+                                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                manager.notify((int) System.currentTimeMillis(), noti);
+                            }
                         }
-
                     }
                 // add listener for comment
                 contestationsRef.child(dataSnapshot.getKey()).child("commenti").addChildEventListener(new ChildEventListener() {
@@ -475,110 +522,7 @@ public class FirebaseBackgroundService extends Service {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {
 
-                // Questo modo di cancellare la spesa non funziona più perché la spesa non viene eleminata dal database
-                // L'idea è aggiungere un listener quando viene creato un gruppo, alla voce "spese" sotto ogni "groupID" e lavorare su onChildChanged
 
-                /////////////////////// Caso aggiunta spesa /////////////////////////////
-                // invio la notifica solo a chi appartiene a gruppo
-                /*
-                if(dataSnapshot.child("partecipanti_numero_cnome").hasChild(userTelephone)) {
-                    Iterator<DataSnapshot> expenses = dataSnapshot.child("spese").getChildren().iterator();
-                    //Individuo la spesa che è stata aggiunta
-                    while (expenses.hasNext()) {
-                        final DataSnapshot currentExpense = expenses.next();
-                        long expenseTimestamp = (long) currentExpense.child("c").getValue();
-                        Spesa spesa = currentExpense.getValue(Spesa.class);
-                        final String expenseID = currentExpense.getKey();
-                        final String groupID = (String) currentExpense.child("gruppo").getValue();
-                        final String expenseName = (String) currentExpense.child("nome").getValue();
-                        final String groupName = (String) dataSnapshot.child("groupName").getValue();
-                        String usernamePagante = (String) currentExpense.child("pagante").child("username").getValue();
-                        String telephonePagante = (String) currentExpense.child("pagante").child("telephone").getValue();
-
-                        if (expenseTimestamp > lastTimestampExpense) {
-                            lastTimestampExpense = expenseTimestamp;
-                            prefEditor = sharedPref.edit();
-                            prefEditor.putLong("lastTimestampExpense", lastTimestampExpense);
-                            prefEditor.commit();
-                            // attacco un listener per ogni divisione
-                            final DatabaseReference divisioniRef = currentExpense.child("divisioni").getRef();
-                            divisioniRef.addChildEventListener(new ChildEventListener() {
-                                @Override
-                                public void onChildAdded(DataSnapshot dataSnapshot, String s) {}
-                                @Override
-                                public void onChildChanged(final DataSnapshot dataSnapshot, String s) {
-                                    // La notifica arriva a coloro che fanno parte del gruppo
-                                    final String user2 = (String) dataSnapshot.child("persona").child("username").getValue();
-                                    final double importo = dataSnapshot.child("importo").getValue(Double.class);
-                                    divisioniRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                                        @Override
-                                        public void onDataChange(DataSnapshot ds) {
-                                            if(ds.hasChild(userTelephone)){
-                                                if((Boolean) dataSnapshot.child("haPagato").getValue() == true) {
-                                                    Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
-                                                    PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                                            PendingIntent.FLAG_UPDATE_CURRENT);
-                                                    android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                                            .setSmallIcon(R.drawable.expense_paid)
-                                                            .setContentTitle("The user " + user2 + " has paid his part (" + importo + ")")
-                                                            .setContentText("expense " + expenseName + " - group " + groupName)
-                                                            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                                            //.setPriority(NotificationCompat.PRIORITY_HIGH)
-                                                            .setContentIntent(contentIntent);
-
-                                                    Notification noti = builder.build();
-                                                    noti.flags = Notification.FLAG_AUTO_CANCEL;
-                                                    // Add notification
-                                                    NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                                    manager.notify((int) System.currentTimeMillis(), noti);
-                                                }
-                                            }
-                                        }
-
-                                        @Override
-                                        public void onCancelled(DatabaseError databaseError) {}
-                                    });
-                                }
-                                @Override
-                                public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                                @Override
-                                public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                                @Override
-                                public void onCancelled(DatabaseError databaseError) {}
-                            });
-
-                            //Riempimento della mappa di gestione dei pagamenti dell'utente i-esimo.
-
-
-                            if(groupsID.contains(groupID)){//è stata aggiunta una nuova spesa al gruppo appena creato
-                                ArrayList<String> listaSpese = new ArrayList<String>();
-                                listaSpese.add(expenseID + " " + expenseName);
-                                groupsExpenses.put(groupID, listaSpese);
-                                groupsID.remove(groupID);
-                            }else groupsExpenses.get(groupID).add(expenseID + " " + expenseName);
-
-                            if(!telephonePagante.equals(userTelephone)){
-                                Intent notificationIntent = new Intent(getApplicationContext(), SplashScreen.class);
-                                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                        PendingIntent.FLAG_UPDATE_CURRENT);
-                                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                        .setSmallIcon(R.drawable.added_expense)
-                                        .setContentTitle("An expense has been added to the group " + groupName)
-                                        .setContentText(expenseName + " - Payer is " + usernamePagante)
-                                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                        //.setPriority(NotificationCompat.PRIORITY_HIGH)
-                                        .setContentIntent(contentIntent);
-                                Notification noti = builder.build();
-                                noti.flags = Notification.FLAG_AUTO_CANCEL;
-                                // Add notification
-                                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                manager.notify((int) System.currentTimeMillis(), noti);
-                            }
-                            break;
-                        }
-                    }
-                }
-                */
             }
 
             @Override
@@ -589,6 +533,144 @@ public class FirebaseBackgroundService extends Service {
             public void onCancelled(DatabaseError databaseError) {}
         };
         groupsRef.addChildEventListener(groupsListener);
+
+
+      DatabaseReference balanceRef = database.getReference().child("balance_prova").child(userTelephone);
+
+        balanceRef.addValueEventListener(new ValueEventListener() {
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                while(iterator.hasNext()){
+                    final DataSnapshot dataS = iterator.next();
+
+                    final Long timeStamp = (Long) dataS.child("timeStamp").getValue();
+                    String time = ""+timeStamp;
+                    String time2 = ""+lastTimestampBalance;
+
+
+                    if(SliceAppDB.getUser()==null){
+                        DatabaseReference user_ref = database.getReference().child("users_prova");
+                        user_ref.child(userTelephone).addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                                Persona user = dataSnapshot.getValue(Persona.class);
+                                SliceAppDB.setUser_1(user);
+                                SliceAppDB.setUser(user);
+                                    if(timeStamp > lastTimestampBalance){
+                                        lastTimestampBalance = timeStamp;
+                                        String beneficiario = (String)dataS.child("beneficiario").getValue();
+                                        String nome =(String)dataS.child("nome").getValue();
+                                        Double importo = (Double)dataS.child("importo").getValue(Double.class);
+                                        int digits = (int)dataS.child("digits").getValue();
+                                        String simbol = (String) dataS.child("simbol").getValue();
+                                        String str = String.format("%."+digits+"f",importo);
+
+                                        if(beneficiario.equals(userTelephone)){
+                                            Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
+                                            notificationIntent.putExtra("uno",1);
+
+                                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                                    PendingIntent.FLAG_UPDATE_CURRENT);
+                                            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                                    .setSmallIcon(R.drawable.added_contestation)
+                                                    .setContentTitle(nome+" payed: "+str+" "+simbol)
+                                                    .setContentText("")
+                                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                                    .setContentIntent(contentIntent);
+                                            Notification noti = builder.build();
+                                            noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                            // Add notification
+                                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                            manager.notify((int) System.currentTimeMillis(), noti);
+                                        }
+                                        else{
+                                            Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
+                                            notificationIntent.putExtra("uno",1);
+
+                                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                                    PendingIntent.FLAG_UPDATE_CURRENT);
+                                            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                                    .setSmallIcon(R.drawable.added_contestation)
+                                                    .setContentTitle("You have payed: "+str+" "+simbol+" to "+nome)
+                                                    .setContentText("")
+                                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                                    .setContentIntent(contentIntent);
+                                            Notification noti = builder.build();
+                                            noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                            // Add notification
+                                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                            manager.notify((int) System.currentTimeMillis(), noti);
+                                        }
+                                    }
+                            }
+
+                            @Override
+                            public void onCancelled(DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+                    else{
+                        String beneficiario = (String)dataS.child("beneficiario").getValue();
+                        String nome =(String)dataS.child("nome").getValue();
+                        Double importo = (Double)dataS.child("importo").getValue(Double.class);
+                        Long digits = (Long)dataS.child("digits").getValue();
+                        String simbol = (String) dataS.child("simbol").getValue();
+                        String str = String.format("%."+digits+"f",importo);
+                        if(timeStamp > lastTimestampBalance) {
+
+
+                            lastTimestampBalance = timeStamp;
+                            if(beneficiario.equals(userTelephone)){
+                                Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
+                                notificationIntent.putExtra("uno", 1);
+
+                                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                        PendingIntent.FLAG_UPDATE_CURRENT);
+                                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                        .setSmallIcon(R.drawable.added_contestation)
+                                        .setContentTitle(nome+" payed: "+str+" "+simbol)
+                                        .setContentText("")
+                                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                        .setContentIntent(contentIntent);
+                                Notification noti = builder.build();
+                                noti.flags = Notification.FLAG_AUTO_CANCEL;
+                                // Add notification
+                                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                                manager.notify((int) System.currentTimeMillis(), noti);
+                            }
+                        }
+                        else{
+                            Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
+                            notificationIntent.putExtra("uno",1);
+
+                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                                    PendingIntent.FLAG_UPDATE_CURRENT);
+                            android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                                    .setSmallIcon(R.drawable.added_contestation)
+                                    .setContentTitle("You have payed: "+str+" "+simbol+" to "+nome)
+                                    .setContentText("")
+                                    .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                                    .setContentIntent(contentIntent);
+                            Notification noti = builder.build();
+                            noti.flags = Notification.FLAG_AUTO_CANCEL;
+                            // Add notification
+                            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                            manager.notify((int) System.currentTimeMillis(), noti);
+                        }
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
     }
 
     @Override

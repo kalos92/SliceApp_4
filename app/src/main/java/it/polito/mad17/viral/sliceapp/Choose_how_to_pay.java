@@ -35,9 +35,10 @@ import java.util.Calendar;
 import dmax.dialog.SpotsDialog;
 
 import static android.content.Context.MODE_PRIVATE;
+import static it.polito.mad17.viral.sliceapp.R.id.rg;
 
 
-public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragment.ReturnSelection_2{
+public class Choose_how_to_pay extends Fragment {
     private View v;
     private String cat;
     private GregorianCalendar data;
@@ -61,9 +62,12 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     private String expenseID = expense.getKey();
     private DatabaseReference groups_prova_2 = database.getReference().child("groups_prova");
 
-    public static Choose_how_to_pay newInstance(Gruppo g) {
+    public static Choose_how_to_pay newInstance(Bundle bundle,Gruppo g, Persona user) {
         Choose_how_to_pay fragment = new Choose_how_to_pay();
         Bundle args = new Bundle();
+        args.putSerializable("Gruppo",g);
+        args.putSerializable("User",user);
+        args.putBundle("Bundle",bundle);
 
         fragment.setArguments(args);
         return fragment;
@@ -72,7 +76,11 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) { }
+        if (getArguments() != null) {
+            gruppo = (Gruppo) getArguments().getSerializable("Gruppo");
+            user = (Persona) getArguments().getSerializable("User");
+
+        }
     }
 
     @Override
@@ -81,6 +89,38 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
         v = inflater.inflate(R.layout.fragment_choose_how_to_pay, container, false);
         context=getContext();
         setRetainInstance(true);
+        this.groupID=gruppo.getGroupID();
+        this.user=SliceAppDB.getUser();
+        if(getArguments().getBundle("Bundle")!=null){
+            Bundle bundle = getArguments().getBundle("Bundle");
+
+            cat= (String) bundle.getSerializable("Cat");
+
+            if( bundle.getSerializable("Data")!=null)
+                data = (GregorianCalendar) bundle.getSerializable("Data");
+            else
+                data=null;
+
+            if(bundle.getParcelable("Bitmap")!=null)
+                b= bundle.getParcelable("Bitmap");
+            else
+                b=null;
+
+            if(bundle.getParcelable("Uri")!=null)
+                uri = bundle.getParcelable("Uri");
+            else
+                uri=null;
+
+            nome = (String) bundle.getSerializable("Nome_s");
+            price = (String) bundle.getSerializable("Prezzo_s");
+            policy = (Policy) bundle.getSerializable("Policy");
+
+            tipo_policy = bundle.getInt("Tipo");
+            buyer = (Persona) bundle.getSerializable("Buyer");//this.cat=cat;
+
+        }
+
+
         if(savedInstanceState!=null){
             if(savedInstanceState.getParcelable("Uri")!=null)
                 uri = savedInstanceState.getParcelable("Uri");
@@ -493,22 +533,8 @@ public class Choose_how_to_pay extends Fragment implements Select_Policy_Fragmen
 
 
 
-    @Override
-    public void returnSelection_2( String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String nome, String price, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy, int tipo_policy) {
 
-        this.cat=cat;
-        this.data=data;//
-        this.buyer=buyer;//
-        this.b=b;
-        this.uri=uri;
-        this.nome=nome;//
-        this.groupID=gruppo.getGroupID();//
-        this.gruppo=gruppo;
-        this.user=SliceAppDB.getUser();//
-        this.policy=policy;//
-        this.price=price;
-        this.tipo_policy=tipo_policy;
-    }
+
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

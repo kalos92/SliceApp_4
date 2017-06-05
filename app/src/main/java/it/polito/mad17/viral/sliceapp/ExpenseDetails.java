@@ -7,11 +7,13 @@ import android.animation.ObjectAnimator;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Build;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.v7.app.AlertDialog;
@@ -96,7 +98,23 @@ public class ExpenseDetails extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Spesa s2;
                 s2=dataSnapshot.getValue(Spesa.class);
-                if(!isRemoved) {
+                if(s2==null || s2.getRemoved()){
+                    AlertDialog.Builder builder;
+                    builder = new AlertDialog.Builder(ExpenseDetails.this);
+                    builder.setTitle("This Expense was removed")
+                            .setMessage("Press OK and return at the previous page")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeEventListener(listener);
+                                    finish();
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+
+
+                }
+                else if(!isRemoved) {
                     if (s2.getContested() == true && s.getFullypayed().values().size()!=gruppo.getN_partecipanti()-1) {
                         CardView cd = (CardView) findViewById(R.id.status_card);
                         cd.setBackgroundColor(Color.argb(255, 248, 148, 6));
@@ -228,7 +246,9 @@ public class ExpenseDetails extends AppCompatActivity {
         String str = String.format("%."+s.getDigit()+"f", s.getImporto());
         tv2.setText(str+" "+s.getValuta());
         tv3.setText(s.getData());
-        String str2 = String.format("%."+s.getDigit()+"f", s.getDivisioni().get(SliceAppDB.getUser().getTelephone()).getImporto());
+        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        String userTelephone = sharedPref.getString("telefono", null);
+        String str2 = String.format("%."+s.getDigit()+"f", s.getDivisioni().get(userTelephone).getImporto());
         tv4.setText(str2+" "+s.getValuta());
 
 

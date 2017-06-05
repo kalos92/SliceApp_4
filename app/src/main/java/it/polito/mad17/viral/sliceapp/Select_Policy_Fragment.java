@@ -16,11 +16,11 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 
-public class Select_Policy_Fragment extends Fragment implements AddExpenseFragment.ReturnSelection, Little_fragment_1.GetPercentages, Little_fragment_2.AlltheSame{
+public class Select_Policy_Fragment extends Fragment implements Little_fragment_1.GetPercentages, Little_fragment_2.AlltheSame{
 
     private ReturnSelection_2 returnSelection_2;
     public interface ReturnSelection_2{
-        void returnSelection_2(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy,int tipo);
+        void returnSelection_2(Bundle bundle);
     }
 
     private String values;
@@ -36,9 +36,10 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
     private FragmentManager fm;
     private View v;
     private Policy policy;
-    private Choose_how_to_pay chtp = new Choose_how_to_pay();
     private RadioGroup rg;
     private int tipo;
+    private Bundle bundle_2;
+    private int radio_id = -1;
 
 
 
@@ -49,11 +50,13 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
     }
 
 
-    public static Select_Policy_Fragment newInstance(Gruppo gruppo, Persona user) {
+    public static Select_Policy_Fragment newInstance(Bundle bundle,Gruppo gruppo, Persona user) {
         Select_Policy_Fragment fragment = new Select_Policy_Fragment();
         Bundle args = new Bundle();
         args.putSerializable("User",user);
         args.putSerializable("Gruppo",gruppo);
+        args.putBundle("Bundle",bundle);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -72,6 +75,42 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
         // Inflate the layout for this fragment
         v = inflater.inflate(R.layout.fragment_select_policy, container, false);
         setRetainInstance(true);
+
+        if(getArguments().getBundle("Bundle")!=null){
+            Bundle bundle = getArguments().getBundle("Bundle");
+
+
+
+            this.cat = (String) bundle.getSerializable("Cat");
+
+            if( bundle.getSerializable("Data")!=null)
+                    this.data = (GregorianCalendar) bundle.getSerializable("Data");
+            else
+                data=null;
+
+            this.buyer = (Persona) bundle.getSerializable("Buyer");
+
+            if( bundle.getParcelable("Uri")!=null)
+                uri=   bundle.getParcelable("Uri");
+            else
+                uri=null;
+
+            if(bundle.getParcelable("Bitmap")!=null)
+                this.b = bundle.getParcelable("Bitmap");
+            else
+                b=null;
+
+            this.price = (String) bundle.getSerializable("Prezzo_s");
+            nome =(String) bundle.getSerializable("Prezzo_s");
+
+            if(bundle.containsKey("ID"))
+            radio_id = bundle.getInt("ID");
+
+
+        }
+
+        if(getArguments().getBundle("Bundle")!=null)
+
         if(savedInstanceState!=null){
             if(savedInstanceState.getParcelable("Uri")!=null)
                 uri = savedInstanceState.getParcelable("Uri");
@@ -97,9 +136,19 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
         returnSelection_2 = (ReturnSelection_2) getActivity();
         rg = (RadioGroup) v.findViewById(R.id.rg);
 
-       rg.check(R.id.b3);
-        policy=gruppo.getPolicy();
-
+        if(radio_id==-1) {
+            rg.check(R.id.b3);
+            policy = gruppo.getPolicy();
+        }else {
+            rg.check(radio_id);
+            policy = gruppo.getPolicy();
+            if(radio_id == R.id.b1)
+                tipo=1;
+            else if(R.id.b2== radio_id)
+                tipo=2;
+            else if(R.id.b3== radio_id)
+                tipo=0;
+        }
 
         rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -141,31 +190,36 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
         });
 
         FloatingActionButton bnb = (FloatingActionButton) v.findViewById(R.id.fab_exp2);
-       // MenuItem ibnb = bnb.getMenu().getItem(1);
-       // BottomNavigationMenuView menuView = (BottomNavigationMenuView) bnb.getChildAt(0);
-       // for (int i = 0; i < menuView.getChildCount(); i++) {
-       //     final View iconView = menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
-       //     final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
-       //     final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            // set your height here
-       //     layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
-            // set your width here
-         //   layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
-       //     iconView.setLayoutParams(layoutParams);
-       // }
+
 
 
         bnb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(policy!=null) {
-                    if (returnSelection_2 != null)
-                        returnSelection_2.returnSelection_2(cat, data, buyer, b, uri, nome, price, gruppo, user, chtp, policy,tipo);
+                    if (returnSelection_2 != null) {
+                        //returnSelection_2.returnSelection_2(cat, data, buyer, b, uri, nome, price, gruppo, user, chtp, policy, tipo);
+                           bundle_2=new Bundle();
+                            bundle_2.putSerializable("Cat",cat);
+                        if(data!=null)
+                            bundle_2.putSerializable("Data",data);
+                        if(b!=null)
+                            bundle_2.putParcelable("Bitmap",b);
+                        if(uri!=null)
+                            bundle_2.putParcelable("Uri",uri);
 
+                        bundle_2.putSerializable("Nome_s",nome);
+                        bundle_2.putSerializable("Prezzo_s",price);
+                        bundle_2.putSerializable("Policy",policy);
+                        bundle_2.putInt("ID",rg.getCheckedRadioButtonId());
+                        bundle_2.putInt("Tipo",tipo);
+                        bundle_2.putSerializable("Buyer",buyer);
 
+                        returnSelection_2.returnSelection_2(bundle_2);
+                    }
                     FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
-                    transaction.replace(R.id.fragment, chtp);
+                    transaction.replace(R.id.fragment, new Choose_how_to_pay().newInstance(bundle_2,gruppo,user));
                     transaction.addToBackStack("TRE");
 
 
@@ -182,20 +236,6 @@ public class Select_Policy_Fragment extends Fragment implements AddExpenseFragme
         return v;
     }
 
-
-    @Override
-    public void returnSelection( String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo g, Persona user, Select_Policy_Fragment spf) {
-
-        this.cat = cat;
-        this.data =data;
-        this.buyer = buyer;
-        this.b = b;
-        this.uri = uri;
-        this.price =price;
-        this.nome= nome;
-        this.gruppo = g;
-        this.user = user;
-    }
 
     @Override
     public void getPercentages(Policy policy) {

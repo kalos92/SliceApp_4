@@ -96,7 +96,7 @@ public class GroupsRecyclerAdapter extends FirebaseRecyclerAdapter<Dettagli_Grup
 
                     g= SliceAppDB.getGroup(chiave);
 
-                    numbers.addAll(g.getPartecipanti_numero_cnome().values());
+                    numbers.addAll(g.getPartecipanti_numero_cnome().keySet());
 
                     users_prova.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override

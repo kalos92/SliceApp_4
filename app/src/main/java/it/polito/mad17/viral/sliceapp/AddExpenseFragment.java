@@ -47,16 +47,8 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
 
     public interface ReturnSelection{
-         void returnSelection(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Select_Policy_Fragment spf);
+         void returnSelection(Bundle bundle);
     }
-
-   // Spinner spi = (Spinner) v.findViewById(R.id.currencies_spinner);
-   // String valuta =(String) spi.getSelectedItem();
-   // String cat = (String) sp_ct.getSelectedItem();
-    //data è settato
-    //buyer cel'ho da prima
-    //photo e pdf cel'ho
-
 
     private Gruppo gruppo;
     private static final int PICK_IMAGE_ID = 234;
@@ -69,13 +61,18 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
     private GregorianCalendar data;
     private int pos=0;
     private int me=0;
-    private String category = "General expenditure";
+    private String cat = "General expenditure";
     private Persona buyer;
     private Spinner sp_ct;
     private ReturnSelection returnSelection;
     private Select_Policy_Fragment spf = new Select_Policy_Fragment();
-    EditText et1;
-    EditText et2;
+    private EditText et1;
+    private EditText et2;
+    private int selection=-1;
+    private int selection_payer=-1;
+    private Bundle bundle;
+    private String nome = "$";
+    private String prezzo = "$";
 
     public AddExpenseFragment() {
         // Required empty public constructor
@@ -83,11 +80,15 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
 
 
-    public static AddExpenseFragment newInstance(Persona user, Gruppo gruppo) {
+    public static AddExpenseFragment newInstance(Bundle bundle, Persona user, Gruppo gruppo) {
         AddExpenseFragment fragment = new AddExpenseFragment();
         Bundle args = new Bundle();
         args.putSerializable("User",user);
         args.putSerializable("Gruppo",gruppo);
+
+        if(bundle!=null)
+            args.putBundle("Bundle",bundle);
+
         fragment.setArguments(args);
         return fragment;
     }
@@ -111,6 +112,79 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         v = inflater.inflate(R.layout.fragment_add_expense, container, false);
         setRetainInstance(true);
         returnSelection = (ReturnSelection) getActivity();
+
+        if(getArguments().getBundle("Bundle")!=null){
+            bundle= new Bundle();
+
+            bundle= getArguments().getBundle("Bundle");
+
+            buyer= (Persona) bundle.getSerializable("Buyer");
+
+
+           selection_payer = bundle.getInt("Buyer_sel");
+
+            if(data!=null)
+                data= (GregorianCalendar) bundle.getSerializable("Data");
+
+           if(bundle.getParcelable("Uri")!=null) {
+               uri = bundle.getParcelable("Uri");
+               Cursor cursor=null;
+
+               cursor = getActivity().getContentResolver().query(uri, null, null, null, null);
+               cursor.moveToFirst();
+               String displayName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+               TextView name =(TextView)v.findViewById(R.id.pdfName);
+               name.setText(displayName);
+               name.setOnClickListener(new View.OnClickListener() {
+                   @Override
+                   public void onClick(View v) {
+
+                       if (uri!=null) {
+
+                           Intent intent = new Intent(Intent.ACTION_VIEW);
+                           intent.setDataAndType(uri, "application/pdf");
+                           intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                           try {
+                               startActivity(intent);
+                           } catch (ActivityNotFoundException e) {
+                               Toast.makeText(getActivity(),
+                                       "No Application Available to View PDF",
+                                       Toast.LENGTH_SHORT).show();
+                           }}
+                       else
+                           Toast.makeText(getActivity(),
+                                   "There is an error with this file",
+                                   Toast.LENGTH_SHORT).show();
+
+                   }
+
+
+
+
+               });
+
+
+           }
+            if(bundle.getParcelable("Bitmap")!=null) {
+                b = bundle.getParcelable("Bitmap");
+                ImageView preview= (ImageView)v.findViewById(R.id.preview);
+                preview.setImageBitmap(b);
+            }
+            nome = (String) bundle.getSerializable("Nome_s");
+
+            prezzo = (String) bundle.getSerializable("Prezzo_s");
+
+            cat= (String) bundle.getSerializable("Cat");
+
+            selection =bundle.getInt("Cat_sel");
+
+
+
+        }
+
+
+
         if (savedInstanceState != null) {
             if (savedInstanceState.getParcelable("Uri") != null) {
                 uri = savedInstanceState.getParcelable("Uri");
@@ -172,27 +246,27 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         et1 = (EditText) v.findViewById((R.id.expense_description));
         et2 = (EditText) v.findViewById(R.id.expense_price);
 
-        //BottomNavigationMenuView menuView = (BottomNavigationMenuView) bnb.getChildAt(0);
-        //for (int i = 0; i < menuView.getChildCount(); i++) {
-         //   final View iconView = menuView.getChildAt(i).findViewById(android.support.design.R.id.icon);
-          //  final ViewGroup.LayoutParams layoutParams = iconView.getLayoutParams();
-           // final DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
-            // set your height here
-           // layoutParams.height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
-            // set your width here
-           // layoutParams.width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 35, displayMetrics);
-         //   iconView.setLayoutParams(layoutParams);
-        //}
+        if(!nome.equals("$"))
+            et1.setText(nome);
+
+        if(!prezzo.equals("$"))
+            et2.setText(prezzo);
+
 
 
 
         sp_ct= (Spinner) v.findViewById(R.id.s_category);
         sp_ct.setAdapter(new Category_adapter(getContext()));
-        sp_ct.setId(0);
+        if(selection==-1)
+            sp_ct.setId(0);
+        else
+            sp_ct.setId(selection);
+
         sp_ct.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int position, long id) {
-                category =(String) adapterView.getItemAtPosition(position);
+                cat=(String) adapterView.getItemAtPosition(position);
+                selection=position;
             }
 
             @Override
@@ -210,7 +284,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
             }
         });
 
-        //ibnb2=bnb.getMenu().getItem(0);
+
 
 
         final List<String> names = new ArrayList<>();
@@ -220,17 +294,22 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         }
 
 
-        Spinner buyer_spinner = (Spinner) v.findViewById(R.id.BuyerSpinner);
+        final Spinner buyer_spinner = (Spinner) v.findViewById(R.id.BuyerSpinner);
         buyer_spinner.setAdapter(new Buyer_Adapter(getContext(),names,gruppo));
 
-        buyer_spinner.setSelection(getIndex(buyer_spinner, user.getTelephone()));
+        if(selection_payer==-1) {
+            buyer_spinner.setSelection(getIndex(buyer_spinner, user.getTelephone()));
+            selection_payer = getIndex(buyer_spinner, user.getTelephone());
+        }else
+            buyer_spinner.setSelection(selection_payer);
+
         buyer_spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                pos=position;
+                selection_payer=position;
+                buyer = gruppo.getPartecipante((String)parent.getItemAtPosition(selection_payer));
 
-                buyer = gruppo.getPartecipante((String)parent.getItemAtPosition(pos));
 
             }
 
@@ -298,20 +377,42 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
                                        }
 
 
-                                       String cat = (String) sp_ct.getSelectedItem();
+                                       cat = (String) sp_ct.getSelectedItem();
                                        //data è settato
                                        //buyer cel'ho da prima
                                        //photo e pdf cel'ho
 
-                                       if (returnSelection != null)
-                                           returnSelection.returnSelection(cat, data, buyer, b, uri, stringEt2, stringEt1, gruppo, user, spf);
+                                       if (returnSelection != null) {
+                                           //returnSelection.returnSelection(cat, data, buyer, b, uri, stringEt2, stringEt1, gruppo, user, spf);
+                                            bundle=new Bundle();
+                                           bundle.putSerializable("Buyer", buyer);
+                                           bundle.putInt("Buyer_sel",selection_payer);
 
+                                           if(data!=null)
+                                           bundle.putSerializable("Data",data);
+
+                                           if(uri!=null)
+                                           bundle.putParcelable("Uri",uri);
+
+                                           if(b!=null)
+                                           bundle.putParcelable("Bitmap",b);
+
+                                           bundle.putSerializable("Nome_s",stringEt1);
+
+                                           bundle.putSerializable("Prezzo_s",stringEt2);
+
+                                           bundle.putSerializable("Cat",cat);
+                                           bundle.putInt("Cat_sel",selection);
+
+                                           returnSelection.returnSelection(bundle);
+
+                                       }
 
                                        FragmentTransaction transaction = getFragmentManager().beginTransaction();
 
 // Replace whatever is in the fragment_container view with this fragment,
 // and add the transaction to the back stack if needed
-                                       transaction.replace(R.id.fragment, spf);
+                                       transaction.replace(R.id.fragment, Select_Policy_Fragment.newInstance(bundle,gruppo,user));
                                        transaction.addToBackStack(null);
 
 // Commit the transaction
@@ -398,7 +499,8 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
 
     @Override
     public void returnDate(GregorianCalendar date) {
-        data=date;
+        if(data==null)
+                data=date;
 
     }
 

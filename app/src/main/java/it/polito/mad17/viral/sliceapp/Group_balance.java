@@ -85,6 +85,11 @@ public class Group_balance extends AppCompatActivity {
                         SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
                         final String userTelephone = sharedPref.getString("telefono", null);
 
+                        SharedPreferences.Editor sharedEditor = sharedPref.edit();
+                        Log.d("groupValue",gruppo.getGroupID());
+                        sharedEditor.putString("gruppo",gruppo.getGroupID());
+                        sharedEditor.commit();
+
                         groups_ref.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -116,18 +121,30 @@ public class Group_balance extends AppCompatActivity {
 
                                             //vado nel mio bilancio e gli butto un *-1
                                             //Lui vede un - quindi a lui metto il prezzo giusto
+
                                             groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").child(key_es).setValue((model.calculate()));
                                             groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(userTelephone).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
                                             user_ref.child(userTelephone).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
                                             user_ref.child(model.getTel()).child("amici").child(userTelephone+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
-                                            Balance_transaction bt = new Balance_transaction(gruppo.getGroupID(),model.getTel(),userTelephone,model.calculate());
+                                            Long timestamp = System.currentTimeMillis();
+                                            String key = database.getReference().child("balance_prova").push().getKey();
+                                            Balance_transaction bt = new Balance_transaction(gruppo.getGroupID(),model.getTel(),userTelephone,model.calculate(),timestamp,model.getNome(),gruppo.getCurr());
+
+                                            database.getReference().child("balance_prova").child(model.getTel()).child(key).setValue(bt);
+                                            database.getReference().child("balance_prova").child(userTelephone).child(key).setValue(bt);
+
                                         }
                                         else {
                                             groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").child(key_es).setValue((model.calculate()));
                                             groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(userTelephone).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
                                             user_ref.child(userTelephone).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
                                             user_ref.child(model.getTel()).child("amici").child(userTelephone+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
-                                            Balance_transaction bt = new Balance_transaction(gruppo.getGroupID(),userTelephone,model.getTel(),model.calculate()*-1);
+                                            Long timestamp = System.currentTimeMillis();
+                                            String key = database.getReference().child("balance_prova").push().getKey();
+
+                                            Balance_transaction bt = new Balance_transaction(gruppo.getGroupID(),userTelephone,model.getTel(),model.calculate()*-1,timestamp,model.getNome(),gruppo.getCurr());
+                                            database.getReference().child("balance_prova").child(model.getTel()).child(key).setValue(bt);
+                                            database.getReference().child("balance_prova").child(userTelephone).child(key).setValue(bt);
                                         }
 
 
@@ -135,7 +152,7 @@ public class Group_balance extends AppCompatActivity {
                                 } else {
 
                                     Toast.makeText(getApplicationContext(),
-                                            "A group has as least one contested expense. You cannot balance",
+                                            "In this group there is at least one contested expensed, balancing bills is not permitted",
                                             Toast.LENGTH_SHORT)
                                             .show();
                                 }

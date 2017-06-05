@@ -13,8 +13,6 @@ import android.support.v7.app.AlertDialog;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 
 
 public class AddExpenseActivity extends FragmentActivity implements DatePickerFragment.TheListener, AddExpenseFragment.ReturnSelection, Little_fragment_1.GetPercentages, Little_fragment_2.AlltheSame, Select_Policy_Fragment.ReturnSelection_2 {
@@ -25,6 +23,8 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
     private AddExpenseFragment mContent;
     private Select_Policy_Fragment mContent2;
     private Choose_how_to_pay mContent3;
+    private Bundle bundle_first;
+    private Bundle bundle_second;
 
 
     @Override
@@ -90,7 +90,7 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
 
             fm = getSupportFragmentManager();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment, AddExpenseFragment.newInstance(user, gruppo));
+            ft.replace(R.id.fragment, AddExpenseFragment.newInstance(null,user, gruppo));
             ft.addToBackStack(null);
             ft.commit();}
 
@@ -108,7 +108,7 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
             super.onBackPressed();
             fm = getSupportFragmentManager();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment, AddExpenseFragment.newInstance(user, gruppo));
+            ft.replace(R.id.fragment, AddExpenseFragment.newInstance(bundle_first,user, gruppo));
             ft.addToBackStack("UNO");
             ft.commit();
             return;
@@ -124,7 +124,7 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
             super.onBackPressed();
             fm = getSupportFragmentManager();
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.fragment, Select_Policy_Fragment.newInstance(gruppo,user));
+            ft.replace(R.id.fragment, Select_Policy_Fragment.newInstance(bundle_second,gruppo,user));
             ft.addToBackStack("DUE");
             ft.commit();
             return;
@@ -142,9 +142,9 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
     }
 
     @Override
-    public void returnSelection( String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Select_Policy_Fragment spf) {
-
-        spf.returnSelection(cat,data,buyer,b,uri,price,nome, gruppo, user,null);
+    public void returnSelection(Bundle bundle) {
+            bundle_first = bundle;
+        //spf.returnSelection(cat,data,buyer,b,uri,price,nome, gruppo, user,null);
     }
 
     @Override
@@ -161,8 +161,9 @@ public class AddExpenseActivity extends FragmentActivity implements DatePickerFr
     }
 
     @Override
-    public void returnSelection_2(String cat, GregorianCalendar data, Persona buyer, Bitmap b, Uri uri, String price, String nome, Gruppo gruppo, Persona user, Choose_how_to_pay chtp, Policy policy,int tipo) {
-        chtp.returnSelection_2(cat,data,buyer,b,uri,price,nome,gruppo,user,null,policy,tipo);
+    public void returnSelection_2(Bundle bundle) {
+        bundle_second=bundle;
+       // chtp.returnSelection_2(cat,data,buyer,b,uri,price,nome,gruppo,user,null,policy,tipo);
     }
 
     @Override
