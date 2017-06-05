@@ -120,12 +120,14 @@ public class Group_balance extends AppCompatActivity {
                                             groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(userTelephone).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
                                             user_ref.child(userTelephone).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
                                             user_ref.child(model.getTel()).child("amici").child(userTelephone+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
+                                            Balance_transaction bt = new Balance_transaction(gruppo.getGroupID(),model.getTel(),userTelephone,model.calculate());
                                         }
                                         else {
                                             groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(model.getTel()).child("bilancio_relativo").child(userTelephone).child("importo").child(key_es).setValue((model.calculate()));
                                             groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(userTelephone).child("bilancio_relativo").child(model.getTel()).child("importo").child(key_es).setValue((model.calculate()) * -1);
                                             user_ref.child(userTelephone).child("amici").child(model.getTel()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate()*-1);
                                             user_ref.child(model.getTel()).child("amici").child(userTelephone+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key_es).setValue(model.calculate());
+                                            Balance_transaction bt = new Balance_transaction(gruppo.getGroupID(),userTelephone,model.getTel(),model.calculate()*-1);
                                         }
 
 
