@@ -55,7 +55,7 @@ public class Balance_transaction implements Serializable{
         this.ID=id;
         this.beneficiario=beneficiario;
         this.pagante=pagante;
-        this.importo=importo;
+        this.importo=importo;//bb
 
     }
 
