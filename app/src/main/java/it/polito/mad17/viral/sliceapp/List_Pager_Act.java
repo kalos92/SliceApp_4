@@ -83,12 +83,10 @@ public class List_Pager_Act extends AppCompatActivity {
         setupTabIcons();
         Bundle extras = getIntent().getExtras();
         if(extras!=null){
-            int value = extras.getInt("three");
-            if(value==2){
+            int value = extras.getInt("page");
+            TabLayout.Tab tab= tabLayout.getTabAt(value);
+            tab.select();
 
-                TabLayout.Tab tab= tabLayout.getTabAt(value);
-                tab.select();
-            }
         }else{
             TabLayout.Tab tab= tabLayout.getTabAt(0);
             tab.select();

@@ -34,9 +34,6 @@ public class Upload_expense extends AsyncTask<Void, Integer, Void> {
     private DatabaseReference expense = expensesRef.push();
     private String expenseID = expense.getKey();
     private DatabaseReference groups_prova_2 = database.getReference().child("groups_prova");
-    private Context context;
-    private SpotsDialog dialog=null;
-    private Persona user;
     private FragmentActivity fa;
 
     public Upload_expense(GregorianCalendar data, Gruppo gruppo, Persona buyer, String nome, String price, String cat, Policy policy, Persona user, Context context, FragmentActivity fa){
@@ -48,8 +45,6 @@ public class Upload_expense extends AsyncTask<Void, Integer, Void> {
         this.data=data;
         this.policy=policy;
         this.groupID=gruppo.getGroupID();
-        this.context=context;
-        this.user=user;
         this.fa=fa;
 
     }

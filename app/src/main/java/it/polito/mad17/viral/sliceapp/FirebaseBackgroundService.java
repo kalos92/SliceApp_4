@@ -583,7 +583,7 @@ public class FirebaseBackgroundService extends Service {
                                         if(beneficiario.equals(userTelephone)){
 
                                             Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
-                                            notificationIntent.putExtra("uno",1);//second Fragment
+                                            notificationIntent.putExtra("page",1);//second Fragment
 
                                             PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                                     PendingIntent.FLAG_UPDATE_CURRENT);
@@ -602,7 +602,7 @@ public class FirebaseBackgroundService extends Service {
                                         else{
 
                                             Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
-                                            notificationIntent.putExtra("uno",1);
+                                            notificationIntent.putExtra("page",1);
 
                                             PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                                     PendingIntent.FLAG_UPDATE_CURRENT);
@@ -645,7 +645,7 @@ public class FirebaseBackgroundService extends Service {
 
 
                                 Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
-                                notificationIntent.putExtra("uno", 1);
+                                notificationIntent.putExtra("page", 1);
 
                                 PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                         PendingIntent.FLAG_UPDATE_CURRENT);
@@ -664,7 +664,7 @@ public class FirebaseBackgroundService extends Service {
 
 
                                 Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
-                                notificationIntent.putExtra("uno",1);
+                                notificationIntent.putExtra("page",1);
 
                                 PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                         PendingIntent.FLAG_UPDATE_CURRENT);
