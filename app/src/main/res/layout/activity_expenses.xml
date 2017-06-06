@@ -22,7 +22,6 @@
                 app:layout_collapseMode="pin"
                 app:layout_scrollFlags="scroll|enterAlways"
                 app:popupTheme="@style/AppTheme"
-                app:navigationIcon="?attr/homeAsUpIndicator"
                 app:titleTextColor="@android:color/white"
                 app:subtitleTextColor="@android:color/white"
                 android:background="@color/colorPrimary">

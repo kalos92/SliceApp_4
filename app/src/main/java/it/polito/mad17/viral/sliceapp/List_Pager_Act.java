@@ -9,6 +9,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.RingtoneManager;
 import android.os.Bundle;
@@ -36,6 +37,8 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +50,7 @@ public class List_Pager_Act extends AppCompatActivity {
 
     private TabLayout tabLayout;
     private int[]  tabIcons = {R.drawable.img_contestation, R.drawable.img_gruppi , R.drawable.img_bilancio};
+    private static final int PICK_IMAGE_ID = 234;
 
 
     private DataSnapshot users;
@@ -168,7 +172,7 @@ public class List_Pager_Act extends AppCompatActivity {
 
         int id = item.getItemId();
 
-        if(id == R.id.action_settings){
+        if(id == R.id.logout){
 
             SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
             SharedPreferences.Editor prefEditor = sharedPref.edit();
@@ -186,6 +190,12 @@ public class List_Pager_Act extends AppCompatActivity {
             finish();
             return true;
         }
+        if(id == R.id.propic_change){
+            Intent chooseImageIntent = ImagePicker.getPickImageIntent(getBaseContext());
+            startActivityForResult(chooseImageIntent, PICK_IMAGE_ID);
+
+
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -200,6 +210,21 @@ public class List_Pager_Act extends AppCompatActivity {
         finish();
         android.os.Process.killProcess(android.os.Process.myPid());
     }}
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case PICK_IMAGE_ID:
+                Bitmap b = ImagePicker.getImageFromResult(this, resultCode, data);
+                if(b!=null) {
+
+                    UpImg_person up = new UpImg_person(SliceAppDB.getUser().getTelephone(),b);
+                    up.execute();
+
+                }
+                break;
+
+        }}
 
 
 }

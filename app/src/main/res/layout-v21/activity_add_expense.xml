@@ -20,7 +20,6 @@
             android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             design:layout_collapseMode="pin"
             design:layout_scrollFlags="scroll|enterAlways"
-            design:navigationIcon="?attr/homeAsUpIndicator"
             design:popupTheme="@style/AppTheme"
             design:subtitleTextColor="#FFFFFF"
             design:title="Add a new expense"

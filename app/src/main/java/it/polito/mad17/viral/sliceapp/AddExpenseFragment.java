@@ -8,6 +8,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import android.net.Uri;
 import android.os.Bundle;
@@ -65,7 +66,6 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
     private Persona buyer;
     private Spinner sp_ct;
     private ReturnSelection returnSelection;
-    private Select_Policy_Fragment spf = new Select_Policy_Fragment();
     private EditText et1;
     private EditText et2;
     private int selection=-1;
@@ -230,9 +230,26 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
                 ImageView preview= (ImageView)v.findViewById(R.id.preview);
                 preview.setImageBitmap(b);
             }
-            if (savedInstanceState.getSerializable("Date") != null)
+            if (savedInstanceState.getSerializable("Date") != null) {
                 data = (GregorianCalendar) savedInstanceState.getSerializable("Date");
+                TextView data_show = (TextView) v.findViewById(R.id.data_spesa);
+                if(data!=null){
+                    int month = data.get(Calendar.MONTH);
+                    month++;
+                    String data_ss = data.get(Calendar.DAY_OF_MONTH)+"/"+month+"/"+data.get(Calendar.YEAR);
+                    data_show.setText(data_ss);
+                }
+                else{
+                    final Calendar c = Calendar.getInstance();
+                    int year = c.get(Calendar.YEAR);
+                    int month = c.get(Calendar.MONTH);
+                    month++;
+                    int day = c.get(Calendar.DAY_OF_MONTH);
+                    String data_ss=day+"/"+month+"/"+year;
+                    data_show.setText(data_ss);
+                }
 
+            }
             if(savedInstanceState.getBoolean("flag"))
                 first_time = savedInstanceState.getBoolean("flag");
 
@@ -252,7 +269,22 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         if(!prezzo.equals("$"))
             et2.setText(prezzo);
 
-
+        TextView data_show = (TextView) v.findViewById(R.id.data_spesa);
+        if(data!=null){
+            int month = data.get(Calendar.MONTH);
+            month++;
+            String data_ss = data.get(Calendar.DAY_OF_MONTH)+"/"+month+"/"+data.get(Calendar.YEAR);
+            data_show.setText(data_ss);
+        }
+        else{
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            month++;
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            String data_ss=day+"/"+month+"/"+year;
+            data_show.setText(data_ss);
+        }
 
 
         sp_ct= (Spinner) v.findViewById(R.id.s_category);
@@ -501,6 +533,23 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
     public void returnDate(GregorianCalendar date) {
         if(data==null)
                 data=date;
+
+        TextView data_show = (TextView) v.findViewById(R.id.data_spesa);
+        if(data!=null){
+            int month = data.get(Calendar.MONTH);
+            month++;
+            String data_ss = data.get(Calendar.DAY_OF_MONTH)+"/"+month+"/"+data.get(Calendar.YEAR);
+            data_show.setText(data_ss);
+        }
+        else{
+            final Calendar c = Calendar.getInstance();
+            int year = c.get(Calendar.YEAR);
+            int month = c.get(Calendar.MONTH);
+            month++;
+            int day = c.get(Calendar.DAY_OF_MONTH);
+            String data_ss=day+"/"+month+"/"+year;
+            data_show.setText(data_ss);
+        }
 
     }
 

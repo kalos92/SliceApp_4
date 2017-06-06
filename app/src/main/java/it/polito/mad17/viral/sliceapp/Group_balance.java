@@ -86,7 +86,7 @@ public class Group_balance extends AppCompatActivity {
                         final String userTelephone = sharedPref.getString("telefono", null);
 
                         SharedPreferences.Editor sharedEditor = sharedPref.edit();
-                        Log.d("groupValue",gruppo.getGroupID());
+
                         sharedEditor.putString("gruppo",gruppo.getGroupID());
                         sharedEditor.commit();
 

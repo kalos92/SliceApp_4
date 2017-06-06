@@ -58,12 +58,16 @@ public class ExpenseRecyclerAdapter extends FirebaseRecyclerAdapter<Spesa, Expen
     protected void populateViewHolder(ExpensesActivity.ExpenseHolder viewHolder, final Spesa model, int position) {
 
         if(model.getRemoved()==true){
-        Picasso.with(context).load(R.drawable.img_removed).into(viewHolder.expIcon);
-        viewHolder.expCurrency.setText(model.getValuta());
-        viewHolder.buyer.setText(model.getRemover());
-        viewHolder.expName.setText(model.getRemoved_msg());
-        String str = String.format("%."+model.getDigit()+"f",model.getImporto());
-        viewHolder.expPrice.setText(""+str);
+            Picasso.with(context).load(R.drawable.img_removed).into(viewHolder.expIcon);
+            viewHolder.expCurrency.setText(model.getValuta());
+            viewHolder.buyer.setText(model.getRemover());
+            viewHolder.expName.setText(model.getRemoved_msg());
+            String str = String.format("%."+model.getDigit()+"f",model.getImporto());
+            viewHolder.expPrice.setText(""+str);
+            viewHolder.expCurrency.setTextColor(Color.rgb(0,0,0));
+            viewHolder.buyer.setTextColor(Color.rgb(0,0,0));
+            viewHolder.expName.setTextColor(Color.rgb(0,0,0));
+            viewHolder.expPrice.setTextColor(Color.rgb(0,0,0));
 
 
         }

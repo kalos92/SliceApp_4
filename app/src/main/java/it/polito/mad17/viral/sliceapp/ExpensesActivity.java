@@ -3,6 +3,7 @@ package it.polito.mad17.viral.sliceapp;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -45,6 +46,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     ValueEventListener listener;
     ValueEventListener listener_2;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,11 +55,16 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         ActivityManager.TaskDescription taskDescription = new ActivityManager.TaskDescription("SliceApp",null, getResources().getColor(R.color.colorPrimary));
         ((Activity)this).setTaskDescription(taskDescription);
 
+
+
+
         Bundle extra =getIntent().getExtras();
         if(extra!= null) {
             gruppo = (Gruppo) extra.get("Gruppo");
+            if(SliceAppDB.getUser()!=null)
+            user = SliceAppDB.getUser();
         }
-        user = SliceAppDB.getUser();
+
         ID=gruppo.getGroupID();
 
         fm= getSupportFragmentManager();
@@ -78,6 +85,26 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         });
 
         final ImageView img = (ImageView) findViewById(R.id.show_GroupIcon);
+
+        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        final String userTelephone = sharedPref.getString("telefono", null);
+
+        users_prova.child(userTelephone).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
+                Integer i = unread.calculate();
+                String key_upd= users_prova.child(userTelephone).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
+                users_prova.child(userTelephone).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         listener = groups_ref.child(gruppo.getGroupID()).child("uri").addValueEventListener(new ValueEventListener() {
             @Override
@@ -168,7 +195,7 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
         fab1.setOnClickListener(this);
         fab2.setOnClickListener(this);
 
-       // final ExpensesAdapter adapter_2 = new ExpensesAdapter(ExpensesActivity.this, R.layout.listview_expense_row, speseGruppo, user);
+
         LinearLayoutManager llm = new LinearLayoutManager(getBaseContext());
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         mylist.setLayoutManager(llm);
@@ -214,15 +241,17 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onBackPressed()
     {
+        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        final String userTelephone = sharedPref.getString("telefono", null);
 
-        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
+        users_prova.child(userTelephone).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
 
                 unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
                 Integer i = unread.calculate();
-                String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
-                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
+                String key_upd= users_prova.child(userTelephone).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
+                users_prova.child(userTelephone).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
                 finish();
             }
 

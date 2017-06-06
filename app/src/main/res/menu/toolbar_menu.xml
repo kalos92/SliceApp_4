@@ -18,9 +18,11 @@
         app:showAsAction="ifRoom"/>
    -->
     <!-- Settings, should always be in the overflow -->
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_setting"
-        android:icon="@drawable/exit_from_app"
-        app:showAsAction="ifRoom"/>
+    <item android:id="@+id/propic_change"
+        android:title="Change Profile Image"
+        app:showAsAction="never"/>
+    <item android:id="@+id/logout"
+        android:title="Logout"
+        app:showAsAction="never"/>
 
 </menu>

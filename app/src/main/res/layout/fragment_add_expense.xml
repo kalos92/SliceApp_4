@@ -78,6 +78,19 @@
 
                     <TextView
                         android:id="@+id/currencies_gruppo"
+                        android:layout_width="60dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="end"
+                        android:layout_marginEnd="@dimen/normal_v_margin"
+                        android:layout_marginRight="@dimen/normal_v_margin"
+                        android:ellipsize="end"
+                        android:padding="10dp"
+                        android:text="KS"
+                        android:textAlignment="center"
+                        android:textColor="@color/text"
+                        android:textSize="20sp" />
+                    <TextView
+                        android:id="@+id/data_spesa"
                         android:layout_width="150dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="end"
@@ -85,10 +98,11 @@
                         android:layout_marginRight="@dimen/normal_v_margin"
                         android:ellipsize="end"
                         android:padding="10dp"
-                        android:text="EUR-€"
+                        android:text="14/10/2001"
                         android:textAlignment="center"
                         android:textColor="@color/text"
                         android:textSize="20sp" />
+
                 </LinearLayout>
 
                 <LinearLayout

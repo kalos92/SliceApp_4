@@ -98,7 +98,7 @@ public class ExpenseDetails extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Spesa s2;
                 s2=dataSnapshot.getValue(Spesa.class);
-                if(s2==null){
+                if(s2==null || s2.getRemoved()){
                     AlertDialog.Builder builder;
                     builder = new AlertDialog.Builder(ExpenseDetails.this);
                     builder.setTitle("This Expense was removed")
@@ -291,59 +291,70 @@ public class ExpenseDetails extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                if(!s.getContested()){
                 isRemoved=true;
-
                 groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeEventListener(listener);
+                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).child("contested").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        boolean b = (boolean) dataSnapshot.getValue();
+                        if(!b){
+                            if (s.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())) {
+                                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeValue();
+                                for(final Persona p: gruppo.obtainPartecipanti().values()){
+
+                                    String key =user_ref.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
+                                    if(!p.getTelephone().equals(s.getPagante().getTelephone())) {
+                                        user_ref.child(p.getTelephone()).child("amici").child(s.getPagante().getTelephone() + ";" + gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto());
+                                        groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s.getPagante().getTelephone()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto());
+                                        //altri con +
+                                        //me con il meno
+                                    }
+                                    else
+                                    {
+                                        for(Persona altri : gruppo.obtainPartecipanti().values()){
+                                            if(!altri.getTelephone().equals(s.getPagante().getTelephone())){
+                                                user_ref.child(s.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto()*-1);
+                                                groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto()*-1);
+                                            }}
+                                    }
+
+                                    String key_s =  groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s.getPagante().getTelephone()).child("importo").push().getKey();
+                                    groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s.getPagante().getTelephone()).child("importo").child(key_s).setValue(s.getImporto()*-1);
 
 
-                if (s.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())) {
-                    groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeValue();
-                    for(final Persona p: gruppo.obtainPartecipanti().values()){
+                                }
+                                String id_remove = s.getExpenseID();
+                                Persona user = SliceAppDB.getUser();
+                                Spesa s_r =gruppo.addFake(id_remove,s.getNome_spesa(),s.getImporto(),user.getName()+" "+user.getSurname(),s.getDigit(),s.getValuta(),false);
 
-                            String key =user_ref.child(p.getTelephone()).child("amici").child(p.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).push().getKey();
-                            if(!p.getTelephone().equals(s.getPagante().getTelephone())) {
-                                user_ref.child(p.getTelephone()).child("amici").child(s.getPagante().getTelephone() + ";" + gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto());
-                                groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(s.getPagante().getTelephone()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto());
-                                //altri con +
-                                //me con il meno
+
+                                Gson gson = new Gson();
+                                Spesa s_r_pojo =gson.fromJson(gson.toJson(s_r),Spesa.class);
+                                groups_ref.child(gruppo.getGroupID()).child("spese").child(id_remove).setValue(s_r_pojo);
+
+
+                                Intent i = new Intent(getBaseContext(),ExpensesActivity.class);
+                                i.putExtra("Gruppo",gruppo);
+                                startActivity(i);
+                                finish();
+
+                                finish();
+                            } else {
+                                Toast.makeText(getBaseContext(), "Only who bought the item can delete this expense", Toast.LENGTH_LONG).show();
                             }
-                            else
-                            {
-                                for(Persona altri : gruppo.obtainPartecipanti().values()){
-                                    if(!altri.getTelephone().equals(s.getPagante().getTelephone())){
-                                        user_ref.child(s.getPagante().getTelephone()).child("amici").child(altri.getTelephone()+";"+gruppo.getCurr().getChoosencurr()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto()*-1);
-                                    groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(p.getTelephone()).child("bilancio_relativo").child(altri.getTelephone()).child("importo").child(key).setValue(s.getDivisioni().get(p.getTelephone()).getImporto()*-1);
-                                }}
-                            }
-
-                        String key_s =  groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s.getPagante().getTelephone()).child("importo").push().getKey();
-                        groups_ref.child(gruppo.getGroupID()).child("dettaglio_bilancio").child(s.getPagante().getTelephone()).child("importo").child(key_s).setValue(s.getImporto()*-1);
-
 
                     }
-                    String id_remove = s.getExpenseID();
-                    Persona user = SliceAppDB.getUser();
-                    Spesa s_r =gruppo.addFake(id_remove,s.getNome_spesa(),s.getImporto(),user.getName()+" "+user.getSurname(),s.getDigit(),s.getValuta(),false);
+                    else
+                    Toast.makeText(getBaseContext(),"There is a contestation on this expense, resolve it",Toast.LENGTH_LONG).show();}
 
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
 
-                    Gson gson = new Gson();
-                    Spesa s_r_pojo =gson.fromJson(gson.toJson(s_r),Spesa.class);
-                    groups_ref.child(gruppo.getGroupID()).child("spese").child(id_remove).setValue(s_r_pojo);
+                    }
+                });
+                //groups_ref.child(gruppo.getGroupID()).child("removed_exp");
 
-
-                    Intent i = new Intent(getBaseContext(),ExpensesActivity.class);
-                    i.putExtra("Gruppo",gruppo);
-                    startActivity(i);
-                    finish();
-
-                    finish();
-                        } else {
-                        Toast.makeText(getBaseContext(), "Only who bought the item can delete this expense", Toast.LENGTH_LONG).show();
-                        }}
-                else
-                    Toast.makeText(getBaseContext(),"This expense has been contested! Resolve it!",Toast.LENGTH_LONG).show();
-            }});
+                        }});
 
 
 

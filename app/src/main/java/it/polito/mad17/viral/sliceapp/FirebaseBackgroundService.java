@@ -35,8 +35,6 @@ public class FirebaseBackgroundService extends Service {
 
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private ChildEventListener groupsListener;
-    private Map<String, List<String>> groupsExpenses = new HashMap<String, List<String>>();
-    private ArrayList <String> groupsID = new ArrayList<String>();
     private SharedPreferences sharedPref;
     private SharedPreferences.Editor prefEditor;
     private Long lastTimestampGroup;
@@ -45,7 +43,7 @@ public class FirebaseBackgroundService extends Service {
     private Long lastTimestampComment;
     private Long lastTimestampDeletedExpense;
     private Long lastTimestampBalance;
-    private ArrayList<String> removedExpenses = new ArrayList<String>();
+
 
     @Nullable
     @Override
@@ -204,8 +202,7 @@ public class FirebaseBackgroundService extends Service {
                         if(commentTimestamp > lastTimestampComment) {
                             String c1 = ""+commentTimestamp;
                             String c2 = ""+lastTimestampComment;
-                            Log.d("time1",c1);
-                            Log.d("time2",c2);
+
                             if(!dataSnapshot.child("userID").getValue(String.class).equals(userTelephone)){
                                 if(SliceAppDB.getUser()==null){
                                     SharedPreferences.Editor prefEditor;
@@ -214,9 +211,9 @@ public class FirebaseBackgroundService extends Service {
                                     prefEditor.commit();
                                 }
                                 String commentsAct = sharedPref.getString("activity","");
-                                Log.d("sharedpref",commentsAct);
+
                                 if(!commentsAct.equals("commentsActivity")) {
-                                    Log.d("passo7","dentro l'if di comments activity");
+
                                     lastTimestampComment = commentTimestamp;
                                     prefEditor = sharedPref.edit();
                                     prefEditor.putLong("lastTimestampComment", lastTimestampComment);
@@ -282,7 +279,7 @@ public class FirebaseBackgroundService extends Service {
                     @Override
                     public void onChildAdded(final DataSnapshot dataSnapshots, String s) {
                         // Il codice relativo alla notifica dell'aggiunta di una spesa puo' essere spostato quì
-                     //   System.out.println("groupdExpenses aggiunta spesa " + dataSnapshots);
+
                         // rilevo la rimozione della spesa dal fatto che alcune voci, tra cui "contestazioni" viene eliminata
                         if(!dataSnapshots.hasChild("cat")) {
                             // riempio i partecipanti del gruppo per poter fare l'intent all'activit giusta
@@ -316,7 +313,6 @@ public class FirebaseBackgroundService extends Service {
                                            prefEditor.commit();
 
                                            Intent notificationIntent = new Intent(getApplicationContext(), ExpensesActivity.class);
-                                          // Gruppo g = dataSnapshot.getValue(Gruppo.class);
                                            notificationIntent.putExtra("Gruppo", g);
                                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                                    PendingIntent.FLAG_UPDATE_CURRENT);
@@ -400,15 +396,15 @@ public class FirebaseBackgroundService extends Service {
                                         }
 
                                         // attacco un listener per ogni divisione
-                                        final DatabaseReference divisioniRef = dataSnapshots.child("divisioni").getRef();
+                                        /*final DatabaseReference divisioniRef = dataSnapshots.child("divisioni").getRef();
                                         divisioniRef.addChildEventListener(new ChildEventListener() {
                                             @Override
                                             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                                                System.out.println("division added" + dataSnapshot);
+
                                             }
                                             @Override
                                             public void onChildChanged(final DataSnapshot dataSnapshotd, String s) {
-                                                //System.out.println("division changed" + dataSnapshotd);
+
                                                 // La notifica arriva a coloro che fanno parte del gruppo
                                                 final String user2 = (String) dataSnapshotd.child("persona").child("username").getValue();
                                                 final double importo = dataSnapshotd.child("importo").getValue(Double.class);
@@ -433,7 +429,7 @@ public class FirebaseBackgroundService extends Service {
                                                         noti.flags = Notification.FLAG_AUTO_CANCEL;
                                                         // Add notification
                                                         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                                        manager.notify((int) System.currentTimeMillis(), noti);*/
+                                                        manager.notify((int) System.currentTimeMillis(), noti);
                                                     }
                                                 }
                                             }
@@ -443,7 +439,7 @@ public class FirebaseBackgroundService extends Service {
                                             public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
                                             @Override
                                             public void onCancelled(DatabaseError databaseError) {}
-                                        });
+                                        });*/
                                     }
                                 }
 
@@ -572,7 +568,7 @@ public class FirebaseBackgroundService extends Service {
                                 SliceAppDB.setUser_1(user);
                                 SliceAppDB.setUser(user);
                                     if(timeStamp > lastTimestampBalance){
-                                        Log.d("Passo1","dopo if del timestamp");
+
                                         lastTimestampBalance = timeStamp;
                                         prefEditor = sharedPref.edit();
                                         prefEditor.putLong("lastTimestampBalance", lastTimestampBalance);
@@ -580,12 +576,12 @@ public class FirebaseBackgroundService extends Service {
                                         String beneficiario = (String)dataS.child("beneficiario").getValue();
                                         String nome =(String)dataS.child("nome").getValue();
                                         Double importo = (Double)dataS.child("importo").getValue(Double.class);
-                                        int digits = (int)dataS.child("digits").getValue();
+                                        Long digits = (Long)dataS.child("digits").getValue();
                                         String simbol = (String) dataS.child("simbol").getValue();
                                         String str = String.format("%."+digits+"f",importo);
 
                                         if(beneficiario.equals(userTelephone)){
-                                            Log.d("Passo2","dopo if beneficiario");
+
                                             Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
                                             notificationIntent.putExtra("uno",1);//second Fragment
 
@@ -593,7 +589,7 @@ public class FirebaseBackgroundService extends Service {
                                                     PendingIntent.FLAG_UPDATE_CURRENT);
                                             android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
                                                     .setSmallIcon(R.drawable.added_contestation)
-                                                    .setContentTitle(nome+" payed: "+str+" "+simbol)
+                                                    .setContentTitle("You received: "+str+" "+simbol)
                                                     .setContentText("")
                                                     .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                                                     .setContentIntent(contentIntent);
@@ -604,7 +600,6 @@ public class FirebaseBackgroundService extends Service {
                                             manager.notify((int) System.currentTimeMillis(), noti);
                                         }
                                         else{
-                                            Log.d("Passo3","else-->non sono il beneficiario");
 
                                             Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
                                             notificationIntent.putExtra("uno",1);
@@ -633,7 +628,6 @@ public class FirebaseBackgroundService extends Service {
                         });
                     }
                     else{
-                        Log.d("Passo4","user non e' a null");
 
                         String beneficiario = (String)dataS.child("beneficiario").getValue();
                         String nome =(String)dataS.child("nome").getValue();
@@ -642,13 +636,13 @@ public class FirebaseBackgroundService extends Service {
                         String simbol = (String) dataS.child("simbol").getValue();
                         String str = String.format("%."+digits+"f",importo);
                         if(timeStamp > lastTimestampBalance) {
-                            Log.d("Passo5","dentro l'if del timestamp nel caso user!=null");
+
                             lastTimestampBalance = timeStamp;
                             prefEditor = sharedPref.edit();
                             prefEditor.putLong("lastTimestampBalance", lastTimestampBalance);
                             prefEditor.commit();
                             if(beneficiario.equals(userTelephone)){
-                                Log.d("Passo6","dentro l'if del beneficiario nel caso user!=null");
+
 
                                 Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
                                 notificationIntent.putExtra("uno", 1);
@@ -657,7 +651,7 @@ public class FirebaseBackgroundService extends Service {
                                         PendingIntent.FLAG_UPDATE_CURRENT);
                                 android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
                                         .setSmallIcon(R.drawable.added_contestation)
-                                        .setContentTitle(nome+" payed: "+str+" "+simbol)
+                                        .setContentTitle("You received: "+str+" "+simbol)
                                         .setContentText("")
                                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                                         .setContentIntent(contentIntent);
@@ -667,7 +661,7 @@ public class FirebaseBackgroundService extends Service {
                                 NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 manager.notify((int) System.currentTimeMillis(), noti);
                             }else{
-                                Log.d("Pass65","dentro l'if del pagante nel caso user!=null");
+
 
                                 Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
                                 notificationIntent.putExtra("uno",1);
