@@ -364,7 +364,6 @@ public class ExpenseDetails extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(s.getUri()!=null){
-
                     new downloadPDF(getBaseContext()).execute(s.getUri(),s.getNome_spesa());
                 }
                 else
@@ -376,6 +375,7 @@ public class ExpenseDetails extends AppCompatActivity {
         contestExpense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeEventListener(listener);
                 if(!s.getContested()){
                     Intent i = new Intent(ExpenseDetails.this, AddContestationActivity.class);
                     i.putExtra("spesa", s.getExpenseID());
@@ -388,9 +388,7 @@ public class ExpenseDetails extends AppCompatActivity {
                     i.putExtra("expenseID",s.getExpenseID());
 
                     FirebaseDatabase contestDB = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                    DatabaseReference contestRef = contestDB.getReference().child("groups_prova").child(s.getGruppo())
-                                                                            .child("spese").child(s.getExpenseID())
-                                                                            .child("contestazioni");
+                    DatabaseReference contestRef = contestDB.getReference().child("groups_prova").child(s.getGruppo()).child("spese").child(s.getExpenseID()).child("contestazioni");
 
                     contestRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
