@@ -587,7 +587,7 @@ public class FirebaseBackgroundService extends Service {
                                         if(beneficiario.equals(userTelephone)){
                                             Log.d("Passo2","dopo if beneficiario");
                                             Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
-                                            notificationIntent.putExtra("uno",1);
+                                            notificationIntent.putExtra("uno",1);//second Fragment
 
                                             PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
                                                     PendingIntent.FLAG_UPDATE_CURRENT);
