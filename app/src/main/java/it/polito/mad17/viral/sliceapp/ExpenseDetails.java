@@ -98,7 +98,7 @@ public class ExpenseDetails extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Spesa s2;
                 s2=dataSnapshot.getValue(Spesa.class);
-                if(s2==null || s2.getRemoved()){
+                if(s2==null){
                     AlertDialog.Builder builder;
                     builder = new AlertDialog.Builder(ExpenseDetails.this);
                     builder.setTitle("This Expense was removed")
@@ -291,10 +291,12 @@ public class ExpenseDetails extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
+                if(!s.getContested()){
                 isRemoved=true;
+
                 groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeEventListener(listener);
 
-                //groups_ref.child(gruppo.getGroupID()).child("removed_exp");
+
                 if (s.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())) {
                     groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeValue();
                     for(final Persona p: gruppo.obtainPartecipanti().values()){
@@ -322,7 +324,7 @@ public class ExpenseDetails extends AppCompatActivity {
                     }
                     String id_remove = s.getExpenseID();
                     Persona user = SliceAppDB.getUser();
-                    Spesa s_r =gruppo.addFake(id_remove,s.getNome_spesa(),s.getImporto(),user.getName()+" "+user.getSurname(),s.getDigit(),s.getValuta());
+                    Spesa s_r =gruppo.addFake(id_remove,s.getNome_spesa(),s.getImporto(),user.getName()+" "+user.getSurname(),s.getDigit(),s.getValuta(),false);
 
 
                     Gson gson = new Gson();
@@ -338,8 +340,10 @@ public class ExpenseDetails extends AppCompatActivity {
                     finish();
                         } else {
                         Toast.makeText(getBaseContext(), "Only who bought the item can delete this expense", Toast.LENGTH_LONG).show();
-                        }
-                        }});
+                        }}
+                else
+                    Toast.makeText(getBaseContext(),"This expense has been contested! Resolve it!",Toast.LENGTH_LONG).show();
+            }});
 
 
 

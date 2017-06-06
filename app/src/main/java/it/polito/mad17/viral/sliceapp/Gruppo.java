@@ -265,9 +265,10 @@ public class Gruppo implements Serializable,Cloneable {
         this.uri = uri;
     }
 
-    public Spesa addFake(String ID, String name, Double importo, String user,int precision, String currenc){
-        Spesa s = new Spesa(name,importo,user,ID,precision,currenc);
-        s.setC(System.currentTimeMillis()); // aggiunto da abdel per evitare l'ondata di notifiche (uso timestamp)
+    public Spesa addFake(String ID, String name, Double importo, String user,int precision, String currenc,boolean b){
+        Spesa s = new Spesa(name,importo,user,ID,precision,currenc,b);
+        s.setC(System.currentTimeMillis());
+        // aggiunto da abdel per evitare l'ondata di notifiche (uso timestamp)
         spese.put(ID,s);
 
             return s;

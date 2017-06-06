@@ -101,7 +101,7 @@ public class Select_Policy_Fragment extends Fragment implements Little_fragment_
                 b=null;
 
             this.price = (String) bundle.getSerializable("Prezzo_s");
-            nome =(String) bundle.getSerializable("Prezzo_s");
+            nome =(String) bundle.getSerializable("Nome_s");
 
             if(bundle.containsKey("ID"))
             radio_id = bundle.getInt("ID");

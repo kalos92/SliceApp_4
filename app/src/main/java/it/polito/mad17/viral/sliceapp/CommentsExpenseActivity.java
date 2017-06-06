@@ -56,7 +56,8 @@ public class CommentsExpenseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-        SharedPreferences sharedPref=getSharedPreferences("data",MODE_PRIVATE);
+        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        String userTelephone = sharedPref.getString("telefono", null);
         SharedPreferences.Editor prefEditor;
 
         prefEditor = sharedPref.edit();
@@ -179,7 +180,7 @@ public class CommentsExpenseActivity extends AppCompatActivity {
 
 
         FloatingActionButton resolveButton = ( FloatingActionButton) findViewById(R.id.resolveButton);
-        if(!contestatorID.equals(SliceAppDB.getUser().getTelephone())){
+        if(!contestatorID.equals(userTelephone)){
             resolveButton.setVisibility(View.GONE);
             RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) comment.getLayoutParams();
             p.addRule(RelativeLayout.LEFT_OF,R.id.commentButton);
@@ -261,9 +262,9 @@ public class CommentsExpenseActivity extends AppCompatActivity {
 
         SharedPreferences sharedPref=getSharedPreferences("data",MODE_PRIVATE);
         SharedPreferences.Editor prefEditor;
+
         prefEditor = sharedPref.edit();
-        prefEditor = sharedPref.edit();
-        prefEditor.putString("activity", "null");
+        prefEditor.putString("activity", null);
         prefEditor.commit();
 
         finish();

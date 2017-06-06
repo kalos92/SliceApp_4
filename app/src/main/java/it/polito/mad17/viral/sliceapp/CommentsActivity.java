@@ -175,12 +175,13 @@ public class CommentsActivity extends AppCompatActivity {
 
 
         FloatingActionButton resolveButton = ( FloatingActionButton) findViewById(R.id.resolveButton);
-        if(!contestatorID.equals(SliceAppDB.getUser().getTelephone())){
+        if(!contestatorID.equals(userTelephone)){
             resolveButton.setVisibility(View.GONE);
             RelativeLayout.LayoutParams p = (RelativeLayout.LayoutParams) comment.getLayoutParams();
             p.addRule(RelativeLayout.LEFT_OF,R.id.commentButton);
            comment.setLayoutParams(p);
-            resolveButton.setClickable(false);}
+            resolveButton.setClickable(false);
+        }
 
         resolveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -259,7 +260,7 @@ public class CommentsActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
         SharedPreferences.Editor prefEditor;
         prefEditor = sharedPref.edit();
-        prefEditor.putString("activity", "null");
+        prefEditor.putString("activity", null);
         prefEditor.commit();
 
         finish();

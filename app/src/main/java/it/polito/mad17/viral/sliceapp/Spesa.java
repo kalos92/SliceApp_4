@@ -141,7 +141,7 @@ public class Spesa implements Serializable {
         this.removed=false;
     }
 
-    public Spesa(String nome, Double importo,String user,String ID,int precision,String valuta){
+    public Spesa(String nome, Double importo,String user,String ID,int precision,String valuta,boolean b){
         this.removed=true;
         this.removed_msg=nome+" Deleted";
         this.importo=importo*-1;
@@ -149,6 +149,7 @@ public class Spesa implements Serializable {
         this.expenseID=ID;
         this.valuta=valuta;
         this.digit=precision;
+        this.contested=b;
 
     }
 

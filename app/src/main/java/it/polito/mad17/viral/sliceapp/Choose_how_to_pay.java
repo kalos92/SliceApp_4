@@ -120,7 +120,6 @@ public class Choose_how_to_pay extends Fragment {
 
         }
 
-
         if(savedInstanceState!=null){
             if(savedInstanceState.getParcelable("Uri")!=null)
                 uri = savedInstanceState.getParcelable("Uri");
