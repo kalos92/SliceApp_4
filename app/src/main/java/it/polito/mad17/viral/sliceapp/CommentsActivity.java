@@ -2,10 +2,12 @@ package it.polito.mad17.viral.sliceapp;
 
 import android.app.Activity;
 import android.app.ActivityManager;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DividerItemDecoration;
@@ -187,44 +189,60 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //Eliminiamo la contestazione
-                FirebaseDatabase dbContest = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
-                DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contestazioni").child(contestationID);
-                dbContest.getReference().child("groups_prova").child(groupID).child("contested").child(contestationID).setValue(false);
-                dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contested").setValue(false);
-                if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
-                    dbContestRef.removeValue();
-                    final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
+                AlertDialog.Builder builder;
+                builder = new AlertDialog.Builder(CommentsActivity.this);
+                builder.setTitle("You want to resolve this contestation. Are you sure?")
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                FirebaseDatabase dbContest = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
+                                DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contestazioni").child(contestationID);
+                                dbContest.getReference().child("groups_prova").child(groupID).child("contested").child(contestationID).setValue(false);
+                                dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contested").setValue(false);
+                                if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
+                                    dbContestRef.removeValue();
+                                    final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
 
-                    dbUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(DataSnapshot dataSnapshot) {
-                            Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
-                            while(iterator.hasNext()){
-                                DataSnapshot user = iterator.next();
-                                if(user.child("contestazioni").hasChild(contestationID)){
-                                    String keyUser = (String)user.getKey();
-                                    dbUserRef.child(keyUser).child("contestazioni").child(contestationID).removeValue();
+                                    dbUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(DataSnapshot dataSnapshot) {
+                                            Iterator<DataSnapshot> iterator = dataSnapshot.getChildren().iterator();
+                                            while(iterator.hasNext()){
+                                                DataSnapshot user = iterator.next();
+                                                if(user.child("contestazioni").hasChild(contestationID)){
+                                                    String keyUser = (String)user.getKey();
+                                                    dbUserRef.child(keyUser).child("contestazioni").child(contestationID).removeValue();
+                                                }
+                                            }
+                                        }
+
+                                        @Override
+                                        public void onCancelled(DatabaseError databaseError) {
+
+                                        }
+                                    });
+
+                                    Toast.makeText(getApplicationContext(),"Contestation resolved!",Toast.LENGTH_SHORT).show();
+
+                                    Intent i = new Intent(CommentsActivity.this,List_Pager_Act.class);
+                                    i.putExtra("page",2);
+                                    startActivity(i);
+                                    finish();
+
+                                }else{
+
+                                    Toast.makeText(getApplicationContext(),"You can't delete the contestation!",Toast.LENGTH_SHORT).show();
                                 }
+
                             }
-                        }
+                        }).setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
 
-                        @Override
-                        public void onCancelled(DatabaseError databaseError) {
-
-                        }
-                    });
-
-                    Toast.makeText(getApplicationContext(),"Contestation resolved!",Toast.LENGTH_SHORT).show();
-
-                    Intent i = new Intent(CommentsActivity.this,List_Pager_Act.class);
-                    i.putExtra("three",2);
-                    startActivity(i);
-                    finish();
-
-                }else{
-
-                    Toast.makeText(getApplicationContext(),"You can't delete the contestation!",Toast.LENGTH_SHORT).show();
-                }
 
 
             }

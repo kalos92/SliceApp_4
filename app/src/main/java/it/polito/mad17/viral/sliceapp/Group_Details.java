@@ -219,60 +219,10 @@ public class Group_Details extends AppCompatActivity implements LittleFragment3.
 
 
             if(datas!=null){
-                images = storageReference.getReference().child(groupID);
-                UploadTask uploadTask = images.putBytes(datas);
-                uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-
-                    // Handle unsuccessful uploads
-                }
-                }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                    @SuppressWarnings("VisibleForTests") Uri downloadUrl = taskSnapshot.getDownloadUrl();
-
-                    mCurrency curr2 = new mCurrency(curr.getSelectedItem().toString());
-                    Gruppo g = new Gruppo(groupID,groupName.getText().toString(), tmpList.size(), tmpList, policy,curr2,downloadUrl,SliceAppDB.getUser().getTelephone());
-                    g.setGroupID(groupID);
-                    g.setUser(SliceAppDB.getUser());
-
-                    // setto il flag contested a false online
-
-
-
-                    Gson gson = new Gson();
-                    Gruppo g1 = gson.fromJson(gson.toJson(g),Gruppo.class);
-
-                    groups_prova.child(g1.getGroupID()).setValue(g1);
-
-
-                    for (Persona p : tmpList) {
-                        Persona p1 = gson.fromJson(gson.toJson(p), Persona.class);
-
-                        for(Persona altri: g1.obtainPartecipanti().values()) {
-                            if(!p.getTelephone().equals(altri.getTelephone())){
-
-                                users_prova.child(p.getTelephone()).child("amici").child(altri.getTelephone() + ";" + g1.getCurr().getChoosencurr()).child("ncname").setValue(altri.getName() + " " + altri.getSurname());
-                                users_prova.child(p.getTelephone()).child("amici").child(altri.getTelephone() + ";" + g1.getCurr().getChoosencurr()).child("symbol").setValue(g1.getCurr().getSymbol());
-                                users_prova.child(p.getTelephone()).child("amici").child(altri.getTelephone() + ";" + g1.getCurr().getChoosencurr()).child("digits").setValue(g1.getCurr().getDigits());
-                                users_prova.child(p.getTelephone()).child("amici").child(altri.getTelephone() + ";" + g1.getCurr().getChoosencurr()).child("cc").setValue(g1.getCurr().getChoosencurr());
-                            }}
-
-                        users_prova.child(p1.getTelephone()).child("gruppi_partecipo").child(g1.getGroupID()).setValue(p1.getGruppi_partecipo().get(groupID));
-                        users_prova.child(p1.getTelephone()).child("posizione_gruppi").child(g1.getGroupID()).setValue(p1.getPosizione(g1));
-                        users_prova.child(p1.getTelephone()).child("dove_ho_debito").child(g1.getGroupID()).setValue(p1.getDove_ho_debito().get(groupID));
-                    }
-
-                    dialog.dismiss();
-                    Intent i = new Intent(Group_Details.this, List_Pager_Act.class);
-                    startActivity(i);
-                    finish();
-
-
-                }
-            });}
+                mCurrency curr2 = new mCurrency(curr.getSelectedItem().toString());
+                Upload_group_image ugi =new Upload_group_image(datas,groupID,groupName.getText().toString(),policy,tmpList,curr2,getBaseContext(),this,dialog);
+                ugi.execute();
+            }
             else {
                 mCurrency curr2 = new mCurrency(curr.getSelectedItem().toString());
                 Gruppo g = new Gruppo(groupID, groupName.getText().toString(), tmpList.size(), tmpList, policy, curr2,null,SliceAppDB.getUser().getTelephone());

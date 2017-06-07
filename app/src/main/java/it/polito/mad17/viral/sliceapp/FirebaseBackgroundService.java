@@ -200,8 +200,7 @@ public class FirebaseBackgroundService extends Service {
                         long commentTimestamp = (long) dataSnapshot.child("timestamp").getValue();
 
                         if(commentTimestamp > lastTimestampComment) {
-                            String c1 = ""+commentTimestamp;
-                            String c2 = ""+lastTimestampComment;
+
 
                             if(!dataSnapshot.child("userID").getValue(String.class).equals(userTelephone)){
                                 if(SliceAppDB.getUser()==null){
@@ -395,51 +394,6 @@ public class FirebaseBackgroundService extends Service {
                                             manager.notify((int) System.currentTimeMillis(), noti);
                                         }
 
-                                        // attacco un listener per ogni divisione
-                                        /*final DatabaseReference divisioniRef = dataSnapshots.child("divisioni").getRef();
-                                        divisioniRef.addChildEventListener(new ChildEventListener() {
-                                            @Override
-                                            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-
-                                            }
-                                            @Override
-                                            public void onChildChanged(final DataSnapshot dataSnapshotd, String s) {
-
-                                                // La notifica arriva a coloro che fanno parte del gruppo
-                                                final String user2 = (String) dataSnapshotd.child("persona").child("username").getValue();
-                                                final double importo = dataSnapshotd.child("importo").getValue(Double.class);
-
-                                                if(dataSnapshots.child("divisioni").hasChild(userTelephone)){
-                                                    if(dataSnapshotd.child("haPagato").getValue(Boolean.class)) {
-                                                    /*     Intent notificationIntent = new Intent(getApplicationContext(), Group_balance.class);
-                                                        //Spesa spesa = dataSnapshots.getValue(Spesa.class);
-                                                      //  Gruppo g = dataSnapshot.getValue(Gruppo.class);
-                                                        //notificationIntent.putExtra("Spesa", spesa);
-                                                        notificationIntent.putExtra("Gruppo", g);
-                                                        PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
-                                                                PendingIntent.FLAG_UPDATE_CURRENT);
-                                                        android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
-                                                                .setSmallIcon(R.drawable.expense_paid)
-                                                                .setContentTitle("The user " + user2 + " has paid his part (" + importo + ")")
-                                                                .setContentText("expense " + expenseName + " - group " + groupName)
-                                                                .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
-                                                                .setContentIntent(contentIntent);
-
-                                                        Notification noti = builder.build();
-                                                        noti.flags = Notification.FLAG_AUTO_CANCEL;
-                                                        // Add notification
-                                                        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                                                        manager.notify((int) System.currentTimeMillis(), noti);
-                                                    }
-                                                }
-                                            }
-                                            @Override
-                                            public void onChildRemoved(DataSnapshot dataSnapshot) {}
-                                            @Override
-                                            public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
-                                            @Override
-                                            public void onCancelled(DatabaseError databaseError) {}
-                                        });*/
                                     }
                                 }
 
@@ -700,6 +654,6 @@ public class FirebaseBackgroundService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+
     }
 }
