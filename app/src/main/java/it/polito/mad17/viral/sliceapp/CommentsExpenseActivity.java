@@ -56,8 +56,8 @@ public class CommentsExpenseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_comments);
-        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
-        String userTelephone = sharedPref.getString("telefono", null);
+        final SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        final String userTelephone = sharedPref.getString("telefono", null);
         SharedPreferences.Editor prefEditor;
 
         prefEditor = sharedPref.edit();
@@ -83,7 +83,7 @@ public class CommentsExpenseActivity extends AppCompatActivity {
             @Override
             protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, Commento model, int position) {
 
-                if(model.getUserID().equals(SliceAppDB.getUser().getTelephone()))
+                if(model.getUserID().equals(userTelephone))
                     populateMe((CommentsActivity.CommentHolder) viewHolder, model, position);
                 else
                     populateOther((CommentsActivity.CommentHolder2) viewHolder, model, position);
@@ -112,7 +112,7 @@ public class CommentsExpenseActivity extends AppCompatActivity {
             @Override
             public int getItemViewType(int position) {
                 Commento model = getItem(position);
-                if(model.getUserID().equals(SliceAppDB.getUser().getTelephone()))
+                if(model.getUserID().equals(userTelephone))
                     return 1;
                 else
                     return 0;
@@ -152,13 +152,14 @@ public class CommentsExpenseActivity extends AppCompatActivity {
                     comment.setError("Inserisci un commento");
                     return;
                 }
-                DatabaseReference comments = databaseRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni").child(contestationID).child("commenti");
+                DatabaseReference comments = databaseRef.child("users_prova").child(userTelephone).child("contestazioni").child(contestationID).child("commenti");
                 final DatabaseReference commentRef = comments.push();
                 final Commento commento = new Commento();
                 commento.setCommento(commentText);
-                commento.setUserName(SliceAppDB.getUser().getUsername());
+                String username = sharedPref.getString("username",null);
+                commento.setUserName(username);
                 commento.setCommentoID(commentRef.getKey());
-                commento.setUserID(SliceAppDB.getUser().getTelephone()); // è giusto? chi mette il commento è l'utente dell'app?
+                commento.setUserID(userTelephone); // è giusto? chi mette il commento è l'utente dell'app?
                 commento.setTimestamp(System.currentTimeMillis());
                 commentRef.setValue(commento);
                 comment.getText().clear();
@@ -195,7 +196,7 @@ public class CommentsExpenseActivity extends AppCompatActivity {
                 DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contestazioni").child(contestationID);
                 dbContest.getReference().child("groups_prova").child(groupID).child("contested").child(contestationID).setValue(false);
                 dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contested").setValue(false);
-                if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
+                if(userTelephone.equals(contestatorID)){
                     dbContestRef.removeValue();
                     final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
 
@@ -218,7 +219,7 @@ public class CommentsExpenseActivity extends AppCompatActivity {
                         }
                     });
 
-                    Toast.makeText(getApplicationContext(),"Contestation Resolved!",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(),"Contestation resolved!",Toast.LENGTH_SHORT).show();
 
                     Intent i = new Intent(CommentsExpenseActivity.this,List_Pager_Act.class);
                     i.putExtra("three",2);
@@ -229,9 +230,10 @@ public class CommentsExpenseActivity extends AppCompatActivity {
 
                     Toast.makeText(getApplicationContext(),"You can't delete the contestation!",Toast.LENGTH_SHORT).show();
                 }
+
+
             }
         });
-
     }
 
     public static class CommentHolder extends RecyclerView.ViewHolder{

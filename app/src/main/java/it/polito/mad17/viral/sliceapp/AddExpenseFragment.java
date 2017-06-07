@@ -1,9 +1,13 @@
 package it.polito.mad17.viral.sliceapp;
 
 
+import android.*;
+import android.annotation.TargetApi;
 import android.app.DialogFragment;
 import android.content.ActivityNotFoundException;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 
@@ -11,13 +15,17 @@ import java.io.ByteArrayOutputStream;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.OpenableColumns;
 import android.support.design.internal.BottomNavigationMenuView;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
@@ -50,7 +58,7 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
     public interface ReturnSelection{
          void returnSelection(Bundle bundle);
     }
-
+    private static final int PERMISSION_REQUEST_STORAGE_2 = 1;
     private Gruppo gruppo;
     private static final int PICK_IMAGE_ID = 234;
     private static final int SELECT_PDF = 1212;
@@ -378,14 +386,65 @@ public class AddExpenseFragment extends Fragment implements DatePickerFragment.T
         PDFAttack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                uri=null;
-                b=null;
-                name.setText(null);
-                preview.setImageBitmap(b);
-                Intent intent = new Intent();
-                intent.setAction(Intent.ACTION_GET_CONTENT);
-                intent.setType("application/pdf");
-                startActivityForResult(intent,SELECT_PDF);
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                        // Should we show an explanation?
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(getActivity(),
+                                android.Manifest.permission.READ_CONTACTS)) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle("Contacts access needed");
+                            builder.setPositiveButton(android.R.string.ok, null);
+                            builder.setMessage("please confirm Contacts access");
+                            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @TargetApi(Build.VERSION_CODES.M)
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    requestPermissions(
+                                            new String[]
+                                                    {android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_STORAGE_2);
+                                }
+                            });
+                            builder.show();
+                            // Show an expanation to the user *asynchronously* -- don't block
+                            // this thread waiting for the user's response! After the user
+                            // sees the explanation, try again to request the permission.
+
+                        } else {
+
+                            // No explanation needed, we can request the permission.
+
+                            ActivityCompat.requestPermissions(getActivity(),
+                                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    PERMISSION_REQUEST_STORAGE_2);
+
+                            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                            // app-defined int constant. The callback method gets the
+                            // result of the request.
+                        }
+                    }else{
+                        uri=null;
+                        b=null;
+                        name.setText(null);
+                        preview.setImageBitmap(b);
+                        Intent intent = new Intent();
+                        intent.setAction(Intent.ACTION_GET_CONTENT);
+                        intent.setType("application/pdf");
+                        startActivityForResult(intent,SELECT_PDF);
+                    }
+                }
+                else{
+                    uri=null;
+                    b=null;
+                    name.setText(null);
+                    preview.setImageBitmap(b);
+                    Intent intent = new Intent();
+                    intent.setAction(Intent.ACTION_GET_CONTENT);
+                    intent.setType("application/pdf");
+                    startActivityForResult(intent,SELECT_PDF);
+                }
+
             }
         });
 

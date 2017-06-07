@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Build;
@@ -145,6 +146,9 @@ public class AddNewGroup extends AppCompatActivity {
     }
 
         public void getContact(){
+            SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+            final String userTelephone = sharedPref.getString("telefono", null);
+
 
                 Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null);
                 while(phones.moveToNext()) {
@@ -163,7 +167,7 @@ public class AddNewGroup extends AppCompatActivity {
                     phoneNumber = phoneNumber.replaceAll("[^0-9]", "");
 
                     Persona p = new Persona(name,null,null,null,phoneNumber,null,0,"+39",null);
-                    if(!p.getTelephone().equals(SliceAppDB.getUser().getTelephone()))
+                    if(!p.getTelephone().equals(userTelephone))
                             contactsMap.put(phoneNumber,p);
 
                     //  Log.d("Name", name);

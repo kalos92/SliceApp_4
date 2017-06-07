@@ -59,7 +59,8 @@ public class CommentsActivity extends AppCompatActivity {
         RecyclerView mylist = (RecyclerView) findViewById(R.id.listViewComments);
 
         SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
-        String userTelephone = sharedPref.getString("telefono", null);
+        final String userTelephone = sharedPref.getString("telefono", null);
+        final String username = sharedPref.getString("username", null);
         SharedPreferences.Editor prefEditor;
         prefEditor = sharedPref.edit();
         prefEditor.putString("activity", "commentsActivity");
@@ -72,7 +73,7 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             protected void populateViewHolder(RecyclerView.ViewHolder viewHolder, Commento model, int position) {
 
-                if(model.getUserID().equals(SliceAppDB.getUser().getTelephone()))
+                if(model.getUserID().equals(userTelephone))
                     populateMe((CommentHolder) viewHolder, model, position);
                 else
                     populateOther((CommentHolder2) viewHolder, model, position);
@@ -101,7 +102,7 @@ public class CommentsActivity extends AppCompatActivity {
             @Override
             public int getItemViewType(int position) {
                 Commento model = getItem(position);
-                if(model.getUserID().equals(SliceAppDB.getUser().getTelephone()))
+                if(model.getUserID().equals(userTelephone))
                     return 1;
                 else
                     return 0;
@@ -140,13 +141,13 @@ public class CommentsActivity extends AppCompatActivity {
                     comment.setError("Insert comment");
                     return;
                 }
-                DatabaseReference comments = databaseRef.child("users_prova").child(SliceAppDB.getUser().getTelephone()).child("contestazioni").child(contestationID).child("commenti");
+                DatabaseReference comments = databaseRef.child("users_prova").child(userTelephone).child("contestazioni").child(contestationID).child("commenti");
                 final DatabaseReference commentRef = comments.push();
                 final Commento commento = new Commento();
                 commento.setCommento(commentText);
-                commento.setUserName(SliceAppDB.getUser().getUsername());
+                commento.setUserName(username);
                 commento.setCommentoID(commentRef.getKey());
-                commento.setUserID(SliceAppDB.getUser().getTelephone()); // è giusto? chi mette il commento è l'utente dell'app?
+                commento.setUserID(userTelephone); // è giusto? chi mette il commento è l'utente dell'app?
                 commento.setTimestamp(System.currentTimeMillis());
                 commentRef.setValue(commento);
                 comment.getText().clear();
@@ -191,7 +192,7 @@ public class CommentsActivity extends AppCompatActivity {
                 DatabaseReference dbContestRef = dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contestazioni").child(contestationID);
                 dbContest.getReference().child("groups_prova").child(groupID).child("contested").child(contestationID).setValue(false);
                 dbContest.getReference().child("groups_prova").child(groupID).child("spese").child(expenseID).child("contested").setValue(false);
-                if(SliceAppDB.getUser().getTelephone().equals(contestatorID)){
+                if(userTelephone.equals(contestatorID)){
                     dbContestRef.removeValue();
                     final DatabaseReference dbUserRef = dbContest.getReference().child("users_prova");
 

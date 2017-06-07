@@ -158,6 +158,7 @@ public class LoginActivity extends AppCompatActivity{
 
 
                     prefEditor.putString("telefono", phone);
+                    prefEditor.putString("username", p.getUsername());
                     prefEditor.commit();
                     progressDialog.dismiss();
 

@@ -1,13 +1,17 @@
 package it.polito.mad17.viral.sliceapp;
 
+import android.*;
+import android.Manifest;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
@@ -16,6 +20,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Environment;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -66,6 +72,7 @@ import java.util.Iterator;
 import java.util.List;
 
 public class ExpenseDetails extends AppCompatActivity {
+    private static final int PERMISSION_REQUEST_STORAGE = 1;
     private FirebaseDatabase database = FirebaseDatabase.getInstance("https://sliceapp-a55d6.firebaseio.com/");
     private DatabaseReference rootRef = database.getReference();
     private DatabaseReference groups_ref = rootRef.child("groups_prova");
@@ -86,7 +93,9 @@ public class ExpenseDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.expense_details);
-
+        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        final String userTelephone = sharedPref.getString("telefono", null);
+        final String username = sharedPref.getString("username",null);
         Bundle extra = getIntent().getExtras();
         if(extra!= null) {
             s= (Spesa) extra.get("Spesa");
@@ -246,8 +255,7 @@ public class ExpenseDetails extends AppCompatActivity {
         String str = String.format("%."+s.getDigit()+"f", s.getImporto());
         tv2.setText(str+" "+s.getValuta());
         tv3.setText(s.getData());
-        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
-        String userTelephone = sharedPref.getString("telefono", null);
+
         String str2 = String.format("%."+s.getDigit()+"f", s.getDivisioni().get(userTelephone).getImporto());
         tv4.setText(str2+" "+s.getValuta());
 
@@ -298,7 +306,7 @@ public class ExpenseDetails extends AppCompatActivity {
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         boolean b = (boolean) dataSnapshot.getValue();
                         if(!b){
-                            if (s.getPagante().getTelephone().equals(SliceAppDB.getUser().getTelephone())) {
+                            if (s.getPagante().getTelephone().equals(userTelephone)) {
                                 groups_ref.child(gruppo.getGroupID()).child("spese").child(s.getExpenseID()).removeValue();
                                 for(final Persona p: gruppo.obtainPartecipanti().values()){
 
@@ -363,12 +371,62 @@ public class ExpenseDetails extends AppCompatActivity {
         downloadPDF.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(s.getUri()!=null){
 
-                    new downloadPDF(getBaseContext()).execute(s.getUri(),s.getNome_spesa());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ContextCompat.checkSelfPermission(getBaseContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+
+                        // Should we show an explanation?
+                        if (ActivityCompat.shouldShowRequestPermissionRationale(ExpenseDetails.this,
+                                android.Manifest.permission.READ_CONTACTS)) {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getBaseContext());
+                            builder.setTitle("Contacts access needed");
+                            builder.setPositiveButton(android.R.string.ok, null);
+                            builder.setMessage("please confirm Contacts access");
+                            builder.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                                @TargetApi(Build.VERSION_CODES.M)
+                                @Override
+                                public void onDismiss(DialogInterface dialog) {
+                                    requestPermissions(
+                                            new String[]
+                                                    {android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_REQUEST_STORAGE);
+                                }
+                            });
+                            builder.show();
+                            // Show an expanation to the user *asynchronously* -- don't block
+                            // this thread waiting for the user's response! After the user
+                            // sees the explanation, try again to request the permission.
+
+                        } else {
+
+                            // No explanation needed, we can request the permission.
+
+                            ActivityCompat.requestPermissions(ExpenseDetails.this,
+                                    new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                                    PERMISSION_REQUEST_STORAGE);
+
+                            // MY_PERMISSIONS_REQUEST_READ_CONTACTS is an
+                            // app-defined int constant. The callback method gets the
+                            // result of the request.
+                        }
+                    }else{
+                        if(s.getUri()!=null){
+
+                            new downloadPDF(getBaseContext()).execute(s.getUri(),s.getNome_spesa());
+                        }
+                        else
+                            Toast.makeText(getBaseContext(),"No PDF was uploaded", Toast.LENGTH_LONG).show();
+                    }
                 }
-                else
-                    Toast.makeText(getBaseContext(),"No PDF was uploaded", Toast.LENGTH_LONG).show();
+                else{
+                    if(s.getUri()!=null){
+
+                        new downloadPDF(getBaseContext()).execute(s.getUri(),s.getNome_spesa());
+                    }
+                    else
+                        Toast.makeText(getBaseContext(),"No PDF was uploaded", Toast.LENGTH_LONG).show();
+                }
+
+
             }
         });
 

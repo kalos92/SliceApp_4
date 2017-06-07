@@ -43,6 +43,12 @@ public class FirebaseBackgroundService extends Service {
     private Long lastTimestampComment;
     private Long lastTimestampDeletedExpense;
     private Long lastTimestampBalance;
+    private String expenseID;
+    private String groupID;
+    private String contestationID;
+    private String contestator;
+    private String contestatorName;
+
 
 
     @Nullable
@@ -62,6 +68,7 @@ public class FirebaseBackgroundService extends Service {
 
         if(lastTimestampGroup == 0) {
             lastTimestampGroup = System.currentTimeMillis();
+
             prefEditor = sharedPref.edit();
             prefEditor.putLong("lastTimestampGroup", lastTimestampGroup);
             prefEditor.commit();
@@ -114,13 +121,15 @@ public class FirebaseBackgroundService extends Service {
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 long contestationTimestamp = (long) dataSnapshot.child("timestamp").getValue();
-                final String contestator,expenseID,groupID,contestationID;
+
                 expenseID = (String) dataSnapshot.child("expenseID").getValue();
                 groupID = (String) dataSnapshot.child("groupID").getValue();
                 contestationID = (String) dataSnapshot.child("contestID").getValue();
-                contestator = (String) dataSnapshot.child("userName").getValue();//contestator
+                contestator = (String) dataSnapshot.child("phoneNumber").getValue();//contestator
+                contestatorName = (String) dataSnapshot.child("userName").getValue();
 
                 if (contestationTimestamp > lastTimestampContestation) {
+
                         if (!dataSnapshot.child("phoneNumber").getValue(String.class).equals(userTelephone)) {
 
                             lastTimestampContestation = contestationTimestamp;
@@ -152,7 +161,7 @@ public class FirebaseBackgroundService extends Service {
                                                 PendingIntent.FLAG_UPDATE_CURRENT);
                                         android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
                                                 .setSmallIcon(R.drawable.added_contestation)
-                                                .setContentTitle(contestator + " has contested expense " + expenseName + " of group " + groupName)
+                                                .setContentTitle(contestatorName + " has contested expense " + expenseName + " of group " + groupName)
                                                 .setContentText(contestTitle)
                                                 .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                                                 .setContentIntent(contentIntent);
@@ -180,7 +189,7 @@ public class FirebaseBackgroundService extends Service {
                                         PendingIntent.FLAG_UPDATE_CURRENT);
                                 android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
                                         .setSmallIcon(R.drawable.added_contestation)
-                                        .setContentTitle(contestator + " has contested expense " + expenseName + " of group " + groupName)
+                                        .setContentTitle(contestatorName + " has contested expense " + expenseName + " of group " + groupName)
                                         .setContentText(contestTitle)
                                         .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
                                         .setContentIntent(contentIntent);
@@ -200,6 +209,7 @@ public class FirebaseBackgroundService extends Service {
                         long commentTimestamp = (long) dataSnapshot.child("timestamp").getValue();
 
                         if(commentTimestamp > lastTimestampComment) {
+
                             String c1 = ""+commentTimestamp;
                             String c2 = ""+lastTimestampComment;
 
@@ -260,7 +270,32 @@ public class FirebaseBackgroundService extends Service {
             @Override
             public void onChildChanged(DataSnapshot dataSnapshot, String s) {}
             @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {}
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+                Intent notificationIntent = new Intent(getApplicationContext(), List_Pager_Act.class);
+                notificationIntent.putExtra("contestator", contestator);
+                notificationIntent.putExtra("groupID", groupID);
+                notificationIntent.putExtra("expenseID", expenseID);
+                notificationIntent.putExtra("contestationID", contestationID);
+                notificationIntent.putExtra("page",0);
+
+                String expenseName = (String) dataSnapshot.child("nameExpense").getValue();
+                String groupName = (String) dataSnapshot.child("groupName").getValue();
+                String contestTitle = (String) dataSnapshot.child("title").getValue();
+
+                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, notificationIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+                android.support.v4.app.NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+                        .setSmallIcon(R.drawable.added_comment)
+                        .setContentTitle("The contestation " + contestTitle + " on expense" + expenseName + " of group " + groupName) // mi servirebbe il nome della spesa :(
+                        .setContentText("has been resolved")
+                        .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION))
+                        .setContentIntent(contentIntent);
+                Notification noti = builder.build();
+                noti.flags = Notification.FLAG_AUTO_CANCEL;
+                // Add notification
+                NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                manager.notify((int) System.currentTimeMillis(), noti);
+            }
             @Override
             public void onChildMoved(DataSnapshot dataSnapshot, String s) {}
             @Override
@@ -568,7 +603,6 @@ public class FirebaseBackgroundService extends Service {
                                 SliceAppDB.setUser_1(user);
                                 SliceAppDB.setUser(user);
                                     if(timeStamp > lastTimestampBalance){
-
                                         lastTimestampBalance = timeStamp;
                                         prefEditor = sharedPref.edit();
                                         prefEditor.putLong("lastTimestampBalance", lastTimestampBalance);

@@ -1,6 +1,7 @@
 package it.polito.mad17.viral.sliceapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -26,7 +27,9 @@ public class AddContestationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contestation);
-
+        SharedPreferences sharedPref = getSharedPreferences("data",MODE_PRIVATE);
+        final String userTelephone = sharedPref.getString("telefono", null);
+        final String username = sharedPref.getString("username",null);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.contestToolbar);
         setSupportActionBar(toolbar);
@@ -65,16 +68,16 @@ public class AddContestationActivity extends AppCompatActivity {
                         contest.setGroupID(groupID);
                         contest.setExpenseID(expenseID);
                         contest.setTitle(title.getText().toString());
-                        contest.setPhoneNumber(SliceAppDB.getUser().getTelephone());
-                        contest.setUserName(SliceAppDB.getUser().getUsername());
+                        contest.setPhoneNumber(userTelephone);
+                        contest.setUserName(username);
                         contest.setGroupName(groupName);
                         contest.setNameExpense(expenseName);
                         contest.setTimestamp(System.currentTimeMillis());
 
                         Commento c = new Commento();
                         c.setCommento(comment.getText().toString());
-                        c.setUserID(SliceAppDB.getUser().getTelephone());
-                        c.setUserName(SliceAppDB.getUser().getUsername());
+                        c.setUserID(userTelephone);
+                        c.setUserName(username);
                         c.setTimestamp(System.currentTimeMillis());
 
                         //per commento e contes IDs prima fare il listener su firebase
@@ -109,7 +112,7 @@ public class AddContestationActivity extends AppCompatActivity {
                         }
 
                          Intent i = new Intent(AddContestationActivity.this,List_Pager_Act.class);
-                         i.putExtra("three",2);
+                         i.putExtra("page",2);
                          startActivity(i);
                          finish();
                     }
