@@ -67,6 +67,7 @@ public class Upload_expense extends AsyncTask<Void, Integer, Void> {
             data_s=day+"/"+month+"/"+year;
         }
         // aggiungo key della spesa
+
         final Spesa s1 = gruppo.AddSpesa(expenseID,buyer, policy, nome, data_s, Double.parseDouble(price));
         s1.setValuta(gruppo.getCurr().getSymbol());
         s1.setDigit(gruppo.getCurr().getDigits());

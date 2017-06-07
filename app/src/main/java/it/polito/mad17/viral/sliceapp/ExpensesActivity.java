@@ -147,34 +147,11 @@ public class ExpensesActivity extends AppCompatActivity implements View.OnClickL
 
         if(gruppo.getUri()!=null) {
             Picasso.with(getBaseContext()).load(gruppo.getUri()).placeholder(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
-            t.setTitle(" "+gruppo.getGroupName());
-            t.setSubtitle(" Welcome: "+user.getUsername());
         setSupportActionBar(t);
         }
         else
             Picasso.with(getBaseContext()).load(R.drawable.img_gruppi).transform(new RoundedTransformation(500, 1)).into(img);
 
-        t.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        unread =  dataSnapshot.getValue(Dettagli_Gruppo.class);
-                        Integer i = unread.calculate();
-                        String key_upd= users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(ID).child("unread").push().getKey();
-                        users_prova.child(user.getTelephone()).child("gruppi_partecipo").child(gruppo.getGroupID()).child("unread").child(key_upd).setValue(i.intValue()*-1);
-
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        });
 
         Query ref = groups_ref.child(gruppo.getGroupID()).child("spese");
         adapter= new ExpenseRecyclerAdapter(Spesa.class,R.layout.listview_expense_row, ExpensesActivity.ExpenseHolder.class,ref,getBaseContext(),gruppo);
