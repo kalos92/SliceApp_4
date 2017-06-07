@@ -74,7 +74,7 @@ public class Upload_expense extends AsyncTask<Void, Integer, Void> {
         s1.setCat_string(cat);
 
         gruppo.refreshC();
-
+//
         final ArrayList<Persona> partecipanti = new ArrayList<Persona>(gruppo.obtainPartecipanti().values());
 
 
